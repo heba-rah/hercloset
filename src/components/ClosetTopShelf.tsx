@@ -35,15 +35,13 @@ export const ClosetTopShelf: React.FC<ClosetTopShelfProps> = ({
     { id: 'all', label: 'All Stores' },
     { id: 'urban planet', label: 'Urban Planet' },
     { id: 'ardene', label: 'Ardene' },
-    { id: 'modanisa', label: 'Modanisa' },
-    { id: 'gymshark', label: 'Gymshark' },
   ];
 
   // Dynamic Color Coding based on score
   const getGaugeColor = (score: number) => {
     if (score >= 80) {
       return {
-        stroke: '#10B981',
+        stroke: '#059669',
         text: 'text-[#059669]',
         badgeBg: 'bg-emerald-50 border-emerald-300 text-emerald-800',
         label: 'High Modesty'
@@ -51,14 +49,14 @@ export const ClosetTopShelf: React.FC<ClosetTopShelfProps> = ({
     }
     if (score >= 60) {
       return {
-        stroke: '#F59E0B',
+        stroke: '#D97706',
         text: 'text-[#D97706]',
         badgeBg: 'bg-amber-50 border-amber-300 text-amber-800',
         label: 'Moderate Modesty'
       };
     }
     return {
-      stroke: '#EF4444',
+      stroke: '#DC2626',
       text: 'text-[#DC2626]',
       badgeBg: 'bg-rose-50 border-rose-300 text-rose-800',
       label: 'Low Modesty'
@@ -68,33 +66,33 @@ export const ClosetTopShelf: React.FC<ClosetTopShelfProps> = ({
   const gaugeTheme = getGaugeColor(averageMatchScore);
 
   // SVG Circular Gauge parameters
-  const radius = 38;
+  const radius = 34;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (averageMatchScore / 100) * circumference;
 
   return (
-    <div className="bg-[#FAF7F2] border border-[#D6CFCE] rounded-3xl p-5 sm:p-6 my-6 shadow-sm transition-all">
+    <div className="w-full bg-[#EAE2D8] border-y-4 border-[#8A6B5D]/40 shadow-[inset_0_6px_12px_rgba(75,63,56,0.15)] py-4 px-4 md:px-8 border-t-[#8A6B5D] border-b-[#4B3F38]/20 my-4">
       
-      {/* 3-Section Closet Top Shelf Grid Row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+      {/* 3-Compartment Layout */}
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-6 items-center max-w-[1700px] mx-auto">
         
-        {/* LEFT DRAWER / BASKET: OCCASION */}
-        <div className="bg-[#F2EDE6] border border-[#B89A8E]/40 rounded-2xl p-4 flex flex-col items-center justify-center space-y-2 shadow-inner group">
-          {/* Subtle Woven Drawer Handle */}
-          <div className="w-10 h-1.5 rounded-full bg-[#B89A8E]/60 group-hover:bg-[#8A6B5D] transition-colors" />
+        {/* LEFT COMPARTMENT — "OCCASION" STORAGE BASKET/BIN */}
+        <div className="bg-[#FAF7F2] rounded-xl border border-[#D6CFCE] p-4 shadow-[0_4px_6px_rgba(75,63,56,0.08),inset_0_2px_4px_rgba(255,255,255,0.8)] flex flex-col items-center">
+          {/* Top Detail: Small Leather/Wood Handle Icon */}
+          <div className="w-8 h-1.5 bg-[#8A6B5D]/60 rounded-full mx-auto mb-2" />
           
-          <div className="flex items-center gap-1.5 text-[#4B3F38]">
+          <div className="flex items-center gap-1.5 mb-2">
             <Tag className="w-3.5 h-3.5 text-[#8A6B5D]" />
-            <span className="text-[11px] font-extrabold tracking-widest uppercase">
+            <h3 className="text-[11px] font-bold tracking-[0.25em] text-[#8A6B5D] uppercase text-center">
               OCCASION
-            </span>
+            </h3>
           </div>
 
-          {/* Inset Label Plate Dropdown Selector */}
+          {/* Inset Select Box */}
           <select
             value={selectedOccasion}
             onChange={(e) => onSelectOccasion(e.target.value)}
-            className="w-full bg-white border border-[#B89A8E] rounded-xl px-3.5 py-2 text-xs font-bold text-[#4B3F38] cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#8A6B5D] shadow-sm"
+            className="w-full bg-white border border-[#B89A8E]/60 rounded-lg px-3.5 py-2 text-xs font-bold text-[#4B3F38] cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#8A6B5D] shadow-inner"
           >
             {occasions.map((occ) => (
               <option key={occ.id} value={occ.id}>
@@ -104,28 +102,26 @@ export const ClosetTopShelf: React.FC<ClosetTopShelfProps> = ({
           </select>
         </div>
 
-        {/* CENTER: INTERACTIVE "MODEST MATCH" CIRCULAR METER */}
-        <div className="flex items-center justify-center gap-4 bg-[#FAF7F2] py-2 px-4 rounded-2xl">
+        {/* CENTER COMPARTMENT — "LIVE MODESTY GAUGE" */}
+        <div className="bg-[#FAF7F2]/80 border border-[#D6CFCE] rounded-xl p-3 sm:px-6 shadow-sm flex items-center justify-center gap-4">
           
-          {/* SVG Circular Progress Ring */}
-          <div className="relative w-24 h-24 flex items-center justify-center shrink-0">
-            <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-              {/* Background Track Circle */}
+          {/* Circular SVG Gauge */}
+          <div className="relative w-20 h-20 flex items-center justify-center shrink-0">
+            <svg className="w-full h-full transform -rotate-90" viewBox="0 0 90 90">
               <circle
-                cx="50"
-                cy="50"
+                cx="45"
+                cy="45"
                 r={radius}
                 className="stroke-[#D6CFCE]/50"
-                strokeWidth="7"
+                strokeWidth="6"
                 fill="transparent"
               />
-              {/* Dynamic Animated Progress Circle */}
               <circle
-                cx="50"
-                cy="50"
+                cx="45"
+                cy="45"
                 r={radius}
                 stroke={gaugeTheme.stroke}
-                strokeWidth="7"
+                strokeWidth="6"
                 strokeDasharray={circumference}
                 strokeDashoffset={strokeDashoffset}
                 strokeLinecap="round"
@@ -134,19 +130,19 @@ export const ClosetTopShelf: React.FC<ClosetTopShelfProps> = ({
               />
             </svg>
 
-            {/* Inner Percentage Value */}
+            {/* Percentage Number Inside Circle */}
             <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-              <span className={`text-xl font-extrabold font-mono ${gaugeTheme.text}`}>
+              <span className={`text-lg font-extrabold font-mono ${gaugeTheme.text}`}>
                 {averageMatchScore}%
               </span>
             </div>
           </div>
 
-          {/* Right Meter Label & Title */}
+          {/* Focal Text & Label */}
           <div className="space-y-1">
             <div className="flex items-center gap-1.5">
               <Sparkles className="w-4 h-4 text-[#8A6B5D]" />
-              <span className="font-serif italic text-lg sm:text-xl font-bold text-[#4B3F38]">
+              <span className="font-serif italic text-lg font-bold text-[#4B3F38]">
                 Modest Match
               </span>
             </div>
@@ -156,29 +152,29 @@ export const ClosetTopShelf: React.FC<ClosetTopShelfProps> = ({
             </div>
 
             <p className="text-[11px] text-[#8A6B5D] font-semibold">
-              Live feed average for {totalItemsCount} Canadian items
+              Live score across {totalItemsCount} Canadian items
             </p>
           </div>
 
         </div>
 
-        {/* RIGHT DRAWER / BASKET: STORES */}
-        <div className="bg-[#F2EDE6] border border-[#B89A8E]/40 rounded-2xl p-4 flex flex-col items-center justify-center space-y-2 shadow-inner group">
-          {/* Subtle Woven Drawer Handle */}
-          <div className="w-10 h-1.5 rounded-full bg-[#B89A8E]/60 group-hover:bg-[#8A6B5D] transition-colors" />
+        {/* RIGHT COMPARTMENT — "STORES" STORAGE BASKET/BIN */}
+        <div className="bg-[#FAF7F2] rounded-xl border border-[#D6CFCE] p-4 shadow-[0_4px_6px_rgba(75,63,56,0.08),inset_0_2px_4px_rgba(255,255,255,0.8)] flex flex-col items-center">
+          {/* Top Detail: Small Leather/Wood Handle Icon */}
+          <div className="w-8 h-1.5 bg-[#8A6B5D]/60 rounded-full mx-auto mb-2" />
 
-          <div className="flex items-center gap-1.5 text-[#4B3F38]">
+          <div className="flex items-center gap-1.5 mb-2">
             <Store className="w-3.5 h-3.5 text-[#8A6B5D]" />
-            <span className="text-[11px] font-extrabold tracking-widest uppercase">
+            <h3 className="text-[11px] font-bold tracking-[0.25em] text-[#8A6B5D] uppercase text-center">
               STORES
-            </span>
+            </h3>
           </div>
 
-          {/* Inset Label Plate Dropdown Selector */}
+          {/* Inset Select Box */}
           <select
             value={selectedStore}
             onChange={(e) => onSelectStore(e.target.value)}
-            className="w-full bg-white border border-[#B89A8E] rounded-xl px-3.5 py-2 text-xs font-bold text-[#4B3F38] cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#8A6B5D] shadow-sm"
+            className="w-full bg-white border border-[#B89A8E]/60 rounded-lg px-3.5 py-2 text-xs font-bold text-[#4B3F38] cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#8A6B5D] shadow-inner"
           >
             {stores.map((s) => (
               <option key={s.id} value={s.id}>

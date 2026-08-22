@@ -165,6 +165,16 @@ export default function Home() {
         activeFilterCount={activeFilterCount}
       />
 
+      {/* FULL-WIDTH HOLLOW WARDROBE TOP SHELF (Occupies full banner width) */}
+      <ClosetTopShelf
+        selectedOccasion={filters.selectedOccasion}
+        onSelectOccasion={(occ) => handleFilterChange({ selectedOccasion: occ })}
+        selectedStore={filters.selectedRetailer}
+        onSelectStore={(store) => handleFilterChange({ selectedRetailer: store })}
+        averageMatchScore={averageMatchScore}
+        totalItemsCount={calculatedMatches.length}
+      />
+
       {/* Main Full-Width Pinterest Feed Content Container */}
       <main className="flex-1 max-w-[1800px] w-full mx-auto px-4 sm:px-6 lg:px-8 pb-20">
         
@@ -182,17 +192,7 @@ export default function Home() {
           onFilterChange={handleFilterChange}
         />
 
-        {/* CLOSET TOP SHELF & CIRCULAR MODESTY GAUGE (Left Drawer: Occasion | Center: Meter | Right Drawer: Stores) */}
-        <ClosetTopShelf
-          selectedOccasion={filters.selectedOccasion}
-          onSelectOccasion={(occ) => handleFilterChange({ selectedOccasion: occ })}
-          selectedStore={filters.selectedRetailer}
-          onSelectStore={(store) => handleFilterChange({ selectedRetailer: store })}
-          averageMatchScore={averageMatchScore}
-          totalItemsCount={calculatedMatches.length}
-        />
-
-        {/* FULL-WIDTH EDGE-TO-EDGE PINTEREST MASONRY GRID */}
+        {/* FULL-WIDTH EDGE-TO-EDGE PINTEREST MASONRY GRID (Starts right below wardrobe top shelf) */}
         <PinterestGrid
           matches={calculatedMatches}
           isAiMode={filters.demoMode === 'ai_search'}
