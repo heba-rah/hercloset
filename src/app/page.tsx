@@ -59,7 +59,7 @@ export default function Home() {
   const [hamper, setHamper] = useState<Product[]>([]);
   const [isHamperOpen, setIsHamperOpen] = useState<boolean>(false);
 
-  // Sync dark class on document element
+  // Strictly enforce Light Mode as default on mount
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
@@ -219,7 +219,7 @@ export default function Home() {
 
       {/* SLIDE-OVER MODESTY FILTERS DRAWER */}
       {isFiltersDrawerOpen && (
-        <div className="fixed inset-0 z-50 flex justify-end bg-[#181412]/70 backdrop-blur-md animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex justify-end bg-[#4B3F38]/60 backdrop-blur-md animate-in fade-in duration-200">
           <div className="relative w-full max-w-md h-full bg-[#FAF7F2] dark:bg-[#241E1B] border-l border-[#D6CFCE] dark:border-[#443732] shadow-2xl flex flex-col justify-between text-[#4B3F38] dark:text-[#F2EDE6]">
             
             {/* Drawer Header */}
