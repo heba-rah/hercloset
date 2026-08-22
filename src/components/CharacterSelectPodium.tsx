@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Check, Sparkles, Shirt, Scissors, EyeOff, Layers, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Check, Sparkles, Shirt, Scissors, EyeOff, Layers, ArrowLeft } from 'lucide-react';
 import { ModestyProfile, Neckline, SleeveLength, Hemline } from '@/types/product';
 
 interface CharacterSkin {
@@ -194,16 +194,16 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
 
   const stepButtonLabel =
     step === 1
-      ? 'Select for Sleeve →'
+      ? 'Select for Sleeve'
       : step === 2
-      ? 'Select for Neckline →'
-      : 'Select for Bottom →';
+      ? 'Select for Neckline'
+      : 'Select for Bottom';
 
   return (
     <div className="min-h-screen w-full bg-[#F2EDE6] p-6 sm:p-10 md:p-12 flex flex-col justify-between font-sans selection:bg-[#B89A8E] selection:text-white">
       
       {/* 1. PERSISTENT TOP HEADER & BACK NAVIGATION */}
-      <div className="w-full max-w-5xl mx-auto flex items-center justify-between mb-4">
+      <div className="w-full max-w-6xl mx-auto flex items-center justify-between mb-4">
         
         {/* Persistent Back Button */}
         {step > 1 ? (
@@ -233,14 +233,14 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
       </div>
 
       {/* 2. DEDICATED STEP CONTENT SCREENS */}
-      <div className="flex-1 max-w-5xl w-full mx-auto flex flex-col items-center justify-center my-4">
+      <div className="flex-1 max-w-6xl w-full mx-auto flex flex-col items-center justify-center my-4">
         
-        {/* ================= STEP 1, STEP 2 & STEP 3: UNENCLOSED FREESTANDING AVATARS ================= */}
+        {/* ================= STEP 1, STEP 2 & STEP 3: SUBSTANTIALLY ENLARGED FREESTANDING AVATARS ================= */}
         {(step === 1 || step === 2 || step === 3) && (
           <div className="w-full flex flex-col items-center justify-center relative my-2">
             
-            {/* SIDE-BY-SIDE FREESTANDING AVATARS WITH GROUND CONTACT SHADOW & CLEAN TYPOGRAPHY */}
-            <div className="flex flex-wrap items-center justify-center gap-16 sm:gap-20 md:gap-24 my-6">
+            {/* SUBSTANTIALLY ENLARGED FREESTANDING AVATARS CONTAINER */}
+            <div className="flex flex-wrap items-center justify-center gap-16 md:gap-32 my-6">
               {currentSkins.map((skin) => {
                 const selected = skin.isSelected(profile);
                 const isHovered = hoveredSkinId === skin.id;
@@ -257,24 +257,24 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
                         : 'opacity-35 scale-95 hover:opacity-75 hover:scale-98'
                     }`}
                   >
-                    {/* ENLARGED FREESTANDING AVATAR SPRITE (w-[280px] h-[280px]) */}
+                    {/* SUBSTANTIALLY ENLARGED AVATAR SPRITE (w-[340px] h-[340px] md:w-[400px] md:h-[400px]) */}
                     <img
                       src={isHovered ? skin.gifImg : skin.staticImg}
                       alt={skin.name}
-                      className="w-[280px] h-[280px] object-contain drop-shadow-xl [image-rendering:pixelated]"
+                      className="w-[340px] h-[340px] md:w-[400px] md:h-[400px] object-contain drop-shadow-2xl [image-rendering:pixelated]"
                     />
 
-                    {/* SOFT REALISTIC GROUND CONTACT SHADOW DIRECTLY UNDER FEET */}
-                    <div className="w-36 h-3 bg-black/10 rounded-[100%] blur-[2px] mx-auto mt-[-10px]" />
+                    {/* PROPORTIONAL SOFT REALISTIC GROUND CONTACT SHADOW */}
+                    <div className="w-48 h-4 bg-black/15 rounded-[100%] blur-[3px] mx-auto mt-[-12px]" />
 
                     {/* CLEAN TYPOGRAPHY & SELECTION BADGE UNDERNEATH */}
-                    <div className="flex items-center gap-1.5 mt-4">
+                    <div className="flex items-center gap-2 mt-5">
                       {selected && (
                         <div className="w-4 h-4 rounded-full bg-[#3D312A] text-white flex items-center justify-center shadow-xs">
                           <Check className="w-2.5 h-2.5 text-amber-200" />
                         </div>
                       )}
-                      <span className={`text-sm font-bold tracking-widest uppercase transition-colors ${
+                      <span className={`text-sm md:text-base font-bold tracking-widest uppercase transition-colors ${
                         selected ? 'text-[#3D312A]' : 'text-[#8A6B5D]'
                       }`}>
                         {skin.name}
@@ -285,12 +285,12 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
               })}
             </div>
 
-            {/* DYNAMIC STEP-SPECIFIC ACTION BUTTON */}
+            {/* CLEAN STEP-SPECIFIC ACTION BUTTON (NO TRAILING ARROW) */}
             <div className="mt-8 flex flex-col items-center gap-2">
               <button
                 type="button"
                 onClick={handleAdvanceNextStep}
-                className="bg-[#3D312A] hover:bg-[#2A211B] text-[#FAF7F2] px-10 py-4 rounded-full font-bold shadow-xl transition-all duration-300 cursor-pointer active:scale-95 text-base md:text-lg flex items-center gap-3 hover:scale-105"
+                className="bg-[#3D312A] hover:bg-[#2A211B] text-[#FAF7F2] px-12 py-4 rounded-full font-bold shadow-xl transition-all duration-300 cursor-pointer active:scale-95 text-base md:text-lg flex items-center justify-center hover:scale-105"
               >
                 <span>{stepButtonLabel}</span>
               </button>
@@ -378,7 +378,6 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
               className="w-full py-4 rounded-2xl bg-[#3D312A] hover:bg-[#2A211B] text-[#FAF7F2] font-bold text-sm md:text-base shadow-lg transition-all cursor-pointer active:scale-95 flex items-center justify-center gap-2"
             >
               <span>Done</span>
-              <ArrowRight className="w-4 h-4 text-amber-200" />
             </button>
           </div>
         )}
@@ -468,15 +467,14 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
 
             </div>
 
-            {/* CENTERED CONFIRM AND ENTER CTA */}
+            {/* CENTERED CONFIRM AND ENTER CTA (NO TRAILING ARROW) */}
             <div className="flex justify-center pt-2">
               <button
                 type="button"
                 onClick={handleFinalConfirm}
-                className="bg-[#3D312A] hover:bg-[#2A211B] text-[#FAF7F2] py-4 px-12 text-lg font-semibold rounded-2xl shadow-xl hover:scale-105 transition-all duration-300 flex items-center gap-3 cursor-pointer active:scale-95 ring-4 ring-amber-300/40"
+                className="bg-[#3D312A] hover:bg-[#2A211B] text-[#FAF7F2] py-4 px-12 text-lg font-semibold rounded-2xl shadow-xl hover:scale-105 transition-all duration-300 flex items-center justify-center cursor-pointer active:scale-95 ring-4 ring-amber-300/40"
               >
                 <span>Confirm and Enter</span>
-                <Sparkles className="w-5 h-5 text-amber-200" />
               </button>
             </div>
 
