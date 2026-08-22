@@ -1,8 +1,8 @@
 // scripts/ingestStore.mjs
 import fs from 'fs';
 
-async function fetchCanadianCatalog(storeBaseUrl, brandName, productPathPrefix, limit = 30) {
-  console.log(`Fetching Canadian items from ${brandName}...`);
+async function fetchCanadianCatalog(storeBaseUrl, brandName, productPathPrefix, limit = 100) {
+  console.log(`Fetching Canadian items from ${brandName} (limit ${limit})...`);
   const endpoint = `${storeBaseUrl}/products.json?limit=${limit}`;
   
   const res = await fetch(endpoint, {
@@ -55,20 +55,20 @@ async function fetchCanadianCatalog(storeBaseUrl, brandName, productPathPrefix, 
 }
 
 async function run() {
-  // Urban Planet Canada
+  // Urban Planet Canada (fetch 100)
   const urbanPlanet = await fetchCanadianCatalog(
     'https://urban-planet.com', 
     'Urban Planet', 
     '/products', 
-    25
+    100
   );
 
-  // Ardene Canada (uses /en-ca/products/ route)
+  // Ardene Canada (fetch 100)
   const ardene = await fetchCanadianCatalog(
     'https://ardene.com', 
     'Ardene', 
     '/en-ca/products', 
-    25
+    100
   );
 
   const allProducts = [...urbanPlanet, ...ardene];

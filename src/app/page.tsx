@@ -67,7 +67,8 @@ export default function Home() {
       fits: newProfile.fits,
       noSlits: newProfile.noSlits,
       noOpenBack: newProfile.noOpenBack,
-      isOpaque: newProfile.isOpaque
+      isOpaque: newProfile.isOpaque,
+      selectedRetailer: 'all' // Always default to "All Stores" on load & profile setup
     }));
     setShowWizardModal(false);
   };
