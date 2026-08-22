@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { ModestyFilterState, ModestyProfile, Product } from '@/types/product';
 import { mockProducts } from '@/data/mockProducts';
 import { filterAndScoreProducts } from '@/utils/filterEngine';
@@ -14,7 +14,9 @@ import { AuditModal } from '@/components/AuditModal';
 import { OnboardingWizard } from '@/components/OnboardingWizard';
 import { HamperDrawer } from '@/components/HamperDrawer';
 import { HamperButton } from '@/components/HamperButton';
-import { Sparkles, ShieldCheck, X } from 'lucide-react';
+import { Sparkles, ShieldCheck, X, ChevronLeft, ChevronRight } from 'lucide-react';
+
+const ITEMS_PER_PAGE = 24;
 
 const INITIAL_PROFILE: ModestyProfile = {
   name: 'My Custom Modesty Rules',
@@ -56,6 +58,14 @@ export default function Home() {
 
   const [hamper, setHamper] = useState<Product[]>([]);
   const [isHamperOpen, setIsHamperOpen] = useState<boolean>(false);
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState<number>(1);
+
+  // Automatically reset to Page 1 whenever filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filters]);
 
   const handleSaveProfile = (newProfile: ModestyProfile) => {
     setProfile(newProfile);
@@ -130,6 +140,13 @@ export default function Home() {
     return Math.round(sum / calculatedMatches.length);
   }, [calculatedMatches]);
 
+  const totalPages = Math.ceil(calculatedMatches.length / ITEMS_PER_PAGE) || 1;
+
+  const paginatedMatches = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return calculatedMatches.slice(start, start + ITEMS_PER_PAGE);
+  }, [calculatedMatches, currentPage]);
+
   const activeFilterCount = useMemo(() => {
     let count = 0;
     if (filters.noSlits) count++;
@@ -187,14 +204,60 @@ export default function Home() {
           />
 
           {/* RIGHT COLUMN: PINTEREST MASONRY PRODUCT FEED */}
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 flex flex-col">
+            
             <PinterestGrid
-              matches={calculatedMatches}
+              matches={paginatedMatches}
               isAiMode={filters.demoMode === 'ai_search'}
               onOpenAuditModal={(prod) => setSelectedAuditProduct(prod)}
               onAddToHamper={handleToggleHamper}
               hamperProductIds={hamper.map(p => p.id)}
             />
+
+            {/* CLEAN PAGINATION CONTROLS */}
+            {calculatedMatches.length > 0 && (
+              <div className="mt-8 pt-6 border-t border-[#D6CFCE] flex flex-col sm:flex-row items-center justify-between gap-4 font-sans">
+                <span className="text-xs text-[#4B3F38] font-semibold">
+                  Page <span className="font-bold text-[#8A6B5D]">{currentPage}</span> of{' '}
+                  <span className="font-bold text-[#8A6B5D]">{totalPages}</span> — Showing{' '}
+                  <span className="font-mono text-[#8A6B5D]">
+                    {paginatedMatches.length} of {calculatedMatches.length}
+                  </span>{' '}
+                  Canadian garments
+                </span>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      setCurrentPage(prev => Math.max(1, prev - 1));
+                      window.scrollTo({ top: 300, behavior: 'smooth' });
+                    }}
+                    disabled={currentPage === 1}
+                    className="bg-[#8A6B5D] hover:bg-[#6e5346] text-[#FAF7F2] font-sans text-xs font-semibold px-4 py-2 rounded-xl shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
+                  >
+                    <ChevronLeft className="w-4 h-4 text-white" />
+                    <span>Previous</span>
+                  </button>
+
+                  <span className="px-3 py-1.5 rounded-lg bg-[#FAF7F2] border border-[#D6CFCE] text-xs font-mono font-bold text-[#4B3F38]">
+                    {currentPage} / {totalPages}
+                  </span>
+
+                  <button
+                    onClick={() => {
+                      setCurrentPage(prev => Math.min(totalPages, prev + 1));
+                      window.scrollTo({ top: 300, behavior: 'smooth' });
+                    }}
+                    disabled={currentPage === totalPages}
+                    className="bg-[#8A6B5D] hover:bg-[#6e5346] text-[#FAF7F2] font-sans text-xs font-semibold px-4 py-2 rounded-xl shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
+                  >
+                    <span>Next</span>
+                    <ChevronRight className="w-4 h-4 text-white" />
+                  </button>
+                </div>
+              </div>
+            )}
+
           </div>
 
         </div>
@@ -213,7 +276,7 @@ export default function Home() {
                   <ShieldCheck className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-extrabold text-base text-[#4B3F38]">Modesty Rules &amp; Filters</h3>
+                  <h3 className="font-serif italic font-bold text-base text-[#4B3F38]">Modesty Rules &amp; Filters</h3>
                   <p className="text-xs text-[#8A6B5D]">Customize your coverage requirements</p>
                 </div>
               </div>
@@ -299,7 +362,7 @@ export default function Home() {
             <div className="h-6 w-6 rounded-lg bg-[#F2EDE6] border border-[#B89A8E] flex items-center justify-center text-[#8A6B5D]">
               <Sparkles className="w-3.5 h-3.5" />
             </div>
-            <span className="font-semibold text-[#4B3F38]">hercloset</span>
+            <span className="font-serif italic font-semibold text-[#4B3F38]">hercloset</span>
             <span>— AI-powered visual fashion search engine</span>
           </div>
 

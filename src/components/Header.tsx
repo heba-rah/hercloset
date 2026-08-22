@@ -39,16 +39,13 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-2xl tracking-tight bg-gradient-to-r from-[#8A6B5D] via-[#B89A8E] to-[#4B3F38] bg-clip-text text-transparent">
+                <span className="font-serif italic font-bold text-2xl tracking-tight bg-gradient-to-r from-[#8A6B5D] via-[#B89A8E] to-[#4B3F38] bg-clip-text text-transparent">
                   hercloset
                 </span>
-                <span className="text-[10px] font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full bg-[#B89A8E]/20 text-[#8A6B5D] border border-[#B89A8E]/40">
+                <span className="text-[10px] font-sans font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full bg-[#B89A8E]/20 text-[#8A6B5D] border border-[#B89A8E]/40">
                   AI Fashion Engine
                 </span>
               </div>
-              <p className="text-xs text-[#8A6B5D] hidden sm:block">
-                Modesty search across live Urban Planet &amp; Ardene Canada catalogs
-              </p>
             </div>
           </div>
 
@@ -61,12 +58,12 @@ export const Header: React.FC<HeaderProps> = ({
                 placeholder="Search Urban Planet &amp; Ardene items..."
                 value={filters.searchQuery}
                 onChange={(e) => onFilterChange({ searchQuery: e.target.value })}
-                className="w-full bg-white border border-[#D6CFCE] rounded-xl pl-10 pr-10 py-2.5 text-sm text-[#4B3F38] placeholder-[#B89A8E] focus:outline-none focus:ring-2 focus:ring-[#8A6B5D]/40 shadow-inner"
+                className="w-full bg-white border border-[#D6CFCE] rounded-xl pl-10 pr-10 py-2.5 text-sm font-sans text-[#4B3F38] placeholder-[#B89A8E] focus:outline-none focus:ring-2 focus:ring-[#8A6B5D]/40 shadow-inner"
               />
               {filters.searchQuery && (
                 <button
                   onClick={() => onFilterChange({ searchQuery: '' })}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#8A6B5D] hover:text-[#4B3F38]"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-sans text-[#8A6B5D] hover:text-[#4B3F38]"
                 >
                   Clear
                 </button>
@@ -79,7 +76,7 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Filter Modesty Rules Trigger Button */}
             <button
               onClick={onOpenFiltersDrawer}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#8A6B5D] hover:bg-[#4B3F38] text-white font-bold text-xs shadow-md transition-all hover:scale-105 active:scale-95 border border-[#B89A8E]"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#8A6B5D] hover:bg-[#4B3F38] text-white font-sans font-bold text-xs shadow-md transition-all hover:scale-105 active:scale-95 border border-[#B89A8E]"
             >
               <Filter className="w-4 h-4 text-white" />
               <span className="hidden sm:inline">Filter Modesty Rules</span>
@@ -95,7 +92,7 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="hidden xl:flex items-center gap-2 bg-[#F2EDE6] p-1.5 rounded-xl border border-[#D6CFCE]">
               <button
                 onClick={() => onFilterChange({ demoMode: 'broken_keyword' })}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-sans font-semibold transition-all ${
                   !isAiMode
                     ? 'bg-rose-100 text-rose-800 border border-rose-300 shadow-sm'
                     : 'text-[#4B3F38]/70 hover:text-[#4B3F38]'
@@ -107,7 +104,7 @@ export const Header: React.FC<HeaderProps> = ({
 
               <button
                 onClick={() => onFilterChange({ demoMode: 'ai_search' })}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-sans font-semibold transition-all ${
                   isAiMode
                     ? 'bg-[#8A6B5D] text-white shadow-sm'
                     : 'text-[#4B3F38]/70 hover:text-[#4B3F38]'
@@ -138,7 +135,7 @@ export const Header: React.FC<HeaderProps> = ({
               placeholder="Search modest fashion..."
               value={filters.searchQuery}
               onChange={(e) => onFilterChange({ searchQuery: e.target.value })}
-              className="w-full bg-white border border-[#D6CFCE] rounded-xl pl-10 pr-4 py-2 text-sm text-[#4B3F38] placeholder-[#B89A8E]"
+              className="w-full bg-white border border-[#D6CFCE] rounded-xl pl-10 pr-4 py-2 text-sm font-sans text-[#4B3F38] placeholder-[#B89A8E]"
             />
           </div>
         </div>
