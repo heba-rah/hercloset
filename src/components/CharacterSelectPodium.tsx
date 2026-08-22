@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, Check, Sparkles, Shirt, Scissors, EyeOff, Layers, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Check, Sparkles, Shirt, Scissors, EyeOff, Layers, ArrowLeft, ArrowRight } from 'lucide-react';
 import { ModestyProfile, Neckline, SleeveLength, Hemline } from '@/types/product';
 
 interface CharacterSkin {
@@ -15,7 +15,7 @@ interface CharacterSkin {
 }
 
 const STEP_SKINS: Record<1 | 2 | 3, CharacterSkin[]> = {
-  // Step 1: Tops - Sleeve Criteria (short-sleeve vs long-sleeve)
+  // Step 1: Tops - Sleeve Criteria (Short Sleeve vs Long Sleeve)
   1: [
     {
       id: 'short-sleeve',
@@ -48,7 +48,7 @@ const STEP_SKINS: Record<1 | 2 | 3, CharacterSkin[]> = {
       }
     }
   ],
-  // Step 2: Tops - Neckline Criteria (crewneck vs highneck)
+  // Step 2: Tops - Neckline Criteria (Crewneck vs High Neck)
   2: [
     {
       id: 'crewneck',
@@ -81,7 +81,7 @@ const STEP_SKINS: Record<1 | 2 | 3, CharacterSkin[]> = {
       }
     }
   ],
-  // Step 3: Bottoms - Bottom Criteria (Maxi Skirt / Dress vs Pants)
+  // Step 3: Bottoms - Bottom Criteria (Maxi Skirt / Dress vs Pants / Trousers)
   3: [
     {
       id: 'skirt',
@@ -129,46 +129,25 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
 }) => {
   // 5-Step Guided Wizard State: 1 | 2 | 3 | 4 | 5
   const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1);
-  const [skinIndex, setSkinIndex] = useState<number>(0);
-  const [isHovered, setIsHovered] = useState<boolean>(false);
-  const [selectedNotice, setSelectedNotice] = useState<string>('');
+  const [hoveredSkinId, setHoveredSkinId] = useState<string | null>(null);
 
   const currentSkins = (step === 1 || step === 2 || step === 3) ? STEP_SKINS[step] : [];
-  const activeSkin = currentSkins.length > 0 ? currentSkins[skinIndex % currentSkins.length] : null;
-  const isSkinActiveSelected = activeSkin ? activeSkin.isSelected(profile) : false;
-
-  const handlePrevSkin = () => {
-    if (currentSkins.length > 0) {
-      setSkinIndex((prev) => (prev - 1 + currentSkins.length) % currentSkins.length);
-    }
-  };
-
-  const handleNextSkin = () => {
-    if (currentSkins.length > 0) {
-      setSkinIndex((prev) => (prev + 1) % currentSkins.length);
-    }
-  };
 
   const handleBackStep = () => {
     if (step > 1) {
       setStep((step - 1) as 1 | 2 | 3 | 4 | 5);
-      setSkinIndex(0);
     }
   };
 
-  const handleSelectCurrentSkin = () => {
-    if (!activeSkin) return;
-    const updated = activeSkin.toggleRule(profile);
+  const handleToggleSkin = (skin: CharacterSkin) => {
+    const updated = skin.toggleRule(profile);
     onChangeProfile(updated);
-    
-    setSelectedNotice(`Selected ${activeSkin.name}!`);
-    setTimeout(() => setSelectedNotice(''), 1200);
+  };
 
-    // Auto-advance step
-    setTimeout(() => {
+  const handleAdvanceNextStep = () => {
+    if (step < 5) {
       setStep((step + 1) as 1 | 2 | 3 | 4 | 5);
-      setSkinIndex(0);
-    }, 250);
+    }
   };
 
   const handleFinalConfirm = () => {
@@ -256,95 +235,62 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
       {/* 2. DEDICATED STEP CONTENT SCREENS */}
       <div className="flex-1 max-w-5xl w-full mx-auto flex flex-col items-center justify-center my-4">
         
-        {/* ================= STEP 1, STEP 2 & STEP 3: CHARACTER PODIUM STAGE (NO OUTER CARD) ================= */}
-        {(step === 1 || step === 2 || step === 3) && activeSkin && (
+        {/* ================= STEP 1, STEP 2 & STEP 3: SIDE-BY-SIDE CARD SELECTION GRID ================= */}
+        {(step === 1 || step === 2 || step === 3) && (
           <div className="w-full flex flex-col items-center justify-center relative my-2">
             
-            {/* STAGE & CAROUSEL (INNER PORTRAIT FRAME w-80 h-96) */}
-            <div className="relative w-full max-w-lg h-[400px] flex items-center justify-center my-2">
-              
-              {/* SCALED OVERHEAD RADIAL SPOTLIGHT GLOW */}
-              <div
-                className="absolute top-0 left-1/2 -translate-x-1/2 w-[440px] h-[340px] pointer-events-none rounded-full"
-                style={{
-                  background: 'radial-gradient(circle, rgba(230,194,128,0.45) 0%, transparent 70%)'
-                }}
-              />
+            {/* SIDE-BY-SIDE CARDS CONTAINER */}
+            <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12 my-6">
+              {currentSkins.map((skin) => {
+                const selected = skin.isSelected(profile);
+                const isHovered = hoveredSkinId === skin.id;
 
-              {/* SINGLE HIGHLIGHTED ACTIVE AVATAR (ENLARGED TO w-[272px] h-[272px]) */}
-              <div
-                onClick={handleSelectCurrentSkin}
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-                className={`relative z-10 flex flex-col items-center group cursor-pointer transition-all duration-300 p-4 rounded-3xl ${
-                  isSkinActiveSelected
-                    ? 'ring-4 ring-[#8A6B5D] bg-[#8A6B5D]/10 shadow-[0_0_35px_rgba(138,107,93,0.45)] scale-105'
-                    : 'hover:scale-102'
-                }`}
-              >
-                {/* Active Selection Badge */}
-                {isSkinActiveSelected && (
-                  <div className="absolute -top-3 z-20 px-3.5 py-1 rounded-full bg-[#3D312A] text-[#FAF7F2] text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-md animate-in fade-in">
-                    <Check className="w-3 h-3 text-amber-200" />
-                    <span>Selected</span>
+                return (
+                  <div
+                    key={skin.id}
+                    onClick={() => handleToggleSkin(skin)}
+                    onMouseEnter={() => setHoveredSkinId(skin.id)}
+                    onMouseLeave={() => setHoveredSkinId(null)}
+                    className={`w-72 h-80 rounded-3xl p-6 flex flex-col items-center justify-center border-2 transition-all cursor-pointer relative ${
+                      selected
+                        ? 'opacity-100 scale-100 border-[#3D312A] bg-[#FAF7F2] shadow-xl ring-4 ring-[#8A6B5D]/30'
+                        : 'opacity-40 scale-95 border-transparent bg-[#FAF7F2]/60 hover:opacity-75 hover:scale-98'
+                    }`}
+                  >
+                    {/* Checkmark Badge on Selected State */}
+                    {selected && (
+                      <div className="absolute top-4 right-4 w-7 h-7 rounded-full bg-[#3D312A] text-white flex items-center justify-center shadow-md animate-in fade-in">
+                        <Check className="w-4 h-4 text-amber-200" />
+                      </div>
+                    )}
+
+                    {/* Avatar Sprite Image (.png by default, .gif on hover) */}
+                    <img
+                      src={isHovered ? skin.gifImg : skin.staticImg}
+                      alt={skin.name}
+                      className="w-[180px] h-[180px] object-contain drop-shadow-xl [image-rendering:pixelated]"
+                    />
+
+                    {/* Oval Base Tag */}
+                    <div className="w-56 h-10 mx-auto mt-2 rounded-[100%] bg-gradient-to-b from-[#D6CFCE] via-[#B89A8E] to-[#8A6B5D] shadow-md border-t border-white/80 flex items-center justify-center">
+                      <span className="text-xs font-mono font-bold text-[#FAF7F2] uppercase tracking-widest drop-shadow-xs">
+                        {skin.name}
+                      </span>
+                    </div>
                   </div>
-                )}
-
-                {/* ENLARGED AVATAR IMAGE (w-[272px] h-[272px]) */}
-                <img
-                  src={isHovered ? activeSkin.gifImg : activeSkin.staticImg}
-                  alt={activeSkin.name}
-                  className="w-[272px] h-[272px] object-contain drop-shadow-2xl [image-rendering:pixelated]"
-                />
-
-                {/* SCALED 3D OVAL PODIUM BASE (w-72 h-12) */}
-                <div className="w-72 h-12 mx-auto -mt-5 rounded-[100%] bg-gradient-to-b from-[#D6CFCE] via-[#B89A8E] to-[#8A6B5D] shadow-xl border-t border-white/80 flex items-center justify-center">
-                  <span className="text-xs font-mono font-bold text-[#FAF7F2] uppercase tracking-widest drop-shadow-xs">
-                    {activeSkin.name}
-                  </span>
-                </div>
-              </div>
-
-              {/* CAROUSEL CHEVRON ARROWS (< and >) PLACED COMFORTABLY OUTSIDE FRAME */}
-              {currentSkins.length > 1 && (
-                <>
-                  <button
-                    type="button"
-                    onClick={handlePrevSkin}
-                    className="absolute left-[-1rem] sm:left-[-3rem] z-20 p-4 rounded-full bg-white/95 hover:bg-white text-[#3D312A] border border-[#D6CFCE] shadow-lg transition-all cursor-pointer hover:scale-110 active:scale-95"
-                    aria-label="Previous Skin"
-                  >
-                    <ChevronLeft className="w-7 h-7 text-[#8A6B5D]" />
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleNextSkin}
-                    className="absolute right-[-1rem] sm:right-[-3rem] z-20 p-4 rounded-full bg-white/95 hover:bg-white text-[#3D312A] border border-[#D6CFCE] shadow-lg transition-all cursor-pointer hover:scale-110 active:scale-95"
-                    aria-label="Next Skin"
-                  >
-                    <ChevronRight className="w-7 h-7 text-[#8A6B5D]" />
-                  </button>
-                </>
-              )}
-
+                );
+              })}
             </div>
 
             {/* DYNAMIC STEP-SPECIFIC ACTION BUTTON */}
-            <div className="mt-8 flex flex-col items-center gap-2">
+            <div className="mt-6 flex flex-col items-center gap-2">
               <button
                 type="button"
-                onClick={handleSelectCurrentSkin}
+                onClick={handleAdvanceNextStep}
                 className="bg-[#3D312A] hover:bg-[#2A211B] text-[#FAF7F2] px-10 py-4 rounded-full font-bold shadow-xl transition-all duration-300 cursor-pointer active:scale-95 text-base md:text-lg flex items-center gap-3 hover:scale-105"
               >
                 <span>{stepButtonLabel}</span>
               </button>
-
-              {selectedNotice && (
-                <span className="text-xs font-bold text-emerald-700 animate-in fade-in">
-                  ✓ {selectedNotice}
-                </span>
-              )}
             </div>
 
           </div>
