@@ -32,18 +32,18 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Top Header Bar */}
         <div className="flex items-center justify-between h-20 gap-4">
 
-          {/* Logo Component (Freestanding Icon & Mixed Typography Wordmark) */}
+          {/* Logo Component (Enlarged Freestanding Icon & Dual-Color Wordmark) */}
           <div className="flex items-center gap-3 cursor-pointer">
             <img
               src="/logo/logo.png"
               alt="hercloset logo"
-              className="w-10 h-10 md:w-12 md:h-12 object-contain drop-shadow-xs"
+              className="h-12 w-12 md:h-14 md:w-14 object-contain shrink-0 drop-shadow-xs"
             />
             <div className="flex items-baseline">
-              <span className="font-serif italic font-normal text-3xl md:text-4xl text-[#3D312A]">
+              <span className="font-serif italic font-normal text-2xl md:text-3xl text-[#7A5C4D]">
                 her
               </span>
-              <span className="font-serif not-italic font-medium text-3xl md:text-4xl text-[#3D312A] tracking-tight">
+              <span className="font-serif not-italic font-medium text-2xl md:text-3xl text-[#3D312A] tracking-tight">
                 closet
               </span>
             </div>
