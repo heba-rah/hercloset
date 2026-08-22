@@ -41,8 +41,8 @@ export const PinterestGrid: React.FC<PinterestGridProps> = ({
 
   return (
     <div className="my-2 w-full">
-      {/* TRUE CSS MULTI-COLUMN MASONRY CONTAINER (FULL-WIDTH EDGE-TO-EDGE) */}
-      <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 gap-4 space-y-4 w-full">
+      {/* TRUE CSS MULTI-COLUMN MASONRY CONTAINER WITH COLUMN-FILL BALANCE */}
+      <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 gap-4 space-y-4 w-full [column-fill:_balance]">
         
         {/* 1. PERSISTENT AVATAR STYLIST TILE (Renders unconditionally as first item on every page) */}
         {onOpenFilters && (

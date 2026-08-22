@@ -16,7 +16,8 @@ import { HamperDrawer } from '@/components/HamperDrawer';
 import { HamperButton } from '@/components/HamperButton';
 import { Sparkles, ShieldCheck, X, ChevronLeft, ChevronRight } from 'lucide-react';
 
-const ITEMS_PER_PAGE = 24;
+// 35 items + 1 avatar tile = 36 total grid items (perfect multiple of 6, 4, 3, 2 columns)
+const ITEMS_PER_PAGE = 35;
 
 const INITIAL_PROFILE: ModestyProfile = {
   name: 'My Custom Modesty Rules',
