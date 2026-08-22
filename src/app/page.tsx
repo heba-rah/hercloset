@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { ModestyFilterState, ModestyProfile, Product } from '@/types/product';
+import { ModestyFilterState, ModestyProfile, Product, UserAccount } from '@/types/product';
 import { mockProducts } from '@/data/mockProducts';
 import { filterAndScoreProducts } from '@/utils/filterEngine';
 
@@ -10,7 +10,7 @@ import { ClosetTopShelf } from '@/components/ClosetTopShelf';
 import { PinterestGrid } from '@/components/PinterestGrid';
 import { ModestyFilters } from '@/components/ModestyFilters';
 import { AuditModal } from '@/components/AuditModal';
-import { OnboardingWizard } from '@/components/OnboardingWizard';
+import { AuthLandingPage } from '@/components/AuthLandingPage';
 import { PermanentProfileModal } from '@/components/PermanentProfileModal';
 import { HamperDrawer } from '@/components/HamperDrawer';
 import { HamperButton } from '@/components/HamperButton';
@@ -50,13 +50,15 @@ const INITIAL_FILTERS: ModestyFilterState = {
 };
 
 export default function Home() {
+  const [currentUser, setCurrentUser] = useState<UserAccount | null>(null);
+  const [showAuthLandingPage, setShowAuthLandingPage] = useState<boolean>(true);
+
   const [profile, setProfile] = useState<ModestyProfile>(INITIAL_PROFILE);
   const [filters, setFilters] = useState<ModestyFilterState>(INITIAL_FILTERS);
   const [selectedAuditProduct, setSelectedAuditProduct] = useState<Product | null>(null);
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState<boolean>(false);
   const [isFiltersDrawerOpen, setIsFiltersDrawerOpen] = useState<boolean>(false);
   const [isPermanentProfileModalOpen, setIsPermanentProfileModalOpen] = useState<boolean>(false);
-  const [showWizardModal, setShowWizardModal] = useState<boolean>(false);
 
   const [hamper, setHamper] = useState<Product[]>([]);
   const [isHamperOpen, setIsHamperOpen] = useState<boolean>(false);
@@ -64,23 +66,27 @@ export default function Home() {
   // Pagination State
   const [currentPage, setCurrentPage] = useState<number>(1);
 
-  // Load permanent profile from localStorage on mount if available
+  // Load permanent user account & profile from localStorage on mount if available
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('hercloset_permanent_profile');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        setProfile(parsed);
-        setFilters(prev => ({
-          ...prev,
-          necklines: parsed.necklines || prev.necklines,
-          sleeveLengths: parsed.sleeveLengths || prev.sleeveLengths,
-          hemlines: parsed.hemlines || prev.hemlines,
-          fits: parsed.fits || prev.fits,
-          noSlits: parsed.noSlits ?? prev.noSlits,
-          noOpenBack: parsed.noOpenBack ?? prev.noOpenBack,
-          isOpaque: parsed.isOpaque ?? prev.isOpaque,
-        }));
+      const storedUser = localStorage.getItem('hercloset_user_account');
+      if (storedUser) {
+        const parsedUser: UserAccount = JSON.parse(storedUser);
+        setCurrentUser(parsedUser);
+        setShowAuthLandingPage(!parsedUser.isLoggedIn);
+        if (parsedUser.profile) {
+          setProfile(parsedUser.profile);
+          setFilters(prev => ({
+            ...prev,
+            necklines: parsedUser.profile.necklines || prev.necklines,
+            sleeveLengths: parsedUser.profile.sleeveLengths || prev.sleeveLengths,
+            hemlines: parsedUser.profile.hemlines || prev.hemlines,
+            fits: parsedUser.profile.fits || prev.fits,
+            noSlits: parsedUser.profile.noSlits ?? prev.noSlits,
+            noOpenBack: parsedUser.profile.noOpenBack ?? prev.noOpenBack,
+            isOpaque: parsedUser.profile.isOpaque ?? prev.isOpaque,
+          }));
+        }
       }
     } catch {
       // fallback
@@ -92,8 +98,33 @@ export default function Home() {
     setCurrentPage(1);
   }, [filters]);
 
+  const handleCompleteAuth = (account: UserAccount) => {
+    setCurrentUser(account);
+    setProfile(account.profile);
+    setFilters(prev => ({
+      ...prev,
+      necklines: account.profile.necklines,
+      sleeveLengths: account.profile.sleeveLengths,
+      hemlines: account.profile.hemlines,
+      fits: account.profile.fits,
+      noSlits: account.profile.noSlits,
+      noOpenBack: account.profile.noOpenBack,
+      isOpaque: account.profile.isOpaque,
+    }));
+    setShowAuthLandingPage(false);
+  };
+
   const handleSaveProfile = (newProfile: ModestyProfile) => {
     setProfile(newProfile);
+    if (currentUser) {
+      const updatedUser = { ...currentUser, profile: newProfile };
+      setCurrentUser(updatedUser);
+      try {
+        localStorage.setItem('hercloset_user_account', JSON.stringify(updatedUser));
+      } catch {
+        // ignore
+      }
+    }
     setFilters(prev => ({
       ...prev,
       necklines: newProfile.necklines,
@@ -105,7 +136,6 @@ export default function Home() {
       isOpaque: newProfile.isOpaque,
       selectedRetailer: 'all'
     }));
-    setShowWizardModal(false);
     setIsPermanentProfileModalOpen(false);
   };
 
@@ -188,13 +218,11 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#F2EDE6] text-[#4B3F38] flex flex-col font-sans selection:bg-[#B89A8E] selection:text-white">
       
-      {/* Onboarding Profile Wizard Modal */}
-      {(!profile.isProfileComplete || showWizardModal) && (
-        <OnboardingWizard
-          initialProfile={profile}
-          onSaveProfile={handleSaveProfile}
-          isEditing={profile.isProfileComplete}
-          onClose={() => setShowWizardModal(false)}
+      {/* Landing & Authentication Modal (Name & Gmail Login/Register + Modesty Profile Setup) */}
+      {showAuthLandingPage && (
+        <AuthLandingPage
+          onCompleteAuth={handleCompleteAuth}
+          onSkipGuest={() => setShowAuthLandingPage(false)}
         />
       )}
 
@@ -214,6 +242,8 @@ export default function Home() {
         onToggleMobileFilters={() => setIsMobileFiltersOpen(true)}
         totalMatchesCount={calculatedMatches.length}
         onOpenProfileModal={() => setIsPermanentProfileModalOpen(true)}
+        currentUser={currentUser}
+        onOpenAuth={() => setShowAuthLandingPage(true)}
       />
 
       {/* FULL-WIDTH HOLLOW WARDROBE TOP SHELF */}

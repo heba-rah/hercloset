@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Sparkles, Search, SlidersHorizontal, UserCheck } from 'lucide-react';
-import { ModestyFilterState } from '@/types/product';
+import { Sparkles, Search, SlidersHorizontal, UserCheck, LogIn } from 'lucide-react';
+import { ModestyFilterState, UserAccount } from '@/types/product';
 
 interface HeaderProps {
   filters: ModestyFilterState;
@@ -10,6 +10,8 @@ interface HeaderProps {
   onToggleMobileFilters: () => void;
   totalMatchesCount: number;
   onOpenProfileModal: () => void;
+  currentUser?: UserAccount | null;
+  onOpenAuth?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -17,7 +19,9 @@ export const Header: React.FC<HeaderProps> = ({
   onFilterChange,
   onToggleMobileFilters,
   totalMatchesCount,
-  onOpenProfileModal
+  onOpenProfileModal,
+  currentUser,
+  onOpenAuth
 }) => {
   return (
     <header className="sticky top-0 z-40 bg-[#FAF7F2]/95 backdrop-blur-md border-b border-[#D6CFCE] text-[#4B3F38] shadow-sm">
@@ -68,21 +72,43 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           {/* Top-Right Square User Profile Card Button */}
-          <div className="flex items-center gap-2.5">
-            <button
-              onClick={onOpenProfileModal}
-              className="w-10 h-10 rounded-xl bg-[#FAF7F2] border border-[#D6CFCE] shadow-sm hover:border-[#8A6B5D] hover:shadow-md transition-all flex items-center justify-center cursor-pointer relative group"
-              title="My Account &amp; Permanent Modesty Profile"
-            >
-              <UserCheck className="w-5 h-5 text-[#8A6B5D]" />
-              {/* Green Status Dot: Active Profile Synced */}
-              <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-emerald-500 border-2 border-[#FAF7F2] shadow-sm animate-pulse" />
+          <div className="flex items-center gap-3">
+            {currentUser?.isLoggedIn ? (
+              <div className="flex items-center gap-2">
+                {/* User Name Badge (Hidden on mobile) */}
+                <div className="hidden sm:flex flex-col items-end text-right">
+                  <span className="text-xs font-bold text-[#4B3F38] leading-none">
+                    {currentUser.name}
+                  </span>
+                  <span className="text-[10px] font-mono text-[#8A6B5D]">
+                    {currentUser.email}
+                  </span>
+                </div>
 
-              {/* Tooltip on Hover */}
-              <div className="absolute top-12 right-0 whitespace-nowrap pointer-events-none text-xs font-sans font-semibold bg-[#4B3F38] text-[#FAF7F2] px-3 py-1 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-200 z-50">
-                My Account &amp; Permanent Modesty Profile
+                <button
+                  onClick={onOpenProfileModal}
+                  className="w-10 h-10 rounded-xl bg-[#FAF7F2] border border-[#D6CFCE] shadow-sm hover:border-[#8A6B5D] hover:shadow-md transition-all flex items-center justify-center cursor-pointer relative group"
+                  title={`${currentUser.name} (${currentUser.email}) — Edit Modesty Profile`}
+                >
+                  <UserCheck className="w-5 h-5 text-[#8A6B5D]" />
+                  {/* Green Status Dot: Active Profile Synced */}
+                  <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-emerald-500 border-2 border-[#FAF7F2] shadow-sm animate-pulse" />
+
+                  {/* Tooltip on Hover */}
+                  <div className="absolute top-12 right-0 whitespace-nowrap pointer-events-none text-xs font-sans font-semibold bg-[#4B3F38] text-[#FAF7F2] px-3 py-1 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-200 z-50">
+                    Account: {currentUser.name} ({currentUser.email})
+                  </div>
+                </button>
               </div>
-            </button>
+            ) : (
+              <button
+                onClick={onOpenAuth}
+                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#8A6B5D] hover:bg-[#4B3F38] text-white font-sans text-xs font-bold shadow-md transition-all"
+              >
+                <LogIn className="w-4 h-4" />
+                <span>Sign In / Register</span>
+              </button>
+            )}
 
             <button
               onClick={onToggleMobileFilters}

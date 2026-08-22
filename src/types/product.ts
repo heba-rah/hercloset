@@ -63,6 +63,13 @@ export interface ModestyProfile {
   isProfileComplete: boolean;
 }
 
+export interface UserAccount {
+  name: string;
+  email: string;
+  isLoggedIn: boolean;
+  profile: ModestyProfile;
+}
+
 export interface ModestyFilterState {
   necklines: Neckline[];
   sleeveLengths: SleeveLength[];
