@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ShieldCheck, AlertTriangle, ExternalLink, Eye, BookmarkCheck, Bookmark } from 'lucide-react';
+import { ShieldCheck, AlertTriangle, ExternalLink, Eye, ShoppingBag, Check } from 'lucide-react';
 import { CalculatedMatch, Product } from '@/types/product';
 
 interface PinterestCardProps {
@@ -47,7 +47,7 @@ export const PinterestCard: React.FC<PinterestCardProps> = ({
   const aspectClass = getDynamicAspectClass(cardIndex);
 
   return (
-    <div className="break-inside-avoid mb-4 group relative rounded-2xl overflow-hidden transition-all duration-300 flex flex-col bg-transparent">
+    <div className="break-inside-avoid mb-4 group relative rounded-2xl overflow-hidden transition-all duration-300 flex flex-col bg-transparent font-serif">
       
       {/* GARMENT IMAGE & HOVER OVERLAY CONTAINER WITH BORDERLESS SOFT SHADOW */}
       <div className={`relative w-full ${aspectClass} rounded-2xl overflow-hidden bg-[#FAF7F2] border-none shadow-sm group-hover:shadow-md transition-all duration-300`}>
@@ -61,7 +61,7 @@ export const PinterestCard: React.FC<PinterestCardProps> = ({
         {/* PINTEREST-STYLE HOVER OVERLAY (Translucent dark backdrop on hover) */}
         <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-between p-3 pointer-events-none group-hover:pointer-events-auto">
           
-          {/* TOP HOVER BAR: Compact Modesty % Match Chip (Left) + Warm-Earth/Red Pin Save Button (Right) */}
+          {/* TOP HOVER BAR: Compact Modesty % Match Chip (Left) + Warm-Earth "Add to Hamper" Pill Button (Right) */}
           <div className="flex items-center justify-between gap-2">
             {/* Top-Left: Compact Modesty % Match Chip */}
             <div className={`px-2.5 py-1 rounded-full text-[11px] font-bold backdrop-blur-md shadow-md flex items-center gap-1 ${
@@ -75,20 +75,27 @@ export const PinterestCard: React.FC<PinterestCardProps> = ({
               <span>{matchPercentage}% Match</span>
             </div>
 
-            {/* Top-Right: Warm-Earth Red "Save" Pin Button */}
+            {/* Top-Right: Warm-Earth Rose "Add to Hamper" Action Pill Button */}
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onAddToHamper(product);
               }}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all shadow-lg flex items-center gap-1 ${
-                isInHamper
-                  ? 'bg-slate-900 text-white'
-                  : 'bg-[#E60023] hover:bg-[#AD001B] text-white'
+              className={`bg-[#8A6B5D] hover:bg-[#6e5346] text-[#FAF7F2] font-serif text-xs font-semibold px-3.5 py-1.5 rounded-full shadow-md transition-all flex items-center gap-1.5 ${
+                isInHamper ? 'bg-[#4B3F38]' : ''
               }`}
             >
-              {isInHamper ? <BookmarkCheck className="w-3.5 h-3.5" /> : <Bookmark className="w-3.5 h-3.5" />}
-              <span>{isInHamper ? 'Saved' : 'Save'}</span>
+              {isInHamper ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-emerald-300" />
+                  <span>In Hamper</span>
+                </>
+              ) : (
+                <>
+                  <ShoppingBag className="w-3.5 h-3.5 text-[#FAF7F2]" />
+                  <span>Add to Hamper</span>
+                </>
+              )}
             </button>
           </div>
 
@@ -142,7 +149,7 @@ export const PinterestCard: React.FC<PinterestCardProps> = ({
           <span className="text-[10px] font-bold text-[#8A6B5D] uppercase tracking-wider block">
             {product.brand}
           </span>
-          <h4 className="text-xs font-semibold text-[#4B3F38] truncate leading-tight mt-0.5">
+          <h4 className="text-xs font-semibold text-[#4B3F38] truncate leading-tight mt-0.5 font-serif">
             {product.name}
           </h4>
         </div>

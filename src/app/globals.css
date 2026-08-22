@@ -16,5 +16,9 @@
 html, body {
   background-color: #F2EDE6 !important;
   color: #4B3F38 !important;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-serif), 'Playfair Display', Lora, Georgia, serif !important;
+}
+
+h1, h2, h3, h4, h5, h6, select, input, button {
+  font-family: var(--font-serif), 'Playfair Display', Lora, Georgia, serif;
 }
