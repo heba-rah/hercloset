@@ -43,8 +43,8 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
         </span>
       </div>
 
-      {/* True Multi-Column Masonry Layout */}
-      <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 gap-4">
+      {/* True Multi-Column 6-Column Masonry Layout */}
+      <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 gap-4">
         {matches.map((match, idx) => (
           <ProductCard
             key={match.product.id}
