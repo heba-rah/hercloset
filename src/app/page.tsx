@@ -275,9 +275,9 @@ export default function Home() {
   }, [filters]);
 
   return (
-    <div className="min-h-screen bg-[#F2EDE6] text-[#4B3F38] flex flex-col font-sans selection:bg-[#B89A8E] selection:text-white pt-3.5">
+    <div className="min-h-screen bg-[#F2EDE6] text-[#4B3F38] flex flex-col font-sans selection:bg-[#B89A8E] selection:text-white">
       
-      {/* INTERACTIVE GOLD ROD & ESPRESSO VELVET CURTAINS TRANSITION OVERLAY */}
+      {/* ESPRESSO VELVET CURTAINS TRANSITION OVERLAY */}
       <VelvetCurtainTransition state={curtainState} />
 
       {/* Landing & Authentication Modal (Name & Gmail Login/Register + Modesty Profile Setup) */}
