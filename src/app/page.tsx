@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { ModestyFilterState, ModestyProfile, Product } from '@/types/product';
 import { mockProducts } from '@/data/mockProducts';
 import { filterAndScoreProducts } from '@/utils/filterEngine';
@@ -54,23 +54,9 @@ export default function Home() {
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState<boolean>(false);
   const [isFiltersDrawerOpen, setIsFiltersDrawerOpen] = useState<boolean>(false);
   const [showWizardModal, setShowWizardModal] = useState<boolean>(false);
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
 
   const [hamper, setHamper] = useState<Product[]>([]);
   const [isHamperOpen, setIsHamperOpen] = useState<boolean>(false);
-
-  // Strictly enforce Light Mode as default on mount
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDarkMode]);
-
-  const handleToggleTheme = () => {
-    setIsDarkMode(prev => !prev);
-  };
 
   const handleSaveProfile = (newProfile: ModestyProfile) => {
     setProfile(newProfile);
@@ -83,7 +69,7 @@ export default function Home() {
       noSlits: newProfile.noSlits,
       noOpenBack: newProfile.noOpenBack,
       isOpaque: newProfile.isOpaque,
-      selectedRetailer: 'all' // Always default to "All Stores" on load & profile setup
+      selectedRetailer: 'all'
     }));
     setShowWizardModal(false);
   };
@@ -139,7 +125,6 @@ export default function Home() {
     return filterAndScoreProducts(mockProducts, filters);
   }, [filters]);
 
-  // Count active non-default modesty filters for badge
   const activeFilterCount = useMemo(() => {
     let count = 0;
     if (filters.noSlits) count++;
@@ -153,7 +138,7 @@ export default function Home() {
   }, [filters]);
 
   return (
-    <div className="min-h-screen bg-[#F2EDE6] dark:bg-[#181412] text-[#4B3F38] dark:text-[#F2EDE6] flex flex-col font-sans selection:bg-[#B89A8E] selection:text-white transition-colors">
+    <div className="min-h-screen bg-[#F2EDE6] text-[#4B3F38] flex flex-col font-sans selection:bg-[#B89A8E] selection:text-white">
       
       {/* Onboarding Profile Wizard Modal */}
       {(!profile.isProfileComplete || showWizardModal) && (
@@ -171,8 +156,6 @@ export default function Home() {
         onFilterChange={handleFilterChange}
         onToggleMobileFilters={() => setIsMobileFiltersOpen(true)}
         totalMatchesCount={calculatedMatches.length}
-        isDarkMode={isDarkMode}
-        onToggleTheme={handleToggleTheme}
         onOpenFiltersDrawer={() => setIsFiltersDrawerOpen(true)}
         activeFilterCount={activeFilterCount}
       />
@@ -206,7 +189,7 @@ export default function Home() {
           isAiMode={filters.demoMode === 'ai_search'}
         />
 
-        {/* FULL-WIDTH EDGE-TO-EDGE PINTEREST MASONRY GRID (No Permanent Left Sidebar) */}
+        {/* FULL-WIDTH EDGE-TO-EDGE PINTEREST MASONRY GRID */}
         <PinterestGrid
           matches={calculatedMatches}
           isAiMode={filters.demoMode === 'ai_search'}
@@ -220,23 +203,23 @@ export default function Home() {
       {/* SLIDE-OVER MODESTY FILTERS DRAWER */}
       {isFiltersDrawerOpen && (
         <div className="fixed inset-0 z-50 flex justify-end bg-[#4B3F38]/60 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="relative w-full max-w-md h-full bg-[#FAF7F2] dark:bg-[#241E1B] border-l border-[#D6CFCE] dark:border-[#443732] shadow-2xl flex flex-col justify-between text-[#4B3F38] dark:text-[#F2EDE6]">
+          <div className="relative w-full max-w-md h-full bg-[#FAF7F2] border-l border-[#D6CFCE] shadow-2xl flex flex-col justify-between text-[#4B3F38]">
             
             {/* Drawer Header */}
-            <div className="p-5 border-b border-[#D6CFCE] dark:border-[#443732] flex items-center justify-between bg-[#F2EDE6] dark:bg-[#181412]">
+            <div className="p-5 border-b border-[#D6CFCE] flex items-center justify-between bg-[#F2EDE6]">
               <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-xl bg-white dark:bg-[#241E1B] border border-[#B89A8E] dark:border-[#8A6B5D] text-[#8A6B5D] dark:text-[#C4A497]">
+                <div className="p-2 rounded-xl bg-white border border-[#B89A8E] text-[#8A6B5D]">
                   <ShieldCheck className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-extrabold text-base text-[#4B3F38] dark:text-[#F2EDE6]">Modesty Rules &amp; Filters</h3>
-                  <p className="text-xs text-[#8A6B5D] dark:text-[#C4A497]">Customize your coverage requirements</p>
+                  <h3 className="font-extrabold text-base text-[#4B3F38]">Modesty Rules &amp; Filters</h3>
+                  <p className="text-xs text-[#8A6B5D]">Customize your coverage requirements</p>
                 </div>
               </div>
 
               <button
                 onClick={() => setIsFiltersDrawerOpen(false)}
-                className="p-2 rounded-full bg-white dark:bg-[#241E1B] text-[#4B3F38] dark:text-[#F2EDE6] hover:bg-[#FAF7F2] dark:hover:bg-[#2D2522] border border-[#D6CFCE] dark:border-[#443732]"
+                className="p-2 rounded-full bg-white text-[#4B3F38] hover:bg-[#FAF7F2] border border-[#D6CFCE]"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -254,13 +237,13 @@ export default function Home() {
             </div>
 
             {/* Footer */}
-            <div className="p-4 bg-[#F2EDE6] dark:bg-[#181412] border-t border-[#D6CFCE] dark:border-[#443732] flex items-center justify-between">
-              <span className="text-xs text-[#8A6B5D] dark:text-[#C4A497] font-semibold">
+            <div className="p-4 bg-[#F2EDE6] border-t border-[#D6CFCE] flex items-center justify-between">
+              <span className="text-xs text-[#8A6B5D] font-semibold">
                 {calculatedMatches.length} items match
               </span>
               <button
                 onClick={() => setIsFiltersDrawerOpen(false)}
-                className="px-5 py-2.5 rounded-xl bg-[#8A6B5D] hover:bg-[#4B3F38] dark:hover:bg-[#A38071] text-white font-bold text-xs shadow-md transition-all"
+                className="px-5 py-2.5 rounded-xl bg-[#8A6B5D] hover:bg-[#4B3F38] text-white font-bold text-xs shadow-md transition-all"
               >
                 Apply &amp; View Feed
               </button>
@@ -273,11 +256,11 @@ export default function Home() {
       {/* Floating Hamper Button */}
       <button
         onClick={() => setIsHamperOpen(true)}
-        className="fixed bottom-6 right-6 z-40 px-4 py-3 rounded-full bg-[#8A6B5D] hover:bg-[#4B3F38] text-white font-extrabold text-xs shadow-xl flex items-center gap-2.5 transition-all hover:scale-105 active:scale-95 border border-[#B89A8E] dark:border-[#8A6B5D]"
+        className="fixed bottom-6 right-6 z-40 px-4 py-3 rounded-full bg-[#8A6B5D] hover:bg-[#4B3F38] text-white font-extrabold text-xs shadow-xl flex items-center gap-2.5 transition-all hover:scale-105 active:scale-95 border border-[#B89A8E]"
       >
         <ShoppingBag className="w-4 h-4" />
         <span>My Hamper</span>
-        <span className="px-2 py-0.5 rounded-full bg-white dark:bg-[#181412] text-[#8A6B5D] dark:text-[#C4A497] font-mono text-[11px] font-bold">
+        <span className="px-2 py-0.5 rounded-full bg-white text-[#8A6B5D] font-mono text-[11px] font-bold">
           {hamper.length}
         </span>
       </button>
@@ -294,7 +277,7 @@ export default function Home() {
       {/* Mobile Filters Drawer */}
       {isMobileFiltersOpen && (
         <div className="fixed inset-0 z-50 lg:hidden flex flex-col justify-end bg-[#4B3F38]/60 backdrop-blur-md">
-          <div className="max-h-[85vh] overflow-y-auto p-4 bg-[#FAF7F2] dark:bg-[#241E1B] rounded-t-3xl border-t border-[#D6CFCE] dark:border-[#443732]">
+          <div className="max-h-[85vh] overflow-y-auto p-4 bg-[#FAF7F2] rounded-t-3xl border-t border-[#D6CFCE]">
             <ModestyFilters
               filters={filters}
               onFilterChange={handleFilterChange}
@@ -315,19 +298,19 @@ export default function Home() {
       />
 
       {/* Footer */}
-      <footer className="mt-auto border-t border-[#D6CFCE] dark:border-[#443732] bg-[#FAF7F2] dark:bg-[#241E1B] py-8 text-xs text-[#8A6B5D] dark:text-[#C4A497]">
+      <footer className="mt-auto border-t border-[#D6CFCE] bg-[#FAF7F2] py-8 text-xs text-[#8A6B5D]">
         <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="h-6 w-6 rounded-lg bg-[#F2EDE6] dark:bg-[#181412] border border-[#B89A8E] flex items-center justify-center text-[#8A6B5D] dark:text-[#C4A497]">
+            <div className="h-6 w-6 rounded-lg bg-[#F2EDE6] border border-[#B89A8E] flex items-center justify-center text-[#8A6B5D]">
               <Sparkles className="w-3.5 h-3.5" />
             </div>
-            <span className="font-semibold text-[#4B3F38] dark:text-[#F2EDE6]">hercloset</span>
+            <span className="font-semibold text-[#4B3F38]">hercloset</span>
             <span>— AI-powered visual fashion search engine</span>
           </div>
 
-          <div className="flex items-center gap-4 text-[#4B3F38] dark:text-[#F2EDE6]">
+          <div className="flex items-center gap-4 text-[#4B3F38]">
             <span className="flex items-center gap-1">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#8A6B5D] dark:text-[#C4A497]" /> Urban Planet &amp; Ardene Live Catalog
+              <ShieldCheck className="w-3.5 h-3.5 text-[#8A6B5D]" /> Urban Planet &amp; Ardene Live Catalog
             </span>
           </div>
         </div>
