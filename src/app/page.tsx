@@ -252,217 +252,217 @@ export default function Home() {
       {/* STEP 3 & 4: GLASSMORPHISM LOADING SCREEN ("Preparing your modest closet...") */}
       <GlassmorphismLoadingScreen isLoading={isGlassLoading} />
 
-      {/* STEP 1 & 2: LANDING HERO & AUTHENTICATION FLOW */}
-      {showAuthLandingPage && (
+      {/* STEP 1 & 2: LANDING HERO & AUTHENTICATION FLOW OR MAIN STORE FEED */}
+      {showAuthLandingPage ? (
         <AuthLandingPage
           onCompleteAuth={handleCompleteAuth}
           onSkipGuest={handleSkipGuest}
         />
-      )}
+      ) : (
+        <>
+          {/* Permanent Modesty Profile Modal (Triggered by top-right square card) */}
+          {isPermanentProfileModalOpen && (
+            <PermanentProfileModal
+              initialProfile={profile}
+              onSaveProfile={handleSaveProfile}
+              onClose={() => setIsPermanentProfileModalOpen(false)}
+              onSignOut={handleSignOut}
+            />
+          )}
 
-      {/* Permanent Modesty Profile Modal (Triggered by top-right square card) */}
-      {isPermanentProfileModalOpen && (
-        <PermanentProfileModal
-          initialProfile={profile}
-          onSaveProfile={handleSaveProfile}
-          onClose={() => setIsPermanentProfileModalOpen(false)}
-          onSignOut={handleSignOut}
-        />
-      )}
+          {/* Top Header Navigation */}
+          <Header
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            onToggleMobileFilters={() => setIsMobileFiltersOpen(true)}
+            totalMatchesCount={calculatedMatches.length}
+            onOpenProfileModal={() => setIsPermanentProfileModalOpen(true)}
+            currentUser={currentUser}
+            onOpenAuth={handleOpenAuth}
+            onSignOut={handleSignOut}
+          />
 
-      {/* Top Header Navigation */}
-      <Header
-        filters={filters}
-        onFilterChange={handleFilterChange}
-        onToggleMobileFilters={() => setIsMobileFiltersOpen(true)}
-        totalMatchesCount={calculatedMatches.length}
-        onOpenProfileModal={() => setIsPermanentProfileModalOpen(true)}
-        currentUser={currentUser}
-        onOpenAuth={handleOpenAuth}
-        onSignOut={handleSignOut}
-      />
+          {/* FULL-WIDTH HOLLOW WARDROBE TOP SHELF */}
+          <ClosetTopShelf
+            selectedOccasion={filters.selectedOccasion}
+            onSelectOccasion={(occ) => handleFilterChange({ selectedOccasion: occ })}
+            selectedStore={filters.selectedRetailer}
+            onSelectStore={(store) => handleFilterChange({ selectedRetailer: store })}
+            averageMatchScore={averageMatchScore}
+            totalItemsCount={calculatedMatches.length}
+          />
 
-      {/* FULL-WIDTH HOLLOW WARDROBE TOP SHELF */}
-      <ClosetTopShelf
-        selectedOccasion={filters.selectedOccasion}
-        onSelectOccasion={(occ) => handleFilterChange({ selectedOccasion: occ })}
-        selectedStore={filters.selectedRetailer}
-        onSelectStore={(store) => handleFilterChange({ selectedRetailer: store })}
-        averageMatchScore={averageMatchScore}
-        totalItemsCount={calculatedMatches.length}
-      />
-
-      {/* Main Full-Width Content Area with Persistent Stylist Tile in Position #1 */}
-      <main className="flex-1 max-w-[1800px] w-full mx-auto px-4 sm:px-6 lg:px-8 pb-20">
-        
-        {/* FULL-WIDTH EDGE-TO-EDGE PINTEREST MASONRY GRID (PERSISTENT STYLIST TILE AT POSITION #1 ON EVERY PAGE) */}
-        <PinterestGrid
-          matches={paginatedMatches}
-          isAiMode={filters.demoMode === 'ai_search'}
-          onOpenAuditModal={(prod) => setSelectedAuditProduct(prod)}
-          onAddToHamper={handleToggleHamper}
-          hamperProductIds={hamper.map(p => p.id)}
-          onOpenFilters={() => setIsFiltersDrawerOpen(true)}
-          activeFilterCount={activeFilterCount}
-        />
-
-        {/* CLEAN PAGINATION CONTROLS */}
-        {calculatedMatches.length > 0 && (
-          <div className="mt-8 pt-6 border-t border-[#D6CFCE] flex flex-col sm:flex-row items-center justify-between gap-4 font-sans">
-            <span className="text-xs text-[#4B3F38] font-semibold">
-              Page <span className="font-bold text-[#8A6B5D]">{currentPage}</span> of{' '}
-              <span className="font-bold text-[#8A6B5D]">{totalPages}</span> — Showing{' '}
-              <span className="font-mono text-[#8A6B5D]">
-                {paginatedMatches.length} of {calculatedMatches.length}
-              </span>{' '}
-              Canadian garments
-            </span>
-
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => {
-                  setCurrentPage(prev => Math.max(1, prev - 1));
-                  window.scrollTo({ top: 300, behavior: 'smooth' });
-                }}
-                disabled={currentPage === 1}
-                className="bg-[#8A6B5D] hover:bg-[#6e5346] text-[#FAF7F2] font-sans text-xs font-semibold px-4 py-2 rounded-xl shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
-              >
-                <ChevronLeft className="w-4 h-4 text-white" />
-                <span>Previous</span>
-              </button>
-
-              <span className="px-3 py-1.5 rounded-lg bg-[#FAF7F2] border border-[#D6CFCE] text-xs font-mono font-bold text-[#4B3F38]">
-                {currentPage} / {totalPages}
-              </span>
-
-              <button
-                onClick={() => {
-                  setCurrentPage(prev => Math.min(totalPages, prev + 1));
-                  window.scrollTo({ top: 300, behavior: 'smooth' });
-                }}
-                disabled={currentPage === totalPages}
-                className="bg-[#8A6B5D] hover:bg-[#6e5346] text-[#FAF7F2] font-sans text-xs font-semibold px-4 py-2 rounded-xl shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
-              >
-                <span>Next</span>
-                <ChevronRight className="w-4 h-4 text-white" />
-              </button>
-            </div>
-          </div>
-        )}
-
-      </main>
-
-      {/* SLIDE-OVER MODESTY FILTERS DRAWER (For Current Session Tweaks) */}
-      {isFiltersDrawerOpen && (
-        <div className="fixed inset-0 z-50 flex justify-end bg-[#4B3F38]/60 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="relative w-full max-w-md h-full bg-[#FAF7F2] border-l border-[#D6CFCE] shadow-2xl flex flex-col justify-between text-[#4B3F38]">
+          {/* Main Full-Width Content Area with Persistent Stylist Tile in Position #1 */}
+          <main className="flex-1 max-w-[1800px] w-full mx-auto px-4 sm:px-6 lg:px-8 pb-20">
             
-            {/* Drawer Header */}
-            <div className="p-5 border-b border-[#D6CFCE] flex items-center justify-between bg-[#F2EDE6]">
-              <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-xl bg-white border border-[#B89A8E] text-[#8A6B5D]">
-                  <ShieldCheck className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="font-serif italic font-bold text-base text-[#4B3F38]">Session Filter Tweaks</h3>
-                  <p className="text-xs text-[#8A6B5D]">Temporary adjustment for this search</p>
+            {/* FULL-WIDTH EDGE-TO-EDGE PINTEREST MASONRY GRID (PERSISTENT STYLIST TILE AT POSITION #1 ON EVERY PAGE) */}
+            <PinterestGrid
+              matches={paginatedMatches}
+              isAiMode={filters.demoMode === 'ai_search'}
+              onOpenAuditModal={(prod) => setSelectedAuditProduct(prod)}
+              onAddToHamper={handleToggleHamper}
+              hamperProductIds={hamper.map(p => p.id)}
+              onOpenFilters={() => setIsFiltersDrawerOpen(true)}
+              activeFilterCount={activeFilterCount}
+            />
+
+            {/* CLEAN PAGINATION CONTROLS */}
+            {calculatedMatches.length > 0 && (
+              <div className="mt-8 pt-6 border-t border-[#D6CFCE] flex flex-col sm:flex-row items-center justify-between gap-4 font-sans">
+                <span className="text-xs text-[#4B3F38] font-semibold">
+                  Page <span className="font-bold text-[#8A6B5D]">{currentPage}</span> of{' '}
+                  <span className="font-bold text-[#8A6B5D]">{totalPages}</span> — Showing{' '}
+                  <span className="font-mono text-[#8A6B5D]">
+                    {paginatedMatches.length} of {calculatedMatches.length}
+                  </span>{' '}
+                  Canadian garments
+                </span>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      setCurrentPage(prev => Math.max(1, prev - 1));
+                      window.scrollTo({ top: 300, behavior: 'smooth' });
+                    }}
+                    disabled={currentPage === 1}
+                    className="bg-[#8A6B5D] hover:bg-[#6e5346] text-[#FAF7F2] font-sans text-xs font-semibold px-4 py-2 rounded-xl shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
+                  >
+                    <ChevronLeft className="w-4 h-4 text-white" />
+                    <span>Previous</span>
+                  </button>
+
+                  <span className="px-3 py-1.5 rounded-lg bg-[#FAF7F2] border border-[#D6CFCE] text-xs font-mono font-bold text-[#4B3F38]">
+                    {currentPage} / {totalPages}
+                  </span>
+
+                  <button
+                    onClick={() => {
+                      setCurrentPage(prev => Math.min(totalPages, prev + 1));
+                      window.scrollTo({ top: 300, behavior: 'smooth' });
+                    }}
+                    disabled={currentPage === totalPages}
+                    className="bg-[#8A6B5D] hover:bg-[#6e5346] text-[#FAF7F2] font-sans text-xs font-semibold px-4 py-2 rounded-xl shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
+                  >
+                    <span>Next</span>
+                    <ChevronRight className="w-4 h-4 text-white" />
+                  </button>
                 </div>
               </div>
+            )}
 
-              <button
-                onClick={() => setIsFiltersDrawerOpen(false)}
-                className="p-2 rounded-full bg-white text-[#4B3F38] hover:bg-[#FAF7F2] border border-[#D6CFCE]"
-              >
-                <X className="w-5 h-5" />
-              </button>
+          </main>
+
+          {/* SLIDE-OVER MODESTY FILTERS DRAWER (For Current Session Tweaks) */}
+          {isFiltersDrawerOpen && (
+            <div className="fixed inset-0 z-50 flex justify-end bg-[#4B3F38]/60 backdrop-blur-md animate-in fade-in duration-200">
+              <div className="relative w-full max-w-md h-full bg-[#FAF7F2] border-l border-[#D6CFCE] shadow-2xl flex flex-col justify-between text-[#4B3F38]">
+                
+                {/* Drawer Header */}
+                <div className="p-5 border-b border-[#D6CFCE] flex items-center justify-between bg-[#F2EDE6]">
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-2 rounded-xl bg-white border border-[#B89A8E] text-[#8A6B5D]">
+                      <ShieldCheck className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-serif italic font-bold text-base text-[#4B3F38]">Session Filter Tweaks</h3>
+                      <p className="text-xs text-[#8A6B5D]">Temporary adjustment for this search</p>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => setIsFiltersDrawerOpen(false)}
+                    className="p-2 rounded-full bg-white text-[#4B3F38] hover:bg-[#FAF7F2] border border-[#D6CFCE]"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {/* Scrollable Filters Body */}
+                <div className="flex-1 overflow-y-auto p-5">
+                  <ModestyFilters
+                    filters={filters}
+                    onFilterChange={handleFilterChange}
+                    onReset={handleResetFilters}
+                    onApplyStrictPreset={handleApplyStrictPreset}
+                    onApplySmartPreset={handleApplySmartPreset}
+                  />
+                </div>
+
+                {/* Footer */}
+                <div className="p-4 bg-[#F2EDE6] border-t border-[#D6CFCE] flex items-center justify-between">
+                  <span className="text-xs text-[#8A6B5D] font-semibold">
+                    {calculatedMatches.length} items match
+                  </span>
+                  <button
+                    onClick={() => setIsFiltersDrawerOpen(false)}
+                    className="px-5 py-2.5 rounded-xl bg-[#8A6B5D] hover:bg-[#4B3F38] text-[#FAF7F2] font-bold text-xs shadow-md transition-all"
+                  >
+                    Apply to Feed
+                  </button>
+                </div>
+
+              </div>
             </div>
+          )}
 
-            {/* Scrollable Filters Body */}
-            <div className="flex-1 overflow-y-auto p-5">
-              <ModestyFilters
-                filters={filters}
-                onFilterChange={handleFilterChange}
-                onReset={handleResetFilters}
-                onApplyStrictPreset={handleApplyStrictPreset}
-                onApplySmartPreset={handleApplySmartPreset}
-              />
+          {/* Floating Aesthetic Woven Laundry Hamper Button */}
+          <HamperButton
+            itemCount={hamper.length}
+            onClick={() => setIsHamperOpen(true)}
+          />
+
+          {/* Hamper Drawer */}
+          <HamperDrawer
+            isOpen={isHamperOpen}
+            onClose={() => setIsHamperOpen(false)}
+            hamperItems={hamper}
+            onRemoveFromHamper={(id) => setHamper(prev => prev.filter(p => p.id !== id))}
+            onClearHamper={() => setHamper([])}
+          />
+
+          {/* Mobile Filters Drawer */}
+          {isMobileFiltersOpen && (
+            <div className="fixed inset-0 z-50 lg:hidden flex flex-col justify-end bg-[#4B3F38]/60 backdrop-blur-md">
+              <div className="max-h-[85vh] overflow-y-auto p-4 bg-[#FAF7F2] rounded-t-3xl border-t border-[#D6CFCE]">
+                <ModestyFilters
+                  filters={filters}
+                  onFilterChange={handleFilterChange}
+                  onReset={handleResetFilters}
+                  onApplyStrictPreset={handleApplyStrictPreset}
+                  onApplySmartPreset={handleApplySmartPreset}
+                  isMobileDrawer
+                  onCloseMobileDrawer={() => setIsMobileFiltersOpen(false)}
+                />
+              </div>
             </div>
+          )}
 
-            {/* Footer */}
-            <div className="p-4 bg-[#F2EDE6] border-t border-[#D6CFCE] flex items-center justify-between">
-              <span className="text-xs text-[#8A6B5D] font-semibold">
-                {calculatedMatches.length} items match
-              </span>
-              <button
-                onClick={() => setIsFiltersDrawerOpen(false)}
-                className="px-5 py-2.5 rounded-xl bg-[#8A6B5D] hover:bg-[#4B3F38] text-[#FAF7F2] font-bold text-xs shadow-md transition-all"
-              >
-                Apply to Feed
-              </button>
+          {/* AI Audit Modal */}
+          <AuditModal
+            product={selectedAuditProduct}
+            onClose={() => setSelectedAuditProduct(null)}
+          />
+
+          {/* Footer */}
+          <footer className="mt-auto border-t border-[#D6CFCE] bg-[#FAF7F2] py-8 text-xs text-[#8A6B5D]">
+            <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <div className="h-6 w-6 rounded-lg bg-[#F2EDE6] border border-[#B89A8E] flex items-center justify-center text-[#8A6B5D]">
+                  <Sparkles className="w-3.5 h-3.5" />
+                </div>
+                <span className="font-serif italic font-semibold text-[#4B3F38]">hercloset</span>
+                <span>— AI-powered visual fashion search engine</span>
+              </div>
+
+              <div className="flex items-center gap-4 text-[#4B3F38]">
+                <span className="flex items-center gap-1">
+                  <ShieldCheck className="w-[#3.5] h-3.5 text-[#8A6B5D]" /> Urban Planet &amp; Ardene Live Catalog
+                </span>
+              </div>
             </div>
-
-          </div>
-        </div>
+          </footer>
+        </>
       )}
-
-      {/* Floating Aesthetic Woven Laundry Hamper Button (Hidden on Landing Page) */}
-      {!showAuthLandingPage && (
-        <HamperButton
-          itemCount={hamper.length}
-          onClick={() => setIsHamperOpen(true)}
-        />
-      )}
-
-      {/* Hamper Drawer */}
-      <HamperDrawer
-        isOpen={isHamperOpen}
-        onClose={() => setIsHamperOpen(false)}
-        hamperItems={hamper}
-        onRemoveFromHamper={(id) => setHamper(prev => prev.filter(p => p.id !== id))}
-        onClearHamper={() => setHamper([])}
-      />
-
-      {/* Mobile Filters Drawer */}
-      {isMobileFiltersOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden flex flex-col justify-end bg-[#4B3F38]/60 backdrop-blur-md">
-          <div className="max-h-[85vh] overflow-y-auto p-4 bg-[#FAF7F2] rounded-t-3xl border-t border-[#D6CFCE]">
-            <ModestyFilters
-              filters={filters}
-              onFilterChange={handleFilterChange}
-              onReset={handleResetFilters}
-              onApplyStrictPreset={handleApplyStrictPreset}
-              onApplySmartPreset={handleApplySmartPreset}
-              isMobileDrawer
-              onCloseMobileDrawer={() => setIsMobileFiltersOpen(false)}
-            />
-          </div>
-        </div>
-      )}
-
-      {/* AI Audit Modal */}
-      <AuditModal
-        product={selectedAuditProduct}
-        onClose={() => setSelectedAuditProduct(null)}
-      />
-
-      {/* Footer */}
-      <footer className="mt-auto border-t border-[#D6CFCE] bg-[#FAF7F2] py-8 text-xs text-[#8A6B5D]">
-        <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="h-6 w-6 rounded-lg bg-[#F2EDE6] border border-[#B89A8E] flex items-center justify-center text-[#8A6B5D]">
-              <Sparkles className="w-3.5 h-3.5" />
-            </div>
-            <span className="font-serif italic font-semibold text-[#4B3F38]">hercloset</span>
-            <span>— AI-powered visual fashion search engine</span>
-          </div>
-
-          <div className="flex items-center gap-4 text-[#4B3F38]">
-            <span className="flex items-center gap-1">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#8A6B5D]" /> Urban Planet &amp; Ardene Live Catalog
-            </span>
-          </div>
-        </div>
-      </footer>
 
     </div>
   );
