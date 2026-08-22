@@ -117,16 +117,16 @@ export default function Home() {
     setCurrentPage(1);
   }, [filters]);
 
-  // STEP 3 & 4: GLASSMORPHISM LOADING SCREEN TRANSITION (Preparing Your Closet -> Fade into Feed)
+  // STEP 3 & 4: LOADING OVERLAY SCREEN TRANSITION (Centered Logo & Rotating Ring -> Fade into Feed)
   const triggerGlassmorphismTransition = (onApplyState: () => void) => {
     setIsGlassLoading(true);
     onApplyState();
     setShowAuthLandingPage(false);
 
-    // After 1.2s delay (simulating catalog curation and preference loading), fade out glass screen
+    // Hold for 1.4s while assets initialize, then smoothly fade out overlay
     setTimeout(() => {
       setIsGlassLoading(false);
-    }, 1200);
+    }, 1400);
   };
 
   const handleOpenAuth = () => {

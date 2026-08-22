@@ -1,41 +1,45 @@
 'use client';
 
-import React from 'react';
-import { Sparkles, Shirt } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 
 interface GlassmorphismLoadingScreenProps {
   isLoading: boolean;
 }
 
 export const GlassmorphismLoadingScreen: React.FC<GlassmorphismLoadingScreenProps> = ({ isLoading }) => {
-  if (!isLoading) return null;
+  const [shouldRender, setShouldRender] = useState<boolean>(isLoading);
+
+  useEffect(() => {
+    if (isLoading) {
+      setShouldRender(true);
+    } else {
+      const timer = setTimeout(() => {
+        setShouldRender(false);
+      }, 700); // 700ms fade-out duration matching transition-opacity
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading]);
+
+  if (!shouldRender) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#F2EDE6]/80 backdrop-blur-xl flex flex-col items-center justify-center transition-all duration-500 animate-in fade-in">
-      
-      {/* GLOWING AMBIENT EMBLEM */}
-      <div className="relative mb-6 flex items-center justify-center">
-        <div className="w-20 h-20 rounded-3xl bg-gradient-to-tr from-[#8A6B5D] via-[#B89A8E] to-[#3D312A] p-0.5 shadow-xl animate-pulse">
-          <div className="w-full h-full bg-[#FAF7F2] rounded-[22px] flex items-center justify-center">
-            <Shirt className="w-9 h-9 text-[#8A6B5D]" />
-          </div>
-        </div>
-        <Sparkles className="w-6 h-6 text-amber-500 absolute -top-2 -right-2 animate-bounce" />
+    <div
+      className={`fixed inset-0 z-[999] flex flex-col items-center justify-center bg-[#F2EDE6]/80 backdrop-blur-md transition-opacity duration-700 font-sans ${
+        isLoading ? 'opacity-100' : 'opacity-0 pointer-events-none'
+      }`}
+    >
+      {/* Centered Logo Emblem with Delicate Rotating Mocha Ring */}
+      <div className="relative flex items-center justify-center">
+        {/* Rotating Mocha Accent Ring */}
+        <div className="absolute w-36 h-36 md:w-44 md:h-44 rounded-full border-2 border-[#D6CFCE]/40 border-t-[#7A5C4D] animate-spin" />
+
+        {/* Hanger Emblem Icon */}
+        <img
+          src="/logo/logo.png"
+          alt="hercloset logo"
+          className="w-24 h-24 md:w-32 md:h-32 object-contain relative z-10 drop-shadow-sm"
+        />
       </div>
-
-      {/* GLOWING LOGO */}
-      <h2 className="font-serif italic text-4xl md:text-5xl font-bold text-[#3D312A] tracking-tight drop-shadow-sm mb-3">
-        hercloset
-      </h2>
-
-      {/* PULSING STATUS TEXT */}
-      <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#8A6B5D]/10 border border-[#8A6B5D]/20">
-        <div className="w-2 h-2 rounded-full bg-[#8A6B5D] animate-ping" />
-        <span className="font-sans text-sm font-medium text-[#6E5D53] animate-pulse tracking-wide">
-          Preparing your modest closet...
-        </span>
-      </div>
-
     </div>
   );
 };
