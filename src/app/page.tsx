@@ -16,7 +16,24 @@ import { HamperDrawer } from '@/components/HamperDrawer';
 import { HamperButton } from '@/components/HamperButton';
 import { Sparkles, ShieldCheck, X, ChevronLeft, ChevronRight } from 'lucide-react';
 
-const ITEMS_PER_PAGE = 35;
+// Helper function to produce truncated pagination numbers with ellipsis (e.g. [1, 2, 3, '...', 42])
+const getPaginationRange = (currentPage: number, totalPages: number): (number | string)[] => {
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  }
+
+  if (currentPage <= 4) {
+    return [1, 2, 3, 4, 5, '...', totalPages];
+  }
+
+  if (currentPage >= totalPages - 3) {
+    return [1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+  }
+
+  return [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
+};
+
+const ITEMS_PER_PAGE = 30;
 
 const INITIAL_PROFILE: ModestyProfile = {
   name: 'My Custom Modesty Rules',
@@ -320,47 +337,51 @@ export default function Home() {
               userName={currentUser?.name}
             />
 
-            {/* CLEAN PAGINATION CONTROLS */}
+            {/* CLEAN TRUNCATED PAGINATION CONTROLS */}
             {calculatedMatches.length > 0 && (
-              <div className="mt-8 pt-6 border-t border-[#D6CFCE] flex flex-col sm:flex-row items-center justify-between gap-4 font-sans">
-                <span className="text-xs text-[#4B3F38] font-semibold">
-                  Page <span className="font-bold text-[#8A6B5D]">{currentPage}</span> of{' '}
-                  <span className="font-bold text-[#8A6B5D]">{totalPages}</span> — Showing{' '}
-                  <span className="font-mono text-[#8A6B5D]">
-                    {paginatedMatches.length} of {calculatedMatches.length}
-                  </span>{' '}
-                  Canadian garments
-                </span>
-
-                <div className="flex items-center gap-2">
+              <div className="mt-12 mb-8 pt-8 border-t border-[#D6CFCE]/60 flex flex-col items-center justify-center gap-3 font-sans">
+                <div className="flex items-center gap-2 flex-wrap justify-center">
                   <button
                     onClick={() => {
                       setCurrentPage(prev => Math.max(1, prev - 1));
                       window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
                     disabled={currentPage === 1}
-                    className="px-4 py-2 rounded-xl bg-white border border-[#D6CFCE] text-xs font-semibold text-[#4B3F38] disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#F2EDE6] transition-all cursor-pointer"
+                    className="px-4 py-2 rounded-xl bg-[#FAF7F2] hover:bg-[#EAE4DC] border border-[#D6CFCE]/80 text-xs font-semibold text-[#3D312A] disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer shadow-xs flex items-center gap-1"
                   >
-                    ← Previous Page
+                    ← Previous
                   </button>
 
-                  <div className="flex items-center gap-1">
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-                      <button
-                        key={pageNum}
-                        onClick={() => {
-                          setCurrentPage(pageNum);
-                          window.scrollTo({ top: 0, behavior: 'smooth' });
-                        }}
-                        className={`w-8 h-8 rounded-lg text-xs font-bold font-mono transition-all cursor-pointer ${
-                          currentPage === pageNum
-                            ? 'bg-[#8A6B5D] text-white shadow-xs'
-                            : 'bg-white border border-[#D6CFCE] text-[#4B3F38] hover:bg-[#F2EDE6]'
-                        }`}
-                      >
-                        {pageNum}
-                      </button>
-                    ))}
+                  <div className="flex items-center gap-1.5">
+                    {getPaginationRange(currentPage, totalPages).map((item, idx) => {
+                      if (typeof item === 'string') {
+                        return (
+                          <span key={`ellipsis-${idx}`} className="w-10 h-10 flex items-center justify-center text-[#8A6B5D] font-mono text-xs select-none">
+                            •••
+                          </span>
+                        );
+                      }
+
+                      const pageNum = item as number;
+                      const isActive = currentPage === pageNum;
+
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => {
+                            setCurrentPage(pageNum);
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                          }}
+                          className={`w-10 h-10 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center ${
+                            isActive
+                              ? 'bg-[#7A5C4D] text-[#FAF7F2] shadow-sm'
+                              : 'bg-[#FAF7F2] hover:bg-[#EAE4DC] text-[#3D312A] border border-[#D6CFCE]/80'
+                          }`}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    })}
                   </div>
 
                   <button
@@ -369,11 +390,18 @@ export default function Home() {
                       window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
                     disabled={currentPage === totalPages}
-                    className="px-4 py-2 rounded-xl bg-white border border-[#D6CFCE] text-xs font-semibold text-[#4B3F38] disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#F2EDE6] transition-all cursor-pointer"
+                    className="px-4 py-2 rounded-xl bg-[#FAF7F2] hover:bg-[#EAE4DC] border border-[#D6CFCE]/80 text-xs font-semibold text-[#3D312A] disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer shadow-xs flex items-center gap-1"
                   >
-                    Next Page →
+                    Next →
                   </button>
                 </div>
+
+                <span className="text-xs text-[#8A6B5D] font-medium tracking-wide text-center">
+                  Showing <span className="font-mono font-bold text-[#3D312A]">{paginatedMatches.length}</span> of{' '}
+                  <span className="font-mono font-bold text-[#3D312A]">{calculatedMatches.length}</span> Canadian garments — Page{' '}
+                  <span className="font-mono font-bold text-[#3D312A]">{currentPage}</span> of{' '}
+                  <span className="font-mono font-bold text-[#3D312A]">{totalPages}</span>
+                </span>
               </div>
             )}
 
@@ -398,7 +426,7 @@ export default function Home() {
 
                   <button
                     onClick={() => setIsFiltersDrawerOpen(false)}
-                    className="p-2 rounded-full bg-white text-[#3D312A] hover:bg-[#FAF7F2] border border-[#D6CFCE] cursor-pointer"
+                    className="p-2 rounded-full bg-[#FAF7F2] text-[#3D312A] hover:bg-[#FAF7F2] border border-[#D6CFCE] cursor-pointer"
                   >
                     <X className="w-5 h-5" />
                   </button>
@@ -471,20 +499,18 @@ export default function Home() {
             onClose={() => setSelectedAuditProduct(null)}
           />
 
-          {/* Footer */}
-          <footer className="mt-auto border-t border-[#D6CFCE] bg-[#FAF7F2] py-8 text-xs text-[#8A6B5D]">
-            <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-2">
-                <div className="h-6 w-6 rounded-lg bg-[#F2EDE6] border border-[#B89A8E] flex items-center justify-center text-[#8A6B5D]">
-                  <Sparkles className="w-3.5 h-3.5" />
-                </div>
-                <span className="font-serif italic font-semibold text-[#4B3F38]">hercloset</span>
-                <span>— AI-powered visual fashion search engine</span>
-              </div>
-
-              <div className="flex items-center gap-4 text-[#4B3F38]">
-                <span className="flex items-center gap-1">
-                  <ShieldCheck className="w-[#3.5] h-3.5 text-[#8A6B5D]" /> Urban Planet &amp; Ardene Live Catalog
+          {/* Clean Brand Motto Footer */}
+          <footer className="mt-auto border-t border-[#D6CFCE]/80 bg-[#FAF7F2] py-8 text-xs font-sans">
+            <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center text-center">
+              <div className="flex items-baseline justify-center gap-1.5 flex-wrap">
+                <span className="font-serif italic font-normal text-base md:text-lg text-[#7A5C4D]">
+                  her
+                </span>
+                <span className="font-serif not-italic font-medium text-base md:text-lg text-[#3D312A] tracking-tight">
+                  closet
+                </span>
+                <span className="text-xs md:text-sm text-[#8A6B5D] uppercase tracking-[0.2em] font-semibold ml-1">
+                  — Fashion Curated for Your Coverage
                 </span>
               </div>
             </div>
