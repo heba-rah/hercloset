@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, Check, Sparkles, Shirt, Scissors, EyeOff, Layers, ArrowLeft, ArrowRight } from 'lucide-react';
-import { ModestyProfile } from '@/types/product';
+import { ModestyProfile, Neckline, SleeveLength, Hemline } from '@/types/product';
 
 interface CharacterSkin {
   id: string;
@@ -10,7 +10,8 @@ interface CharacterSkin {
   staticImg: string;
   gifImg: string;
   categoryType: 'sleeve' | 'neckline' | 'skirt' | 'pants';
-  applyRule: (prev: ModestyProfile) => ModestyProfile;
+  isSelected: (p: ModestyProfile) => boolean;
+  toggleRule: (prev: ModestyProfile) => ModestyProfile;
 }
 
 const SKINS: Record<'sleeve' | 'neckline' | 'skirt' | 'pants', CharacterSkin[]> = {
@@ -21,7 +22,14 @@ const SKINS: Record<'sleeve' | 'neckline' | 'skirt' | 'pants', CharacterSkin[]> 
       staticImg: '/avatars/short-sleeve.png',
       gifImg: '/avatars/short-sleeve.gif',
       categoryType: 'sleeve',
-      applyRule: (prev) => ({ ...prev, sleeveLengths: ['elbow', '3/4', 'wrist'] })
+      isSelected: (p) => p.sleeveLengths.includes('elbow') || p.sleeveLengths.includes('3/4'),
+      toggleRule: (prev) => {
+        const hasIt = prev.sleeveLengths.includes('elbow');
+        const newSleeves: SleeveLength[] = hasIt
+          ? prev.sleeveLengths.filter(s => s !== 'elbow' && s !== '3/4' && s !== 'short')
+          : Array.from(new Set([...prev.sleeveLengths, 'elbow', '3/4', 'wrist']));
+        return { ...prev, sleeveLengths: newSleeves.length > 0 ? newSleeves : ['wrist'] };
+      }
     },
     {
       id: 'long-sleeve',
@@ -29,7 +37,14 @@ const SKINS: Record<'sleeve' | 'neckline' | 'skirt' | 'pants', CharacterSkin[]> 
       staticImg: '/avatars/long-sleeve.png',
       gifImg: '/avatars/long-sleeve.gif',
       categoryType: 'sleeve',
-      applyRule: (prev) => ({ ...prev, sleeveLengths: ['wrist'] })
+      isSelected: (p) => p.sleeveLengths.includes('wrist'),
+      toggleRule: (prev) => {
+        const hasIt = prev.sleeveLengths.includes('wrist');
+        const newSleeves: SleeveLength[] = hasIt
+          ? prev.sleeveLengths.filter(s => s !== 'wrist')
+          : Array.from(new Set([...prev.sleeveLengths, 'wrist']));
+        return { ...prev, sleeveLengths: newSleeves.length > 0 ? newSleeves : ['wrist'] };
+      }
     }
   ],
   neckline: [
@@ -39,7 +54,14 @@ const SKINS: Record<'sleeve' | 'neckline' | 'skirt' | 'pants', CharacterSkin[]> 
       staticImg: '/avatars/crewneck.png',
       gifImg: '/avatars/crewneck.gif',
       categoryType: 'neckline',
-      applyRule: (prev) => ({ ...prev, necklines: ['crew', 'high'] })
+      isSelected: (p) => p.necklines.includes('crew'),
+      toggleRule: (prev) => {
+        const hasIt = prev.necklines.includes('crew');
+        const newNecks: Neckline[] = hasIt
+          ? prev.necklines.filter(n => n !== 'crew')
+          : Array.from(new Set([...prev.necklines, 'crew']));
+        return { ...prev, necklines: newNecks.length > 0 ? newNecks : ['high'] };
+      }
     },
     {
       id: 'highneck',
@@ -47,7 +69,14 @@ const SKINS: Record<'sleeve' | 'neckline' | 'skirt' | 'pants', CharacterSkin[]> 
       staticImg: '/avatars/highneck.png',
       gifImg: '/avatars/highneck.gif',
       categoryType: 'neckline',
-      applyRule: (prev) => ({ ...prev, necklines: ['high'] })
+      isSelected: (p) => p.necklines.includes('high'),
+      toggleRule: (prev) => {
+        const hasIt = prev.necklines.includes('high');
+        const newNecks: Neckline[] = hasIt
+          ? prev.necklines.filter(n => n !== 'high')
+          : Array.from(new Set([...prev.necklines, 'high']));
+        return { ...prev, necklines: newNecks.length > 0 ? newNecks : ['high'] };
+      }
     }
   ],
   skirt: [
@@ -57,7 +86,29 @@ const SKINS: Record<'sleeve' | 'neckline' | 'skirt' | 'pants', CharacterSkin[]> 
       staticImg: '/avatars/skirt.png',
       gifImg: '/avatars/skirt.gif',
       categoryType: 'skirt',
-      applyRule: (prev) => ({ ...prev, hemlines: ['floor'] })
+      isSelected: (p) => p.hemlines.includes('floor'),
+      toggleRule: (prev) => {
+        const hasIt = prev.hemlines.includes('floor');
+        const newHems: Hemline[] = hasIt
+          ? prev.hemlines.filter(h => h !== 'floor')
+          : Array.from(new Set([...prev.hemlines, 'floor']));
+        return { ...prev, hemlines: newHems.length > 0 ? newHems : ['floor'] };
+      }
+    },
+    {
+      id: 'pants',
+      name: 'Pants / Trousers',
+      staticImg: '/avatars/pants.png',
+      gifImg: '/avatars/pants.gif',
+      categoryType: 'skirt',
+      isSelected: (p) => p.hemlines.includes('ankle'),
+      toggleRule: (prev) => {
+        const hasIt = prev.hemlines.includes('ankle');
+        const newHems: Hemline[] = hasIt
+          ? prev.hemlines.filter(h => h !== 'ankle')
+          : Array.from(new Set([...prev.hemlines, 'ankle']));
+        return { ...prev, hemlines: newHems.length > 0 ? newHems : ['ankle'] };
+      }
     }
   ],
   pants: [
@@ -67,7 +118,29 @@ const SKINS: Record<'sleeve' | 'neckline' | 'skirt' | 'pants', CharacterSkin[]> 
       staticImg: '/avatars/pants.png',
       gifImg: '/avatars/pants.gif',
       categoryType: 'pants',
-      applyRule: (prev) => ({ ...prev, hemlines: ['ankle'] })
+      isSelected: (p) => p.hemlines.includes('ankle'),
+      toggleRule: (prev) => {
+        const hasIt = prev.hemlines.includes('ankle');
+        const newHems: Hemline[] = hasIt
+          ? prev.hemlines.filter(h => h !== 'ankle')
+          : Array.from(new Set([...prev.hemlines, 'ankle']));
+        return { ...prev, hemlines: newHems.length > 0 ? newHems : ['ankle'] };
+      }
+    },
+    {
+      id: 'skirt',
+      name: 'Maxi Skirt / Dress',
+      staticImg: '/avatars/skirt.png',
+      gifImg: '/avatars/skirt.gif',
+      categoryType: 'pants',
+      isSelected: (p) => p.hemlines.includes('floor'),
+      toggleRule: (prev) => {
+        const hasIt = prev.hemlines.includes('floor');
+        const newHems: Hemline[] = hasIt
+          ? prev.hemlines.filter(h => h !== 'floor')
+          : Array.from(new Set([...prev.hemlines, 'floor']));
+        return { ...prev, hemlines: newHems.length > 0 ? newHems : ['floor'] };
+      }
     }
   ]
 };
@@ -91,13 +164,12 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [selectedNotice, setSelectedNotice] = useState<string>('');
   
-  // Track completed steps for conditional CTA visibility
+  // Track completed steps for conditional CTA reveal
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
 
   const currentSkins = SKINS[subTab] || SKINS.sleeve;
   const activeSkin = currentSkins[skinIndex % currentSkins.length];
-  const prevSkin = currentSkins[(skinIndex - 1 + currentSkins.length) % currentSkins.length];
-  const nextSkin = currentSkins[(skinIndex + 1) % currentSkins.length];
+  const isSkinActiveSelected = activeSkin.isSelected(profile);
 
   const goToStep = (stepNum: 1 | 2 | 3 | 4) => {
     setCurrentStep(stepNum);
@@ -131,29 +203,27 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
     }
   };
 
-  const handleSelectCurrentSkin = () => {
-    const updated = activeSkin.applyRule(profile);
+  const handleToggleCurrentSkin = () => {
+    const updated = activeSkin.toggleRule(profile);
     onChangeProfile(updated);
-    setSelectedNotice(`Selected ${activeSkin.name}!`);
+    
+    const isNowSelected = activeSkin.isSelected(updated);
+    setSelectedNotice(isNowSelected ? `Selected ${activeSkin.name}!` : `Deselected ${activeSkin.name}`);
     setTimeout(() => setSelectedNotice(''), 1500);
 
     setCompletedSteps(prev => Array.from(new Set([...prev, currentStep])));
 
     // STEP-BY-STEP AUTOMATIC PROGRESSION FLOW
     if (currentStep === 1) {
-      // Step 1 (Tops -> Sleeve) -> Auto-advance to Step 2 (Tops -> Neckline)
-      setTimeout(() => goToStep(2), 300);
+      setTimeout(() => goToStep(2), 350);
     } else if (currentStep === 2) {
-      // Step 2 (Tops -> Neckline) -> Auto-switch to Bottoms and advance to Step 3 (Bottoms -> Skirt)
-      setTimeout(() => goToStep(3), 300);
+      setTimeout(() => goToStep(3), 350);
     } else if (currentStep === 3) {
-      // Step 3 (Bottoms -> Skirt) -> Auto-advance to Step 4 (Bottoms -> Pants)
-      setTimeout(() => goToStep(4), 300);
+      setTimeout(() => goToStep(4), 350);
     }
   };
 
   const handleFinalConfirm = () => {
-    // Save modesty profile object to localStorage for client persistence
     try {
       localStorage.setItem('user_modesty_profile', JSON.stringify(profile));
     } catch {
@@ -171,8 +241,8 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
       ? 'Skirt'
       : 'Pants';
 
-  // Check if profile setup is ready for final confirmation
-  const isConfirmReady = currentStep === 4 || completedSteps.length >= 2;
+  // CTA Reveal Logic: Keep "Confirm and Enter Closet →" hidden until Bottoms step completed (step 3 or 4 completed)
+  const isCtaRevealed = completedSteps.includes(3) || completedSteps.includes(4) || currentStep === 4;
 
   return (
     <div className="min-h-screen w-full bg-[#F2EDE6] p-6 sm:p-10 md:p-12 flex flex-col justify-between font-sans selection:bg-[#B89A8E] selection:text-white">
@@ -297,9 +367,9 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
             </button>
           </div>
 
-          {/* BOTTOM MAIN CTA: CONFIRM AND ENTER CLOSET (CONDITIONALLY VISIBLE ONCE STEPS ARE ADVANCED) */}
+          {/* BOTTOM MAIN CTA: CONFIRM AND ENTER CLOSET (SMOOTHLY REVEALED ONCE BOTTOMS COMPLETED) */}
           <div className={`transition-all duration-500 ${
-            isConfirmReady
+            isCtaRevealed
               ? 'opacity-100 translate-y-0 pointer-events-auto'
               : 'opacity-0 translate-y-4 pointer-events-none'
           }`}>
@@ -391,10 +461,10 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
             <div className="w-12" /> {/* Spacer */}
           </div>
 
-          {/* ENLARGED 3D CHARACTER PODIUM STAGE & SPOTLIGHT */}
+          {/* CLEAN CENTER STAGE: SINGLE HIGHLIGHTED AVATAR CENTERED WITH SPOTLIGHT (NO GHOST PREVIEWS) */}
           <div className="relative w-full max-w-lg h-80 flex items-center justify-center my-4">
             
-            {/* ENLARGED OVERHEAD RADIAL SPOTLIGHT GLOW */}
+            {/* OVERHEAD RADIAL SPOTLIGHT GLOW */}
             <div
               className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-72 pointer-events-none rounded-full"
               style={{
@@ -402,29 +472,33 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
               }}
             />
 
-            {/* ADJACENT PREVIEW (LEFT) */}
-            <div className="absolute left-2 top-8 z-0 scale-75 opacity-40 blur-[0.5px] pointer-events-none transition-all duration-300 hidden sm:block">
-              <img
-                src={prevSkin.staticImg}
-                alt={prevSkin.name}
-                className="w-28 h-28 object-contain"
-              />
-            </div>
-
-            {/* ENLARGED CENTER ACTIVE CHARACTER */}
+            {/* SINGLE CENTERED ACTIVE CHARACTER (WITH MULTI-SELECTION HIGHLIGHT GLOW & BADGE) */}
             <div
+              onClick={handleToggleCurrentSkin}
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
-              className="relative z-10 flex flex-col items-center group cursor-pointer transition-transform duration-300 hover:scale-105"
+              className={`relative z-10 flex flex-col items-center group cursor-pointer transition-all duration-300 p-2 rounded-3xl ${
+                isSkinActiveSelected
+                  ? 'ring-4 ring-[#8A6B5D] bg-[#8A6B5D]/10 shadow-[0_0_30px_rgba(138,107,93,0.4)] scale-105'
+                  : 'hover:scale-102'
+              }`}
             >
-              {/* ENLARGED ACTIVE AVATAR SPRITE (w-[204px] h-[204px]) */}
+              {/* Selected Badge Indicator */}
+              {isSkinActiveSelected && (
+                <div className="absolute -top-3 z-20 px-3 py-1 rounded-full bg-[#3D312A] text-[#FAF7F2] text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-md animate-in fade-in">
+                  <Check className="w-3 h-3 text-amber-200" />
+                  <span>Selected</span>
+                </div>
+              )}
+
+              {/* Sprite Image (.png by default, .gif on hover) */}
               <img
                 src={isHovered ? activeSkin.gifImg : activeSkin.staticImg}
                 alt={activeSkin.name}
                 className="w-[204px] h-[204px] object-contain drop-shadow-2xl [image-rendering:pixelated]"
               />
 
-              {/* ENLARGED 3D OVAL PODIUM BASE (w-56 h-10) */}
+              {/* 3D OVAL PODIUM BASE */}
               <div className="w-56 h-10 mx-auto -mt-4 rounded-[100%] bg-gradient-to-b from-[#D6CFCE] via-[#B89A8E] to-[#8A6B5D] shadow-lg border-t border-white/70 flex items-center justify-center">
                 <span className="text-[11px] font-mono font-bold text-[#FAF7F2] uppercase tracking-widest drop-shadow-xs">
                   {activeSkin.name}
@@ -432,46 +506,43 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
               </div>
             </div>
 
-            {/* ADJACENT PREVIEW (RIGHT) */}
-            <div className="absolute right-2 top-8 z-0 scale-75 opacity-40 blur-[0.5px] pointer-events-none transition-all duration-300 hidden sm:block">
-              <img
-                src={nextSkin.staticImg}
-                alt={nextSkin.name}
-                className="w-28 h-28 object-contain"
-              />
-            </div>
-
-            {/* CAROUSEL ARROWS */}
+            {/* CAROUSEL CHEVRON ARROWS TO TOGGLE STRICTLY BETWEEN CATEGORY OPTIONS */}
             {currentSkins.length > 1 && (
               <>
                 <button
                   type="button"
                   onClick={handlePrevSkin}
-                  className="absolute left-2 z-20 p-3 rounded-full bg-white/90 hover:bg-white text-[#3D312A] border border-[#D6CFCE] shadow-md transition-all cursor-pointer hover:scale-110 active:scale-95"
+                  className="absolute left-4 z-20 p-3 rounded-full bg-white/95 hover:bg-white text-[#3D312A] border border-[#D6CFCE] shadow-md transition-all cursor-pointer hover:scale-110 active:scale-95"
+                  aria-label="Previous Option"
                 >
-                  <ChevronLeft className="w-5 h-5 text-[#8A6B5D]" />
+                  <ChevronLeft className="w-6 h-6 text-[#8A6B5D]" />
                 </button>
 
                 <button
                   type="button"
                   onClick={handleNextSkin}
-                  className="absolute right-2 z-20 p-3 rounded-full bg-white/90 hover:bg-white text-[#3D312A] border border-[#D6CFCE] shadow-md transition-all cursor-pointer hover:scale-110 active:scale-95"
+                  className="absolute right-4 z-20 p-3 rounded-full bg-white/95 hover:bg-white text-[#3D312A] border border-[#D6CFCE] shadow-md transition-all cursor-pointer hover:scale-110 active:scale-95"
+                  aria-label="Next Option"
                 >
-                  <ChevronRight className="w-5 h-5 text-[#8A6B5D]" />
+                  <ChevronRight className="w-6 h-6 text-[#8A6B5D]" />
                 </button>
               </>
             )}
 
           </div>
 
-          {/* PRIMARY STEP SELECT BUTTON WITH CLEAN SINGLE CHECKMARK LABEL */}
+          {/* PRIMARY TOGGLE SELECT BUTTON */}
           <div className="mt-4 flex flex-col items-center gap-2">
             <button
               type="button"
-              onClick={handleSelectCurrentSkin}
-              className="bg-[#3D312A] hover:bg-[#2A211B] text-[#FAF7F2] px-8 py-3 rounded-full font-bold shadow-md transition-all cursor-pointer active:scale-95 flex items-center gap-2 text-xs md:text-sm"
+              onClick={handleToggleCurrentSkin}
+              className={`px-8 py-3 rounded-full font-bold shadow-md transition-all cursor-pointer active:scale-95 flex items-center gap-2 text-xs md:text-sm ${
+                isSkinActiveSelected
+                  ? 'bg-[#8A6B5D] hover:bg-[#6E5346] text-white ring-2 ring-amber-300'
+                  : 'bg-[#3D312A] hover:bg-[#2A211B] text-[#FAF7F2]'
+              }`}
             >
-              <span>✓ Select for {categoryStepLabel}</span>
+              <span>{isSkinActiveSelected ? '✓ Selected for' : 'Select for'} {categoryStepLabel}</span>
             </button>
 
             {selectedNotice && (
