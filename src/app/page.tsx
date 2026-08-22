@@ -320,6 +320,7 @@ export default function Home() {
               hamperProductIds={hamper.map(p => p.id)}
               onOpenFilters={() => setIsFiltersDrawerOpen(true)}
               activeFilterCount={activeFilterCount}
+              userName={currentUser?.name}
             />
 
             {/* CLEAN PAGINATION CONTROLS */}
