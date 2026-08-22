@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { ShieldCheck, X, Check, Save, UserCheck, HeartHandshake, Scissors, EyeOff, Layers, LogOut } from 'lucide-react';
 import { ModestyProfile, Neckline, SleeveLength, Hemline } from '@/types/product';
+import { AvatarCarousel } from '@/components/AvatarCarousel';
 
 interface PermanentProfileModalProps {
   initialProfile: ModestyProfile;
@@ -50,34 +51,6 @@ export const PermanentProfileModal: React.FC<PermanentProfileModalProps> = ({
       : [...current, item];
   };
 
-  const handleApplyStrictPreset = () => {
-    setProfile(prev => ({
-      ...prev,
-      name: 'Strict Coverage Default',
-      necklines: ['high'],
-      sleeveLengths: ['wrist'],
-      hemlines: ['floor'],
-      fits: ['loose', 'relaxed'],
-      noSlits: true,
-      noOpenBack: true,
-      isOpaque: true
-    }));
-  };
-
-  const handleApplySmartPreset = () => {
-    setProfile(prev => ({
-      ...prev,
-      name: 'Smart Casual Default',
-      necklines: ['high', 'crew'],
-      sleeveLengths: ['wrist', '3/4'],
-      hemlines: ['floor', 'ankle', 'midi'],
-      fits: [],
-      noSlits: true,
-      noOpenBack: true,
-      isOpaque: true
-    }));
-  };
-
   const handleSave = () => {
     const updated = { ...profile, isProfileComplete: true };
     try {
@@ -123,74 +96,12 @@ export const PermanentProfileModal: React.FC<PermanentProfileModalProps> = ({
         {/* Scrollable Body */}
         <div className="p-6 overflow-y-auto space-y-6 flex-1">
           
-          {/* Preset Selector */}
-          <div>
-            <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider block mb-2.5">
-              Account Preset Defaults
-            </label>
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                onClick={handleApplyStrictPreset}
-                className="flex items-center justify-center gap-2 p-3 rounded-2xl bg-[#8A6B5D] hover:bg-[#4B3F38] text-white text-xs font-semibold transition-all shadow-sm"
-              >
-                <ShieldCheck className="w-4 h-4" />
-                <span>Strict Coverage Preset</span>
-              </button>
-
-              <button
-                onClick={handleApplySmartPreset}
-                className="flex items-center justify-center gap-2 p-3 rounded-2xl bg-[#B89A8E] hover:bg-[#8A6B5D] text-white text-xs font-semibold transition-all shadow-sm"
-              >
-                <HeartHandshake className="w-4 h-4" />
-                <span>Smart Casual Preset</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Hard Constraints */}
-          <div className="space-y-2.5 bg-[#F2EDE6] p-4 rounded-2xl border border-[#D6CFCE]">
-            <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider block mb-1">
-              Hard Coverage Constraints (Default Rules)
-            </label>
-
-            <label className="flex items-center justify-between p-2.5 rounded-xl hover:bg-white cursor-pointer transition-all">
-              <div className="flex items-center gap-2.5">
-                <Scissors className="w-4 h-4 text-rose-700 shrink-0" />
-                <span className="text-xs font-medium text-[#4B3F38]">No Slits (Thigh or Back Slits)</span>
-              </div>
-              <input
-                type="checkbox"
-                checked={profile.noSlits}
-                onChange={(e) => setProfile(prev => ({ ...prev, noSlits: e.target.checked }))}
-                className="w-4 h-4 rounded border-[#D6CFCE] bg-white text-[#8A6B5D] focus:ring-[#8A6B5D]"
-              />
-            </label>
-
-            <label className="flex items-center justify-between p-2.5 rounded-xl hover:bg-white cursor-pointer transition-all">
-              <div className="flex items-center gap-2.5">
-                <EyeOff className="w-4 h-4 text-[#8A6B5D] shrink-0" />
-                <span className="text-xs font-medium text-[#4B3F38]">No Open Back / Back Cutouts</span>
-              </div>
-              <input
-                type="checkbox"
-                checked={profile.noOpenBack}
-                onChange={(e) => setProfile(prev => ({ ...prev, noOpenBack: e.target.checked }))}
-                className="w-4 h-4 rounded border-[#D6CFCE] bg-white text-[#8A6B5D] focus:ring-[#8A6B5D]"
-              />
-            </label>
-
-            <label className="flex items-center justify-between p-2.5 rounded-xl hover:bg-white cursor-pointer transition-all">
-              <div className="flex items-center gap-2.5">
-                <Layers className="w-4 h-4 text-[#B89A8E] shrink-0" />
-                <span className="text-xs font-medium text-[#4B3F38]">100% Opaque (No Sheer Fabrics)</span>
-              </div>
-              <input
-                type="checkbox"
-                checked={profile.isOpaque}
-                onChange={(e) => setProfile(prev => ({ ...prev, isOpaque: e.target.checked }))}
-                className="w-4 h-4 rounded border-[#D6CFCE] bg-white text-[#8A6B5D] focus:ring-[#8A6B5D]"
-              />
-            </label>
+          {/* AVATAR CAROUSEL WITH MODESTY PRESET SYNC */}
+          <div className="bg-[#F2EDE6] p-4 rounded-2xl border border-[#D6CFCE]">
+            <AvatarCarousel
+              profile={profile}
+              onChangeProfile={(updated) => setProfile(prev => ({ ...prev, ...updated }))}
+            />
           </div>
 
           {/* Neckline Preferred */}
@@ -204,11 +115,15 @@ export const PermanentProfileModal: React.FC<PermanentProfileModalProps> = ({
                 return (
                   <button
                     key={item.id}
-                    onClick={() => setProfile(prev => ({ ...prev, necklines: toggleArrayItem(prev.necklines, item.id) }))}
-                    className={`px-3.5 py-2 rounded-xl text-xs font-medium transition-all flex items-center gap-1.5 border ${selected
-                        ? 'bg-[#8A6B5D] border-[#8A6B5D] text-white font-semibold'
+                    onClick={() => setProfile(prev => ({
+                      ...prev,
+                      necklines: toggleArrayItem(prev.necklines, item.id)
+                    }))}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-medium border transition-all flex items-center gap-1.5 cursor-pointer ${
+                      selected
+                        ? 'bg-[#8A6B5D] border-[#8A6B5D] text-white shadow-sm font-semibold'
                         : 'bg-white border-[#D6CFCE] text-[#4B3F38] hover:bg-[#F2EDE6]'
-                      }`}
+                    }`}
                   >
                     {selected && <Check className="w-3.5 h-3.5 text-white" />}
                     <span>{item.label}</span>
@@ -218,7 +133,7 @@ export const PermanentProfileModal: React.FC<PermanentProfileModalProps> = ({
             </div>
           </div>
 
-          {/* Sleeve Lengths */}
+          {/* Sleeve Length Preferred */}
           <div>
             <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider block mb-2">
               Default Sleeve Lengths
@@ -229,11 +144,15 @@ export const PermanentProfileModal: React.FC<PermanentProfileModalProps> = ({
                 return (
                   <button
                     key={item.id}
-                    onClick={() => setProfile(prev => ({ ...prev, sleeveLengths: toggleArrayItem(prev.sleeveLengths, item.id) }))}
-                    className={`px-3.5 py-2 rounded-xl text-xs font-medium transition-all flex items-center gap-1.5 border ${selected
-                        ? 'bg-[#8A6B5D] border-[#8A6B5D] text-white font-semibold'
+                    onClick={() => setProfile(prev => ({
+                      ...prev,
+                      sleeveLengths: toggleArrayItem(prev.sleeveLengths, item.id)
+                    }))}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-medium border transition-all flex items-center gap-1.5 cursor-pointer ${
+                      selected
+                        ? 'bg-[#8A6B5D] border-[#8A6B5D] text-white shadow-sm font-semibold'
                         : 'bg-white border-[#D6CFCE] text-[#4B3F38] hover:bg-[#F2EDE6]'
-                      }`}
+                    }`}
                   >
                     {selected && <Check className="w-3.5 h-3.5 text-white" />}
                     <span>{item.label}</span>
@@ -243,7 +162,7 @@ export const PermanentProfileModal: React.FC<PermanentProfileModalProps> = ({
             </div>
           </div>
 
-          {/* Hemlines */}
+          {/* Hemline Length Preferred */}
           <div>
             <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider block mb-2">
               Default Hemline Lengths
@@ -254,11 +173,15 @@ export const PermanentProfileModal: React.FC<PermanentProfileModalProps> = ({
                 return (
                   <button
                     key={item.id}
-                    onClick={() => setProfile(prev => ({ ...prev, hemlines: toggleArrayItem(prev.hemlines, item.id) }))}
-                    className={`px-3.5 py-2 rounded-xl text-xs font-medium transition-all flex items-center gap-1.5 border ${selected
-                        ? 'bg-[#8A6B5D] border-[#8A6B5D] text-white font-semibold'
+                    onClick={() => setProfile(prev => ({
+                      ...prev,
+                      hemlines: toggleArrayItem(prev.hemlines, item.id)
+                    }))}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-medium border transition-all flex items-center gap-1.5 cursor-pointer ${
+                      selected
+                        ? 'bg-[#8A6B5D] border-[#8A6B5D] text-white shadow-sm font-semibold'
                         : 'bg-white border-[#D6CFCE] text-[#4B3F38] hover:bg-[#F2EDE6]'
-                      }`}
+                    }`}
                   >
                     {selected && <Check className="w-3.5 h-3.5 text-white" />}
                     <span>{item.label}</span>
@@ -270,31 +193,40 @@ export const PermanentProfileModal: React.FC<PermanentProfileModalProps> = ({
 
         </div>
 
-        {/* Footer Action Bar */}
-        <div className="p-5 bg-[#F2EDE6] border-t border-[#D6CFCE] flex items-center justify-between gap-3">
+        {/* Footer Actions */}
+        <div className="p-6 border-t border-[#D6CFCE] bg-[#F2EDE6] flex items-center justify-between gap-4">
           {onSignOut ? (
             <button
-              onClick={() => {
-                onClose();
-                onSignOut();
-              }}
-              className="px-4 py-2.5 rounded-xl bg-white hover:bg-rose-50 border border-[#D6CFCE] hover:border-rose-300 text-xs font-semibold text-rose-700 transition-all flex items-center gap-1.5"
+              onClick={onSignOut}
+              className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold transition-all cursor-pointer"
             >
-              <LogOut className="w-4 h-4 text-rose-600" />
+              <LogOut className="w-4 h-4" />
               <span>Sign Out</span>
             </button>
           ) : (
-            <span className="text-xs text-[#8A6B5D] font-semibold">
-              {savedSuccess ? '✅ Profile Saved!' : 'Auto-applies on login'}
-            </span>
+            <button
+              onClick={onClose}
+              className="px-4 py-2.5 rounded-xl bg-white border border-[#D6CFCE] text-xs font-semibold text-[#4B3F38] hover:bg-[#FAF7F2] transition-all cursor-pointer"
+            >
+              Cancel
+            </button>
           )}
 
           <button
             onClick={handleSave}
-            className="px-6 py-3 rounded-2xl bg-[#8A6B5D] hover:bg-[#4B3F38] text-white font-bold text-xs shadow-md transition-all flex items-center gap-2"
+            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#8A6B5D] hover:bg-[#4B3F38] text-white font-bold text-xs shadow-md transition-all cursor-pointer"
           >
-            <Save className="w-4 h-4" />
-            <span>Save as My Permanent Default</span>
+            {savedSuccess ? (
+              <>
+                <Check className="w-4 h-4 text-emerald-300" />
+                <span>Modesty Profile Saved!</span>
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4" />
+                <span>Save Profile Preferences</span>
+              </>
+            )}
           </button>
         </div>
 

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { ShieldCheck, ArrowRight, User, Mail, Lock, Check, Store, Scissors, EyeOff, Layers, LogIn, UserPlus } from 'lucide-react';
 import { UserAccount, ModestyProfile, Neckline, SleeveLength, Hemline } from '@/types/product';
 import { PartingClothesReveal } from '@/components/PartingClothesReveal';
+import { AvatarCarousel } from '@/components/AvatarCarousel';
 
 interface AuthLandingPageProps {
   onCompleteAuth: (account: UserAccount) => void;
@@ -172,9 +173,9 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
           </div>
 
           {/* 
-            PANEL B: STREAMLINED EXPANDED AUTH FORM CONTAINER
+            PANEL B: STREAMLINED EXPANDED AUTH FORM CONTAINER WITH AVATAR CAROUSEL
           */}
-          <div className={`w-full max-w-lg md:max-w-xl mx-auto p-8 md:p-10 rounded-3xl bg-[#FAF7F2]/95 border border-[#D6CFCE] shadow-2xl text-[#3D312A] transition-all duration-700 ease-in-out max-h-[520px] overflow-y-auto ${
+          <div className={`w-full max-w-lg md:max-w-xl mx-auto p-8 md:p-10 rounded-3xl bg-[#FAF7F2]/95 border border-[#D6CFCE] shadow-2xl text-[#3D312A] transition-all duration-700 ease-in-out max-h-[560px] overflow-y-auto ${
             panelState === 'entered'
               ? 'translate-x-0 opacity-100 relative pointer-events-auto'
               : 'translate-x-full opacity-0 pointer-events-none absolute'
@@ -330,7 +331,7 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
               </form>
             )}
 
-            {/* STEP 2: MODESTY PROFILE SETUP */}
+            {/* STEP 2: MODESTY PROFILE SETUP WITH AVATAR CAROUSEL */}
             {step === 'profile_setup' && (
               <div className="space-y-4">
                 <div className="text-center">
@@ -340,6 +341,14 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
                   <h3 className="font-serif italic font-bold text-xl text-[#3D312A] mt-1">
                     Welcome, {fullName || 'Fashion Lover'}!
                   </h3>
+                </div>
+
+                {/* INTERACTIVE AVATAR CAROUSEL WITH 2-WAY FILTER SYNC */}
+                <div className="bg-[#F2EDE6] p-4 rounded-2xl border border-[#D6CFCE]">
+                  <AvatarCarousel
+                    profile={profile}
+                    onChangeProfile={(updated) => setProfile(prev => ({ ...prev, ...updated }))}
+                  />
                 </div>
 
                 {/* Stores Selector */}
@@ -372,53 +381,7 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
                   </div>
                 </div>
 
-                {/* Hard Constraints */}
-                <div className="space-y-2 bg-[#F2EDE6] p-4 rounded-2xl border border-[#D6CFCE]">
-                  <label className="text-xs font-bold text-[#8A6B5D] uppercase tracking-wider block mb-1">
-                    Hard Coverage Rules
-                  </label>
-
-                  <label className="flex items-center justify-between p-2 rounded-xl hover:bg-white cursor-pointer transition-all">
-                    <div className="flex items-center gap-2.5">
-                      <Scissors className="w-4 h-4 text-rose-700 shrink-0" />
-                      <span className="text-xs font-medium text-[#3D312A]">No Thigh or Leg Slits</span>
-                    </div>
-                    <input
-                      type="checkbox"
-                      checked={profile.noSlits}
-                      onChange={(e) => setProfile(prev => ({ ...prev, noSlits: e.target.checked }))}
-                      className="w-4 h-4 rounded border-[#D6CFCE] bg-white text-[#3D312A]"
-                    />
-                  </label>
-
-                  <label className="flex items-center justify-between p-2 rounded-xl hover:bg-white cursor-pointer transition-all">
-                    <div className="flex items-center gap-2.5">
-                      <EyeOff className="w-4 h-4 text-[#8A6B5D] shrink-0" />
-                      <span className="text-xs font-medium text-[#3D312A]">No Open Back / Cutouts</span>
-                    </div>
-                    <input
-                      type="checkbox"
-                      checked={profile.noOpenBack}
-                      onChange={(e) => setProfile(prev => ({ ...prev, noOpenBack: e.target.checked }))}
-                      className="w-4 h-4 rounded border-[#D6CFCE] bg-white text-[#3D312A]"
-                    />
-                  </label>
-
-                  <label className="flex items-center justify-between p-2 rounded-xl hover:bg-white cursor-pointer transition-all">
-                    <div className="flex items-center gap-2.5">
-                      <Layers className="w-4 h-4 text-[#8A6B5D] shrink-0" />
-                      <span className="text-xs font-medium text-[#3D312A]">100% Opaque (No Sheer Mesh)</span>
-                    </div>
-                    <input
-                      type="checkbox"
-                      checked={profile.isOpaque}
-                      onChange={(e) => setProfile(prev => ({ ...prev, isOpaque: e.target.checked }))}
-                      className="w-4 h-4 rounded border-[#D6CFCE] bg-white text-[#3D312A]"
-                    />
-                  </label>
-                </div>
-
-                {/* Necklines */}
+                {/* Necklines Preferred */}
                 <div>
                   <label className="text-xs font-bold text-[#8A6B5D] uppercase tracking-wider block mb-1.5">
                     Necklines Preferred
@@ -458,10 +421,9 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
                   <button
                     type="button"
                     onClick={handleFinishProfileSetup}
-                    className="flex-1 py-3 px-4 rounded-xl bg-[#3D312A] hover:bg-[#2A211B] text-white font-semibold text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    className="flex-1 py-3.5 px-4 rounded-xl bg-[#3D312A] hover:bg-[#2A211B] text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    <span>Save Profile &amp; Start Shopping</span>
-                    <ArrowRight className="w-4 h-4" />
+                    <span>Save &amp; Open My Closet &rarr;</span>
                   </button>
                 </div>
 
