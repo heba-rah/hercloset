@@ -10,6 +10,7 @@ interface PinterestCardProps {
   onOpenAuditModal: (product: Product) => void;
   onAddToHamper: (product: Product) => void;
   isInHamper: boolean;
+  cardIndex?: number;
 }
 
 export const PinterestCard: React.FC<PinterestCardProps> = ({
@@ -17,7 +18,8 @@ export const PinterestCard: React.FC<PinterestCardProps> = ({
   isAiMode,
   onOpenAuditModal,
   onAddToHamper,
-  isInHamper
+  isInHamper,
+  cardIndex = 0
 }) => {
   const { product, matchPercentage, passedFilters } = match;
   const { modestyAudit } = product;
@@ -33,36 +35,47 @@ export const PinterestCard: React.FC<PinterestCardProps> = ({
 
   const isHighMatch = matchPercentage >= 90 && passedFilters;
 
+  // DYNAMIC ASYMMETRICAL ASPECT RATIOS BASED ON INDEX
+  const getDynamicAspectClass = (idx: number) => {
+    const mod = idx % 4;
+    if (mod === 0) return 'aspect-[3/5]';  // Tall editorial portrait
+    if (mod === 1) return 'aspect-[4/5]';  // Standard portrait
+    if (mod === 2) return 'aspect-[2/3]';  // Medium long shot
+    return 'aspect-[1/1]';                // Square/close-up crop
+  };
+
+  const aspectClass = getDynamicAspectClass(cardIndex);
+
   return (
     <div className="break-inside-avoid mb-4 group relative rounded-2xl overflow-hidden transition-all duration-300 flex flex-col bg-transparent">
       
-      {/* GARMENT IMAGE & HOVER OVERLAY CONTAINER */}
-      <div className="relative w-full rounded-2xl overflow-hidden bg-[#FAF7F2] dark:bg-[#2D2522] border border-[#D6CFCE]/60 dark:border-[#443732]/60 shadow-sm group-hover:shadow-xl transition-all duration-300">
+      {/* GARMENT IMAGE & HOVER OVERLAY CONTAINER WITH DYNAMIC HIGH-FASHION CROP */}
+      <div className={`relative w-full ${aspectClass} rounded-2xl overflow-hidden bg-[#FAF7F2] dark:bg-[#2D2522] border border-[#D6CFCE]/60 dark:border-[#443732]/60 shadow-sm group-hover:shadow-xl transition-all duration-300`}>
         <img
           src={imgSrc}
           alt={product.name}
           onError={handleImageError}
-          className="w-full h-auto object-cover object-center group-hover:scale-105 transition-transform duration-500 block"
+          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 block"
         />
 
-        {/* PINTEREST-STYLE HOVER OVERLAY (Translucent dark backdrop on hover) */}
-        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-between p-3 pointer-events-none group-hover:pointer-events-auto">
+        {/* PINTEREST-STYLE HOVER OVERLAY (Translucent dark backdrop bg-black/30 on hover) */}
+        <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-between p-3 pointer-events-none group-hover:pointer-events-auto">
           
-          {/* TOP HOVER BAR: Modesty Badge (Left) + Pinterest Save Pill (Right) */}
+          {/* TOP HOVER BAR: Compact Modesty % Match Chip (Left) + Warm-Earth/Red Pin Save Button (Right) */}
           <div className="flex items-center justify-between gap-2">
-            {/* Top-Left: Modesty Match Badge */}
+            {/* Top-Left: Compact Modesty % Match Chip */}
             <div className={`px-2.5 py-1 rounded-full text-[11px] font-bold backdrop-blur-md border shadow-md flex items-center gap-1 ${
               !passedFilters || matchPercentage < 70
                 ? 'bg-rose-900/90 text-rose-100 border-rose-700'
                 : isHighMatch
-                  ? 'bg-emerald-900/90 text-emerald-100 border-emerald-700'
-                  : 'bg-amber-900/90 text-amber-100 border-amber-700'
+                  ? 'bg-[#8A6B5D]/90 text-white border-[#8A6B5D]'
+                  : 'bg-[#B89A8E]/90 text-white border-[#B89A8E]'
             }`}>
               {passedFilters ? <ShieldCheck className="w-3 h-3 text-emerald-300" /> : <AlertTriangle className="w-3 h-3 text-rose-300" />}
               <span>{matchPercentage}% Match</span>
             </div>
 
-            {/* Top-Right: Pinterest Red "Save to Hamper" Pill Button */}
+            {/* Top-Right: Warm-Earth Red "Save" Pin Button */}
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -79,7 +92,7 @@ export const PinterestCard: React.FC<PinterestCardProps> = ({
             </button>
           </div>
 
-          {/* BOTTOM HOVER BAR: Action Buttons Overlay */}
+          {/* BOTTOM HOVER BAR: Product Name, CAD Price & View AI Audit */}
           <div className="space-y-2">
             {/* Warning callout on hover if failed rules */}
             {!passedFilters && modestyAudit.hasSlit && (

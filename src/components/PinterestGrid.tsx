@@ -42,12 +42,12 @@ export const PinterestGrid: React.FC<PinterestGridProps> = ({
           <Sparkles className="w-4 h-4 text-[#8A6B5D] dark:text-[#C4A497]" />
           <span>Pinterest Modesty Feed ({matches.length} curated apparel matches)</span>
         </h3>
-        <span className="text-xs text-[#8A6B5D] dark:text-[#C4A497] font-mono">Masonry Columns</span>
+        <span className="text-xs text-[#8A6B5D] dark:text-[#C4A497] font-mono">Asymmetrical Masonry</span>
       </div>
 
-      {/* PINTEREST MASONRY COLUMNS LAYOUT */}
-      <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 gap-4 space-y-4">
-        {matches.map((match) => (
+      {/* PINTEREST ASYMMETRICAL MASONRY COLUMNS LAYOUT */}
+      <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 gap-4">
+        {matches.map((match, idx) => (
           <PinterestCard
             key={match.product.id}
             match={match}
@@ -55,6 +55,7 @@ export const PinterestGrid: React.FC<PinterestGridProps> = ({
             onOpenAuditModal={onOpenAuditModal}
             onAddToHamper={onAddToHamper}
             isInHamper={hamperProductIds.includes(match.product.id)}
+            cardIndex={idx}
           />
         ))}
       </div>
