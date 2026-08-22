@@ -275,7 +275,9 @@ export default function Home() {
           onSkipGuest={handleSkipGuest}
         />
       ) : (
-        <>
+        <div className={`flex-1 flex flex-col transition-opacity duration-700 ${
+          isGlassLoading ? 'opacity-0 pointer-events-none invisible' : 'opacity-100 visible'
+        }`}>
           {/* Permanent Modesty Profile Modal (Triggered by top-right square card) */}
           {isPermanentProfileModalOpen && (
             <PermanentProfileModal
@@ -339,29 +341,42 @@ export default function Home() {
                   <button
                     onClick={() => {
                       setCurrentPage(prev => Math.max(1, prev - 1));
-                      window.scrollTo({ top: 300, behavior: 'smooth' });
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
                     disabled={currentPage === 1}
-                    className="bg-[#8A6B5D] hover:bg-[#6e5346] text-[#FAF7F2] font-sans text-xs font-semibold px-4 py-2 rounded-xl shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
+                    className="px-4 py-2 rounded-xl bg-white border border-[#D6CFCE] text-xs font-semibold text-[#4B3F38] disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#F2EDE6] transition-all cursor-pointer"
                   >
-                    <ChevronLeft className="w-4 h-4 text-white" />
-                    <span>Previous</span>
+                    ← Previous Page
                   </button>
 
-                  <span className="px-3 py-1.5 rounded-lg bg-[#FAF7F2] border border-[#D6CFCE] text-xs font-mono font-bold text-[#4B3F38]">
-                    {currentPage} / {totalPages}
-                  </span>
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                      <button
+                        key={pageNum}
+                        onClick={() => {
+                          setCurrentPage(pageNum);
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }}
+                        className={`w-8 h-8 rounded-lg text-xs font-bold font-mono transition-all cursor-pointer ${
+                          currentPage === pageNum
+                            ? 'bg-[#8A6B5D] text-white shadow-xs'
+                            : 'bg-white border border-[#D6CFCE] text-[#4B3F38] hover:bg-[#F2EDE6]'
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    ))}
+                  </div>
 
                   <button
                     onClick={() => {
                       setCurrentPage(prev => Math.min(totalPages, prev + 1));
-                      window.scrollTo({ top: 300, behavior: 'smooth' });
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
                     disabled={currentPage === totalPages}
-                    className="bg-[#8A6B5D] hover:bg-[#6e5346] text-[#FAF7F2] font-sans text-xs font-semibold px-4 py-2 rounded-xl shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
+                    className="px-4 py-2 rounded-xl bg-white border border-[#D6CFCE] text-xs font-semibold text-[#4B3F38] disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#F2EDE6] transition-all cursor-pointer"
                   >
-                    <span>Next</span>
-                    <ChevronRight className="w-4 h-4 text-white" />
+                    Next Page →
                   </button>
                 </div>
               </div>
@@ -479,7 +494,7 @@ export default function Home() {
               </div>
             </div>
           </footer>
-        </>
+        </div>
       )}
 
     </div>

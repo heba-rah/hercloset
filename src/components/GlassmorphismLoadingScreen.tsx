@@ -24,7 +24,7 @@ export const GlassmorphismLoadingScreen: React.FC<GlassmorphismLoadingScreenProp
 
   return (
     <div
-      className={`fixed inset-0 z-[999] flex flex-col items-center justify-center bg-[#F2EDE6]/80 backdrop-blur-md transition-opacity duration-700 font-sans ${
+      className={`fixed inset-0 z-[999] flex flex-col items-center justify-center bg-[#F2EDE6] backdrop-blur-md transition-opacity duration-700 font-sans ${
         isLoading ? 'opacity-100' : 'opacity-0 pointer-events-none'
       }`}
     >
