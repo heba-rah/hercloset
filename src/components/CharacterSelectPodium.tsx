@@ -235,12 +235,12 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
       {/* 2. DEDICATED STEP CONTENT SCREENS */}
       <div className="flex-1 max-w-5xl w-full mx-auto flex flex-col items-center justify-center my-4">
         
-        {/* ================= STEP 1, STEP 2 & STEP 3: SIDE-BY-SIDE CARD SELECTION GRID ================= */}
+        {/* ================= STEP 1, STEP 2 & STEP 3: UNENCLOSED FREESTANDING AVATARS ================= */}
         {(step === 1 || step === 2 || step === 3) && (
           <div className="w-full flex flex-col items-center justify-center relative my-2">
             
-            {/* SIDE-BY-SIDE CARDS CONTAINER */}
-            <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12 my-6">
+            {/* SIDE-BY-SIDE FREESTANDING AVATARS WITH GROUND CONTACT SHADOW & CLEAN TYPOGRAPHY */}
+            <div className="flex flex-wrap items-center justify-center gap-16 sm:gap-20 md:gap-24 my-6">
               {currentSkins.map((skin) => {
                 const selected = skin.isSelected(profile);
                 const isHovered = hoveredSkinId === skin.id;
@@ -251,29 +251,32 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
                     onClick={() => handleToggleSkin(skin)}
                     onMouseEnter={() => setHoveredSkinId(skin.id)}
                     onMouseLeave={() => setHoveredSkinId(null)}
-                    className={`w-72 h-80 rounded-3xl p-6 flex flex-col items-center justify-center border-2 transition-all cursor-pointer relative ${
+                    className={`flex flex-col items-center cursor-pointer transition-all duration-300 ${
                       selected
-                        ? 'opacity-100 scale-100 border-[#3D312A] bg-[#FAF7F2] shadow-xl ring-4 ring-[#8A6B5D]/30'
-                        : 'opacity-40 scale-95 border-transparent bg-[#FAF7F2]/60 hover:opacity-75 hover:scale-98'
+                        ? 'opacity-100 scale-100'
+                        : 'opacity-35 scale-95 hover:opacity-75 hover:scale-98'
                     }`}
                   >
-                    {/* Checkmark Badge on Selected State */}
-                    {selected && (
-                      <div className="absolute top-4 right-4 w-7 h-7 rounded-full bg-[#3D312A] text-white flex items-center justify-center shadow-md animate-in fade-in">
-                        <Check className="w-4 h-4 text-amber-200" />
-                      </div>
-                    )}
-
-                    {/* Avatar Sprite Image (.png by default, .gif on hover) */}
+                    {/* ENLARGED FREESTANDING AVATAR SPRITE (w-[280px] h-[280px]) */}
                     <img
                       src={isHovered ? skin.gifImg : skin.staticImg}
                       alt={skin.name}
-                      className="w-[180px] h-[180px] object-contain drop-shadow-xl [image-rendering:pixelated]"
+                      className="w-[280px] h-[280px] object-contain drop-shadow-xl [image-rendering:pixelated]"
                     />
 
-                    {/* Oval Base Tag */}
-                    <div className="w-56 h-10 mx-auto mt-2 rounded-[100%] bg-gradient-to-b from-[#D6CFCE] via-[#B89A8E] to-[#8A6B5D] shadow-md border-t border-white/80 flex items-center justify-center">
-                      <span className="text-xs font-mono font-bold text-[#FAF7F2] uppercase tracking-widest drop-shadow-xs">
+                    {/* SOFT REALISTIC GROUND CONTACT SHADOW DIRECTLY UNDER FEET */}
+                    <div className="w-36 h-3 bg-black/10 rounded-[100%] blur-[2px] mx-auto mt-[-10px]" />
+
+                    {/* CLEAN TYPOGRAPHY & SELECTION BADGE UNDERNEATH */}
+                    <div className="flex items-center gap-1.5 mt-4">
+                      {selected && (
+                        <div className="w-4 h-4 rounded-full bg-[#3D312A] text-white flex items-center justify-center shadow-xs">
+                          <Check className="w-2.5 h-2.5 text-amber-200" />
+                        </div>
+                      )}
+                      <span className={`text-sm font-bold tracking-widest uppercase transition-colors ${
+                        selected ? 'text-[#3D312A]' : 'text-[#8A6B5D]'
+                      }`}>
                         {skin.name}
                       </span>
                     </div>
@@ -283,7 +286,7 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
             </div>
 
             {/* DYNAMIC STEP-SPECIFIC ACTION BUTTON */}
-            <div className="mt-6 flex flex-col items-center gap-2">
+            <div className="mt-8 flex flex-col items-center gap-2">
               <button
                 type="button"
                 onClick={handleAdvanceNextStep}
