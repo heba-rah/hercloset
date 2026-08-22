@@ -116,11 +116,12 @@ export const Header: React.FC<HeaderProps> = ({
                 )}
               </div>
             ) : (
+              /* RESTYLED SIGN IN / REGISTER BUTTON MATCHING DARK ESPRESSO BANNER TONE */
               <button
                 onClick={onOpenAuth}
-                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#8A6B5D] hover:bg-[#4B3F38] text-white font-sans text-xs font-bold shadow-md transition-all"
+                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#181311] hover:bg-[#241D1A] text-[#FAF7F2] border border-[#4B3F38]/60 shadow-sm transition-all duration-200 font-sans text-xs font-semibold cursor-pointer"
               >
-                <LogIn className="w-4 h-4" />
+                <LogIn className="w-4 h-4 text-[#B89A8E]" />
                 <span>Sign In / Register</span>
               </button>
             )}
