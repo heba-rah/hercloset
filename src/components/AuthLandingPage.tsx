@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Sparkles, ShieldCheck, ArrowRight, User, Mail, Lock, Check, Store, Scissors, EyeOff, Layers, LogIn, UserPlus, Lightbulb } from 'lucide-react';
+import { ShieldCheck, ArrowRight, User, Mail, Lock, Check, Store, Scissors, EyeOff, Layers, LogIn, UserPlus, Lightbulb } from 'lucide-react';
 import { UserAccount, ModestyProfile, Neckline, SleeveLength, Hemline } from '@/types/product';
 
 interface AuthLandingPageProps {
@@ -150,8 +150,8 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#0D0B0A] font-sans selection:bg-[#B89A8E] selection:text-white overflow-hidden p-4">
       
-      {/* 3D CLOSET STAGE CONTAINER */}
-      <div className="relative w-full max-w-5xl h-[650px] overflow-hidden rounded-3xl border border-[#4B3F38]/40 shadow-2xl flex flex-col items-center justify-start bg-[#070605] [perspective:1200px]">
+      {/* 3D CLOSET BROAD STAGE CONTAINER */}
+      <div className="relative w-full max-w-5xl h-[660px] overflow-hidden rounded-3xl border border-[#4B3F38]/40 shadow-2xl flex flex-col items-center justify-start bg-[#070605] [perspective:1200px] p-6 md:p-10">
         
         {/* 1. LEFT CLOSET DOOR PANEL */}
         <div className={`absolute top-0 left-0 w-1/2 h-full bg-[#1C1613] border-r-2 border-[#8A6B5D]/40 z-30 origin-left transition-transform duration-1000 ease-out shadow-2xl ${
@@ -192,7 +192,7 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
           </div>
 
           {/* Spotlight Glow Effect Cone */}
-          <div className={`absolute top-16 w-[550px] h-96 bg-gradient-to-b from-amber-200/20 via-amber-400/10 to-transparent blur-3xl rounded-full pointer-events-none transition-opacity duration-700 ${
+          <div className={`absolute top-16 w-[600px] h-96 bg-gradient-to-b from-amber-200/20 via-amber-400/10 to-transparent blur-3xl rounded-full pointer-events-none transition-opacity duration-700 ${
             introStage === 'flicker' || introStage === 'ready' || introStage === 'entered' ? 'opacity-100' : 'opacity-0'
           }`} />
         </div>
@@ -205,9 +205,9 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
         <div className="relative z-20 w-full flex-1 flex items-center justify-center px-4 overflow-hidden">
           
           {/* 
-            PANEL A: LANDING HERO CONTENT (HERCLOSET LOGO, SLOGAN & ENTER BUTTON)
+            PANEL A: LANDING HERO CONTENT (LARGE ENLARGED HERCLOSET TYPOGRAPHY & SLEEK ENTER PILL)
           */}
-          <div className={`w-full max-w-lg flex flex-col items-center justify-center text-center transition-all duration-700 ease-in-out ${
+          <div className={`w-full max-w-2xl flex flex-col items-center justify-center text-center transition-all duration-700 ease-in-out ${
             introStage === 'entered'
               ? '-translate-x-full opacity-0 pointer-events-none absolute'
               : introStage === 'flicker' || introStage === 'ready'
@@ -215,19 +215,17 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
                 : 'translate-x-0 opacity-0 relative pointer-events-none'
           }`}>
             
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#8A6B5D]/20 border border-[#8A6B5D]/40 text-[#B89A8E] text-xs font-mono mb-4">
-              <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-              <span>AI Vision Modesty Search</span>
-            </div>
-
-            <h1 className="font-serif italic font-bold text-5xl md:text-6xl tracking-tight text-[#FAF7F2] drop-shadow-[0_4px_25px_rgba(251,191,36,0.3)]">
+            {/* ENLARGED HERCLOSET HEADING */}
+            <h1 className="text-6xl md:text-8xl font-serif italic font-bold text-[#FAF7F2] tracking-tight drop-shadow-[0_6px_30px_rgba(251,191,36,0.35)] mb-3">
               hercloset
             </h1>
             
+            {/* SLOGAN TEXT */}
             <p className="font-serif italic text-sm md:text-base text-[#D6CFCE]/80 tracking-wide text-center uppercase mt-3">
               Fashion curated for your coverage.
             </p>
 
+            {/* REFINED SLEEK ENTER GLOW PILL BUTTON WITH RIGHT ARROW */}
             <div className={`mt-8 transition-all duration-700 ${
               introStage === 'ready'
                 ? 'opacity-100 translate-y-0 pointer-events-auto'
@@ -235,7 +233,7 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
             }`}>
               <button
                 onClick={() => setIntroStage('entered')}
-                className="group relative px-10 py-3.5 rounded-2xl bg-gradient-to-r from-[#8A6B5D] via-[#B89A8E] to-[#8A6B5D] hover:from-[#6e5346] hover:to-[#6e5346] text-[#FAF7F2] font-serif font-bold text-sm tracking-widest uppercase shadow-[0_0_35px_rgba(138,107,93,0.7)] transition-all hover:scale-105 active:scale-95 flex items-center gap-2.5 cursor-pointer"
+                className="px-8 py-3.5 rounded-full bg-[#8A6B5D]/80 hover:bg-[#8A6B5D] text-[#FAF7F2] text-sm md:text-base font-semibold tracking-widest uppercase border border-[#FAF7F2]/20 backdrop-blur-md shadow-[0_0_25px_rgba(234,179,8,0.25)] hover:shadow-[0_0_35px_rgba(234,179,8,0.4)] transition-all duration-300 flex items-center gap-3 mx-auto mt-8 cursor-pointer active:scale-95 group"
               >
                 <span>ENTER</span>
                 <ArrowRight className="w-4 h-4 text-amber-200 group-hover:translate-x-1 transition-transform" />
@@ -246,7 +244,6 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
 
           {/* 
             PANEL B: STREAMLINED EXPANDED AUTH FORM CONTAINER
-            w-full max-w-lg md:max-w-xl p-8 md:p-10 rounded-3xl bg-[#1A1614]/90 border border-[#8A6B5D]/30 backdrop-blur-md shadow-2xl overflow-hidden
           */}
           <div className={`w-full max-w-lg md:max-w-xl mx-auto p-8 md:p-10 rounded-3xl bg-[#1A1614]/90 border border-[#8A6B5D]/30 backdrop-blur-md shadow-2xl overflow-hidden text-[#FAF7F2] transition-all duration-700 ease-in-out max-h-[520px] overflow-y-auto ${
             introStage === 'entered'
@@ -254,7 +251,7 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
               : 'translate-x-full opacity-0 pointer-events-none absolute'
           }`}>
             
-            {/* STREAMLINED BORDERLESS TOGGLE TABS (NO NESTED EXTRA CARD) */}
+            {/* STREAMLINED BORDERLESS TOGGLE TABS */}
             {step === 'credentials' && (
               <div className="flex justify-center gap-8 mb-6 border-b border-[#8A6B5D]/20 pb-3">
                 <button

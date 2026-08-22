@@ -378,11 +378,13 @@ export default function Home() {
         </div>
       )}
 
-      {/* Floating Aesthetic Woven Laundry Hamper Button */}
-      <HamperButton
-        itemCount={hamper.length}
-        onClick={() => setIsHamperOpen(true)}
-      />
+      {/* Floating Aesthetic Woven Laundry Hamper Button (Hidden on Landing Page) */}
+      {!showAuthLandingPage && (
+        <HamperButton
+          itemCount={hamper.length}
+          onClick={() => setIsHamperOpen(true)}
+        />
+      )}
 
       {/* Hamper Drawer */}
       <HamperDrawer
