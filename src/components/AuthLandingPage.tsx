@@ -49,9 +49,10 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
   const [profile, setProfile] = useState<ModestyProfile>(DEFAULT_PROFILE);
 
   useEffect(() => {
+    // Wait for the wardrobe clothes parting animation to finish sliding away (2.5s) before revealing logo & text
     const timer = setTimeout(() => {
       setIsMounted(true);
-    }, 50);
+    }, 2500);
     return () => clearTimeout(timer);
   }, []);
 
