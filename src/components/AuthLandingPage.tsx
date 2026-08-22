@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowRight, User, Mail, Lock, LogIn, UserPlus } from 'lucide-react';
 import { UserAccount, ModestyProfile } from '@/types/product';
 import { PartingClothesReveal } from '@/components/PartingClothesReveal';
@@ -29,6 +29,9 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
   onCompleteAuth,
   onSkipGuest
 }) => {
+  // Page Load Entrance Transition State
+  const [isMounted, setIsMounted] = useState<boolean>(false);
+
   // Intro Panel Stage: 'hero' | 'entered'
   const [panelState, setPanelState] = useState<'hero' | 'entered'>('hero');
   
@@ -44,6 +47,13 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
 
   // Modesty Profile State
   const [profile, setProfile] = useState<ModestyProfile>(DEFAULT_PROFILE);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsMounted(true);
+    }, 50);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleCredentialSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -127,13 +137,13 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#FAF7F2] via-[#F2EDE6] to-[#E5DCD3] pointer-events-none" />
 
       {/* CLEAN LINEN STAGE CONTAINER */}
-      <div className="relative w-full max-w-5xl h-[680px] overflow-hidden flex flex-col items-center justify-center bg-transparent p-4 md:p-8">
+      <div className="relative w-full max-w-5xl min-h-screen flex flex-col items-center justify-center bg-transparent p-6 text-center">
         
         {/* SLIDING PANELS CONTAINER */}
         <div className="relative z-20 w-full flex-1 flex items-center justify-center px-2 overflow-hidden">
           
           {/* 
-            PANEL A: LANDING HERO CONTENT
+            PANEL A: LANDING HERO CONTENT WITH SMOOTH PAGE-LOAD ENTRANCE TRANSITION
           */}
           <div className={`w-full max-w-3xl flex flex-col items-center justify-center text-center transition-all duration-700 ease-in-out ${
             panelState === 'entered'
@@ -141,15 +151,19 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
               : 'translate-x-0 opacity-100 relative pointer-events-auto'
           }`}>
             
-            {/* LARGE CENTERED HANGER LOGO EMBLEM */}
+            {/* SUBSTANTIALLY ENLARGED HANGER LOGO EMBLEM WITH SMOOTH ENTRANCE */}
             <img
               src="/logo/logo.png"
               alt="hercloset logo"
-              className="w-24 h-24 md:w-32 md:h-32 object-contain mb-4 drop-shadow-sm mx-auto"
+              className={`w-36 h-36 md:w-52 md:h-52 object-contain mb-6 drop-shadow-sm mx-auto transition-all duration-1000 ease-out transform ${
+                isMounted ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-6 scale-95'
+              }`}
             />
 
-            {/* DUAL-COLOR HERCLOSET WORDMARK */}
-            <h1 className="flex items-baseline justify-center tracking-tight mb-2">
+            {/* DUAL-COLOR HERCLOSET WORDMARK WITH STAGGERED FADE-IN */}
+            <h1 className={`flex items-baseline justify-center tracking-tight mb-2 transition-all duration-1000 ease-out delay-150 transform ${
+              isMounted ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-6 scale-95'
+            }`}>
               <span className="font-serif italic font-normal text-5xl md:text-7xl text-[#7A5C4D]">
                 her
               </span>
@@ -158,16 +172,20 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
               </span>
             </h1>
             
-            {/* SUBTITLE */}
-            <p className="text-xs md:text-sm tracking-[0.25em] text-[#8A6B5D] font-sans font-semibold uppercase mt-3 mb-8 text-center">
+            {/* SUBTITLE WITH STAGGERED DELAY */}
+            <p className={`text-xs md:text-sm tracking-[0.25em] text-[#8A6B5D] font-sans font-semibold uppercase mt-3 mb-8 text-center transition-all duration-1000 ease-out delay-300 transform ${
+              isMounted ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-6 scale-95'
+            }`}>
               FASHION CURATED FOR YOUR COVERAGE.
             </p>
 
-            {/* REFINED ENTER BUTTON */}
-            <div>
+            {/* REFINED ENTER BUTTON WITH STAGGERED DELAY */}
+            <div className={`transition-all duration-1000 ease-out delay-500 transform ${
+              isMounted ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-6 scale-95'
+            }`}>
               <button
                 onClick={() => setPanelState('entered')}
-                className="bg-[#7A5C4D] hover:bg-[#684C3F] text-[#FAF7F2] px-10 py-3 rounded-full text-sm font-semibold tracking-widest uppercase shadow-md transition-all duration-300 flex items-center gap-3 mx-auto cursor-pointer active:scale-95 group"
+                className="bg-[#7A5C4D] hover:bg-[#684C3F] text-[#FAF7F2] px-10 py-3.5 rounded-full text-sm font-semibold tracking-widest uppercase shadow-md hover:shadow-xl transition-all duration-300 flex items-center gap-3 mx-auto cursor-pointer active:scale-95 group hover:scale-105"
               >
                 <span>ENTER</span>
                 <ArrowRight className="w-4 h-4 text-amber-200 group-hover:translate-x-1 transition-transform" />
@@ -193,149 +211,150 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
                   setAuthMode('register');
                   setErrorMsg('');
                 }}
-                className={`transition-colors flex items-center gap-2 text-sm cursor-pointer ${
+                className={`text-sm font-bold pb-2 transition-all cursor-pointer ${
                   authMode === 'register'
-                    ? 'text-[#3D312A] font-serif font-bold border-b-2 border-[#3D312A] pb-3 -mb-3.5'
-                    : 'text-[#8A6B5D]/70 hover:text-[#3D312A] font-sans'
+                    ? 'text-[#3D312A] border-b-2 border-[#3D312A]'
+                    : 'text-[#8A6B5D] hover:text-[#3D312A]'
                 }`}
               >
-                <UserPlus className="w-4 h-4 text-[#8A6B5D]" />
-                <span>Register</span>
+                Create Account
               </button>
-
               <button
                 type="button"
                 onClick={() => {
                   setAuthMode('login');
                   setErrorMsg('');
                 }}
-                className={`transition-colors flex items-center gap-2 text-sm cursor-pointer ${
+                className={`text-sm font-bold pb-2 transition-all cursor-pointer ${
                   authMode === 'login'
-                    ? 'text-[#3D312A] font-serif font-bold border-b-2 border-[#3D312A] pb-3 -mb-3.5'
-                    : 'text-[#8A6B5D]/70 hover:text-[#3D312A] font-sans'
+                    ? 'text-[#3D312A] border-b-2 border-[#3D312A]'
+                    : 'text-[#8A6B5D] hover:text-[#3D312A]'
                 }`}
               >
-                <LogIn className="w-4 h-4 text-[#8A6B5D]" />
-                <span>Log In</span>
+                Sign In
               </button>
             </div>
 
-            {/* STEP 1: CREDENTIALS (NAME & GMAIL) */}
+            {/* Error Feedback Message */}
+            {errorMsg && (
+              <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 text-center animate-in fade-in">
+                {errorMsg}
+              </div>
+            )}
+
+            {/* GOOGLE SIGN IN CTA BUTTON */}
+            <button
+              type="button"
+              onClick={handleGoogleSignIn}
+              className="w-full py-3 px-4 rounded-2xl bg-white border border-[#D6CFCE] text-[#3D312A] font-bold text-xs shadow-sm hover:bg-[#FAF7F2] transition-all flex items-center justify-center gap-3 mb-4 cursor-pointer"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z" />
+                <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.27v3.14C3.25 21.27 7.31 24 12 24z" />
+                <path fill="#FBBC05" d="M5.28 14.24c-.25-.72-.38-1.49-.38-2.24s.13-1.52.38-2.24V6.62H1.27C.46 8.23 0 10.06 0 12s.46 3.77 1.27 5.38l4.01-3.14z" />
+                <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.25 2.73 1.27 6.62l4.01 3.14c.95-2.85 3.6-4.96 6.72-4.96z" />
+              </svg>
+              <span>Continue with Google</span>
+            </button>
+
+            <div className="flex items-center gap-3 my-4">
+              <div className="flex-1 h-[1px] bg-[#D6CFCE]" />
+              <span className="text-[10px] font-bold text-[#8A6B5D] uppercase tracking-wider">or email</span>
+              <div className="flex-1 h-[1px] bg-[#D6CFCE]" />
+            </div>
+
+            {/* CREDENTIALS FORM */}
             <form onSubmit={handleCredentialSubmit} className="space-y-4">
               
-              {errorMsg && (
-                <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 text-center">
-                  {errorMsg}
-                </div>
-              )}
-
-              {/* Quick Google Sign In Button */}
-              <button
-                type="button"
-                onClick={handleGoogleSignIn}
-                className="w-full py-3.5 px-4 rounded-xl bg-white hover:bg-[#F2EDE6] text-[#3D312A] border border-[#D6CFCE] text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer"
-              >
-                <svg className="w-4 h-4" viewBox="0 0 24 24">
-                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
-                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
-                </svg>
-                <span>Continue with Google (Gmail)</span>
-              </button>
-
-              <div className="relative flex py-1 items-center">
-                <div className="flex-grow border-t border-[#D6CFCE]"></div>
-                <span className="flex-shrink mx-3 text-[10px] text-[#8A6B5D] uppercase font-bold tracking-wider">
-                  Or sign in with email
-                </span>
-                <div className="flex-grow border-t border-[#D6CFCE]"></div>
-              </div>
-
-              {/* Name Input (Register Mode Only) */}
               {authMode === 'register' && (
                 <div>
-                  <label className="text-xs font-bold text-[#8A6B5D] uppercase tracking-wider block mb-1">
+                  <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider block mb-1">
                     Full Name
                   </label>
                   <div className="relative">
-                    <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8A6B5D]" />
+                    <User className="w-4 h-4 text-[#8A6B5D] absolute left-3.5 top-1/2 -translate-y-1/2" />
                     <input
                       type="text"
-                      required
-                      placeholder="Amina Syed"
+                      placeholder="e.g. Amina Syed"
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
-                      className="py-3.5 px-4 pl-10 rounded-xl bg-white border border-[#D6CFCE] text-[#3D312A] placeholder-[#8A6B5D]/60 focus:border-[#8A6B5D] focus:outline-none w-full text-sm font-sans shadow-inner"
+                      className="w-full pl-10 pr-4 py-3 rounded-2xl bg-white border border-[#D6CFCE] text-xs font-semibold text-[#3D312A] focus:outline-none focus:border-[#3D312A]"
                     />
                   </div>
                 </div>
               )}
 
-              {/* Gmail Input */}
               <div>
-                <label className="text-xs font-bold text-[#8A6B5D] uppercase tracking-wider block mb-1">
-                  Gmail / Email Address
+                <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider block mb-1">
+                  Email Address
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8A6B5D]" />
+                  <Mail className="w-4 h-4 text-[#8A6B5D] absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
                     type="email"
-                    required
-                    placeholder="amina@gmail.com"
+                    placeholder="you@gmail.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="py-3.5 px-4 pl-10 rounded-xl bg-white border border-[#D6CFCE] text-[#3D312A] placeholder-[#8A6B5D]/60 focus:border-[#8A6B5D] focus:outline-none w-full text-sm font-sans shadow-inner"
+                    className="w-full pl-10 pr-4 py-3 rounded-2xl bg-white border border-[#D6CFCE] text-xs font-semibold text-[#3D312A] focus:outline-none focus:border-[#3D312A]"
                   />
                 </div>
               </div>
 
-              {/* Password Input */}
               <div>
-                <label className="text-xs font-bold text-[#8A6B5D] uppercase tracking-wider block mb-1">
+                <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider block mb-1">
                   Password
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8A6B5D]" />
+                  <Lock className="w-4 h-4 text-[#8A6B5D] absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
                     type="password"
-                    required
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="py-3.5 px-4 pl-10 rounded-xl bg-white border border-[#D6CFCE] text-[#3D312A] placeholder-[#8A6B5D]/60 focus:border-[#8A6B5D] focus:outline-none w-full text-sm font-sans shadow-inner"
+                    className="w-full pl-10 pr-4 py-3 rounded-2xl bg-white border border-[#D6CFCE] text-xs font-semibold text-[#3D312A] focus:outline-none focus:border-[#3D312A]"
                   />
                 </div>
               </div>
 
-              {/* Primary CTA Submit Button */}
+              {/* ACTION BUTTON */}
               <button
                 type="submit"
-                className="w-full py-3.5 rounded-xl bg-[#3D312A] hover:bg-[#2A211B] text-[#FAF7F2] font-semibold text-sm transition-all shadow-md mt-2 flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-3.5 px-4 rounded-2xl bg-[#3D312A] hover:bg-[#2A211B] text-[#FAF7F2] font-bold text-xs shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 mt-4"
               >
-                <span>{authMode === 'register' ? 'Set Up Modesty Profile' : 'Sign In & Explore Feed'}</span>
-                <ArrowRight className="w-4 h-4" />
+                {authMode === 'register' ? (
+                  <>
+                    <UserPlus className="w-4 h-4 text-amber-200" />
+                    <span>Create Account &amp; Set Up Modesty Profile →</span>
+                  </>
+                ) : (
+                  <>
+                    <LogIn className="w-4 h-4 text-amber-200" />
+                    <span>Sign In &amp; Enter Closet →</span>
+                  </>
+                )}
               </button>
 
-              {onSkipGuest && (
-                <div className="text-center pt-2">
-                  <button
-                    type="button"
-                    onClick={onSkipGuest}
-                    className="text-xs font-semibold text-[#8A6B5D] hover:underline cursor-pointer"
-                  >
-                    Continue as Guest Preview &rarr;
-                  </button>
-                </div>
-              )}
-
             </form>
+
+            {/* GUEST SKIP BUTTON */}
+            {onSkipGuest && (
+              <div className="mt-4 text-center">
+                <button
+                  type="button"
+                  onClick={onSkipGuest}
+                  className="text-xs font-semibold text-[#8A6B5D] hover:text-[#3D312A] underline cursor-pointer"
+                >
+                  Continue as Guest
+                </button>
+              </div>
+            )}
 
           </div>
 
         </div>
 
       </div>
+
     </div>
   );
 };
