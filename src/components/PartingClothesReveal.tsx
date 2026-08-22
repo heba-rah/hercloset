@@ -1,22 +1,21 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Shirt } from 'lucide-react';
 
 export const PartingClothesReveal: React.FC = () => {
   const [isParted, setIsParted] = useState<boolean>(false);
   const [isDone, setIsDone] = useState<boolean>(false);
 
   useEffect(() => {
-    // Start parting the clothes rack after 250ms
+    // 1. Initial 600ms pause so the user registers the dense closet rack
     const timer1 = setTimeout(() => {
       setIsParted(true);
-    }, 250);
+    }, 600);
 
-    // Unmount overlay after animation completes (1500ms)
+    // 2. Fade out and unmount overlay after 2.6s (600ms pause + 2.0s slide)
     const timer2 = setTimeout(() => {
       setIsDone(true);
-    }, 1500);
+    }, 2800);
 
     return () => {
       clearTimeout(timer1);
@@ -26,78 +25,104 @@ export const PartingClothesReveal: React.FC = () => {
 
   if (isDone) return null;
 
+  // Garment Data for 20 dense overlapping items
+  const leftGarments = [
+    { color: '#2A201C', height: 'h-[580px]', width: 'w-36', name: 'Espresso Abaya', offset: 'ml-0' },
+    { color: '#B38E65', height: 'h-[520px]', width: 'w-32', name: 'Camel Trench Coat', offset: '-ml-8' },
+    { color: '#5A5D4A', height: 'h-[490px]', width: 'w-30', name: 'Olive Duster', offset: '-ml-8' },
+    { color: '#332E2C', height: 'h-[560px]', width: 'w-36', name: 'Charcoal Maxi Dress', offset: '-ml-8' },
+    { color: '#E2D9CE', height: 'h-[450px]', width: 'w-28', name: 'Cream Linen Cardigan', offset: '-ml-8' },
+    { color: '#2A201C', height: 'h-[570px]', width: 'w-36', name: 'Dark Velvet Coat', offset: '-ml-8' },
+    { color: '#B38E65', height: 'h-[510px]', width: 'w-32', name: 'Mocha Pleated Dress', offset: '-ml-8' },
+    { color: '#5A5D4A', height: 'h-[480px]', width: 'w-30', name: 'Sage Overcoat', offset: '-ml-8' },
+    { color: '#332E2C', height: 'h-[550px]', width: 'w-34', name: 'Midnight Maxi', offset: '-ml-8' },
+    { color: '#E2D9CE', height: 'h-[460px]', width: 'w-28', name: 'Ivory Knit Top', offset: '-ml-8' },
+  ];
+
+  const rightGarments = [
+    { color: '#E2D9CE', height: 'h-[460px]', width: 'w-28', name: 'Ivory Knit Top', offset: 'mr-0' },
+    { color: '#332E2C', height: 'h-[550px]', width: 'w-34', name: 'Midnight Maxi', offset: '-mr-8' },
+    { color: '#5A5D4A', height: 'h-[480px]', width: 'w-30', name: 'Sage Overcoat', offset: '-mr-8' },
+    { color: '#B38E65', height: 'h-[510px]', width: 'w-32', name: 'Mocha Pleated Dress', offset: '-mr-8' },
+    { color: '#2A201C', height: 'h-[570px]', width: 'w-36', name: 'Dark Velvet Coat', offset: '-mr-8' },
+    { color: '#E2D9CE', height: 'h-[450px]', width: 'w-28', name: 'Cream Linen Cardigan', offset: '-mr-8' },
+    { color: '#332E2C', height: 'h-[560px]', width: 'w-36', name: 'Charcoal Maxi Dress', offset: '-mr-8' },
+    { color: '#5A5D4A', height: 'h-[490px]', width: 'w-30', name: 'Olive Duster', offset: '-mr-8' },
+    { color: '#B38E65', height: 'h-[520px]', width: 'w-32', name: 'Camel Trench Coat', offset: '-mr-8' },
+    { color: '#2A201C', height: 'h-[580px]', width: 'w-36', name: 'Espresso Abaya', offset: '-mr-8' },
+  ];
+
   return (
-    <div className="fixed inset-0 z-40 pointer-events-none overflow-hidden font-sans">
+    <div className={`fixed inset-0 z-40 pointer-events-none overflow-hidden font-sans transition-opacity duration-700 ${
+      isParted ? 'opacity-90' : 'opacity-100'
+    }`}>
       
       {/* WOODEN CLOSET RACK BAR AT TOP */}
-      <div className="absolute top-0 left-0 right-0 h-3 bg-[#4B3F38] shadow-md z-10 flex items-center justify-around">
-        {Array.from({ length: 16 }).map((_, i) => (
-          <div key={i} className="w-1.5 h-3 bg-[#8A6B5D] rounded-b-sm opacity-60" />
+      <div className="absolute top-0 left-0 right-0 h-4 bg-[#4B3F38] shadow-md z-20 flex items-center justify-around">
+        {Array.from({ length: 32 }).map((_, i) => (
+          <div key={i} className="w-1.5 h-3 bg-[#8A6B5D] rounded-b-xs opacity-70" />
         ))}
       </div>
 
       {/* 
-        LEFT CLUSTER OF HANGING GARMENTS (Trench Coat, Abaya, Maxi Dress, Blouses)
+        LEFT CLUSTER (10 OVERLAPPING GARMENTS CONCEALED AT CENTER)
       */}
       <div
-        className={`absolute top-0 left-0 w-1/2 h-full flex items-start justify-end pr-4 transition-transform duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        className={`absolute top-0 left-0 w-1/2 h-full flex items-start justify-end pr-2 transition-all duration-[2000ms] ease-[cubic-bezier(0.25,1,0.35,1)] ${
           isParted
-            ? '-translate-x-[110%] rotate-[-4deg]'
+            ? '-translate-x-[125%] rotate-[-3deg]'
             : 'translate-x-0 rotate-0'
         }`}
       >
-        <div className="flex items-start gap-1 pt-3 opacity-95">
-          {/* Garment 1: Long Mocha Trench Coat */}
-          <div className="w-32 h-[520px] bg-[#3D312A] rounded-b-3xl shadow-2xl relative flex flex-col items-center p-2 border-t-4 border-[#8A6B5D]">
-            <div className="w-8 h-4 border-t-2 border-[#D6CFCE] rounded-t-full mb-1" />
-            <div className="w-full h-12 bg-[#2A211B] rounded-md mb-2 opacity-80" />
-            <div className="w-full flex-1 bg-gradient-to-b from-[#3D312A] via-[#2A211B] to-[#1C1613] rounded-b-2xl" />
-          </div>
-
-          {/* Garment 2: Flowing Maxi Abaya */}
-          <div className="w-36 h-[580px] bg-[#2A211B] rounded-b-3xl shadow-2xl relative flex flex-col items-center p-2 border-t-4 border-[#8A6B5D] -ml-6 z-10">
-            <div className="w-8 h-4 border-t-2 border-[#D6CFCE] rounded-t-full mb-1" />
-            <div className="w-full h-16 bg-[#1C1613] rounded-md mb-2 opacity-90" />
-            <div className="w-full flex-1 bg-gradient-to-b from-[#2A211B] via-[#1C1613] to-[#140F0D] rounded-b-2xl" />
-          </div>
-
-          {/* Garment 3: Warm Taupe Pleated Blouse */}
-          <div className="w-28 h-[440px] bg-[#8A6B5D] rounded-b-3xl shadow-2xl relative flex flex-col items-center p-2 border-t-4 border-[#B89A8E] -ml-6">
-            <div className="w-8 h-4 border-t-2 border-[#FAF7F2] rounded-t-full mb-1" />
-            <div className="w-full flex-1 bg-gradient-to-b from-[#8A6B5D] to-[#6E5D53] rounded-b-2xl" />
-          </div>
+        <div className="flex items-start pt-3">
+          {leftGarments.map((g, idx) => (
+            <div
+              key={idx}
+              className={`${g.width} ${g.height} ${g.offset} rounded-b-3xl shadow-2xl relative flex flex-col items-center p-2 border-t-4 border-[#8A6B5D] shrink-0 transition-transform duration-500`}
+              style={{
+                backgroundColor: g.color,
+                zIndex: idx + 1
+              }}
+            >
+              {/* Wooden Hanger Neck */}
+              <div className="w-8 h-4 border-t-2 border-[#E2D9CE]/70 rounded-t-full mb-1" />
+              {/* Collar Accent */}
+              <div className="w-full h-10 bg-black/20 rounded-md mb-2" />
+              {/* Garment Body Gradient */}
+              <div className="w-full flex-1 bg-gradient-to-b from-transparent via-black/10 to-black/40 rounded-b-2xl" />
+            </div>
+          ))}
         </div>
       </div>
 
       {/* 
-        RIGHT CLUSTER OF HANGING GARMENTS (Floor Dress, Duster Coat, Layered Linen)
+        RIGHT CLUSTER (10 OVERLAPPING GARMENTS CONCEALED AT CENTER)
       */}
       <div
-        className={`absolute top-0 right-0 w-1/2 h-full flex items-start justify-start pl-4 transition-transform duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        className={`absolute top-0 right-0 w-1/2 h-full flex items-start justify-start pl-2 transition-all duration-[2000ms] ease-[cubic-bezier(0.25,1,0.35,1)] ${
           isParted
-            ? 'translate-x-[110%] rotate-[4deg]'
+            ? 'translate-x-[125%] rotate-[3deg]'
             : 'translate-x-0 rotate-0'
         }`}
       >
-        <div className="flex items-start gap-1 pt-3 opacity-95">
-          {/* Garment 4: Cream Linen Layered Shirt */}
-          <div className="w-30 h-[460px] bg-[#A89F91] rounded-b-3xl shadow-2xl relative flex flex-col items-center p-2 border-t-4 border-[#C4B5A5]">
-            <div className="w-8 h-4 border-t-2 border-[#FAF7F2] rounded-t-full mb-1" />
-            <div className="w-full flex-1 bg-gradient-to-b from-[#A89F91] to-[#8A6B5D] rounded-b-2xl" />
-          </div>
-
-          {/* Garment 5: Deep Espresso Duster Coat */}
-          <div className="w-36 h-[590px] bg-[#1C1613] rounded-b-3xl shadow-2xl relative flex flex-col items-center p-2 border-t-4 border-[#8A6B5D] -ml-6 z-10">
-            <div className="w-8 h-4 border-t-2 border-[#D6CFCE] rounded-t-full mb-1" />
-            <div className="w-full h-16 bg-[#140F0D] rounded-md mb-2 opacity-90" />
-            <div className="w-full flex-1 bg-gradient-to-b from-[#1C1613] via-[#140F0D] to-black rounded-b-2xl" />
-          </div>
-
-          {/* Garment 6: Mocha Pleated Skirt Suit */}
-          <div className="w-32 h-[510px] bg-[#6E5D53] rounded-b-3xl shadow-2xl relative flex flex-col items-center p-2 border-t-4 border-[#8A6B5D] -ml-6">
-            <div className="w-8 h-4 border-t-2 border-[#FAF7F2] rounded-t-full mb-1" />
-            <div className="w-full flex-1 bg-gradient-to-b from-[#6E5D53] to-[#3D312A] rounded-b-2xl" />
-          </div>
+        <div className="flex items-start pt-3">
+          {rightGarments.map((g, idx) => (
+            <div
+              key={idx}
+              className={`${g.width} ${g.height} ${g.offset} rounded-b-3xl shadow-2xl relative flex flex-col items-center p-2 border-t-4 border-[#8A6B5D] shrink-0 transition-transform duration-500`}
+              style={{
+                backgroundColor: g.color,
+                zIndex: rightGarments.length - idx
+              }}
+            >
+              {/* Wooden Hanger Neck */}
+              <div className="w-8 h-4 border-t-2 border-[#E2D9CE]/70 rounded-t-full mb-1" />
+              {/* Collar Accent */}
+              <div className="w-full h-10 bg-black/20 rounded-md mb-2" />
+              {/* Garment Body Gradient */}
+              <div className="w-full flex-1 bg-gradient-to-b from-transparent via-black/10 to-black/40 rounded-b-2xl" />
+            </div>
+          ))}
         </div>
       </div>
 
