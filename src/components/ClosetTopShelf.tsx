@@ -37,28 +37,28 @@ export const ClosetTopShelf: React.FC<ClosetTopShelfProps> = ({
     { id: 'ardene', label: 'Ardene' },
   ];
 
-  // Dynamic Color Coding based on score
+  // Dynamic Color Coding based on score for Dark Cinematic Aesthetics
   const getGaugeColor = (score: number) => {
     if (score >= 80) {
       return {
-        stroke: '#059669',
-        text: 'text-[#059669]',
-        badgeBg: 'bg-emerald-50 border-emerald-300 text-emerald-800',
-        label: 'High Modesty'
+        stroke: '#10B981',
+        text: 'text-emerald-300 font-bold text-base md:text-lg',
+        badgeBg: 'bg-emerald-950/80 text-emerald-300 border border-emerald-700/50 px-2.5 py-0.5 rounded-full text-xs font-bold',
+        label: 'High Coverage'
       };
     }
     if (score >= 60) {
       return {
-        stroke: '#D97706',
-        text: 'text-[#D97706]',
-        badgeBg: 'bg-amber-50 border-amber-300 text-amber-800',
-        label: 'Moderate Modesty'
+        stroke: '#F59E0B',
+        text: 'text-amber-300 font-bold text-base md:text-lg',
+        badgeBg: 'bg-amber-950/80 text-amber-300 border border-amber-700/50 px-2.5 py-0.5 rounded-full text-xs font-bold',
+        label: 'Moderate Coverage'
       };
     }
     return {
-      stroke: '#DC2626',
-      text: 'text-[#DC2626]',
-      badgeBg: 'bg-rose-50 border-rose-300 text-rose-800',
+      stroke: '#FF5A52',
+      text: 'text-[#FF7A66] font-bold text-base md:text-lg',
+      badgeBg: 'bg-[#FF5A52]/20 text-[#FFA494] border border-[#FF5A52]/40 px-2.5 py-0.5 rounded-full text-xs font-medium',
       label: 'Low Modesty'
     };
   };
@@ -71,31 +71,31 @@ export const ClosetTopShelf: React.FC<ClosetTopShelfProps> = ({
   const strokeDashoffset = circumference - (averageMatchScore / 100) * circumference;
 
   return (
-    <div className="w-full bg-[#EAE2D8] border-y-4 border-[#8A6B5D]/40 shadow-[inset_0_6px_12px_rgba(75,63,56,0.15)] py-4 px-4 md:px-8 border-t-[#8A6B5D] border-b-[#4B3F38]/20 my-4">
+    <div className="w-full bg-[#181311] border-b border-[#3A2E28] py-4 px-4 md:px-8 shadow-xl font-sans my-2">
       
       {/* 3-Compartment Layout */}
       <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-6 items-center max-w-[1700px] mx-auto">
         
         {/* LEFT COMPARTMENT — "OCCASION" STORAGE BASKET/BIN */}
-        <div className="bg-[#FAF7F2] rounded-xl border border-[#D6CFCE] p-4 shadow-[0_4px_6px_rgba(75,63,56,0.08),inset_0_2px_4px_rgba(255,255,255,0.8)] flex flex-col items-center">
-          {/* Top Detail: Small Leather/Wood Handle Icon */}
+        <div className="bg-[#241D1A]/90 border border-[#4B3F38]/60 shadow-lg backdrop-blur-md rounded-2xl p-4 text-[#FAF7F2] flex flex-col items-center">
+          {/* Top Detail: Small Handle Accent */}
           <div className="w-8 h-1.5 bg-[#8A6B5D]/60 rounded-full mx-auto mb-2" />
           
           <div className="flex items-center gap-1.5 mb-2">
-            <Tag className="w-3.5 h-3.5 text-[#8A6B5D]" />
-            <h3 className="text-[11px] font-bold tracking-[0.25em] text-[#8A6B5D] uppercase text-center">
+            <Tag className="w-3.5 h-3.5 text-[#B89A8E]" />
+            <h3 className="text-[#D6CFCE] font-sans text-xs tracking-widest uppercase font-semibold text-center">
               OCCASION
             </h3>
           </div>
 
-          {/* Inset Select Box */}
+          {/* Dark Inset Select Box */}
           <select
             value={selectedOccasion}
             onChange={(e) => onSelectOccasion(e.target.value)}
-            className="w-full bg-white border border-[#B89A8E]/60 rounded-lg px-3.5 py-2 text-xs font-bold text-[#4B3F38] cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#8A6B5D] shadow-inner"
+            className="w-full bg-[#181311] border border-[#4B3F38] rounded-xl px-3 py-2 text-xs font-semibold text-[#FAF7F2] cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#8A6B5D] shadow-inner"
           >
             {occasions.map((occ) => (
-              <option key={occ.id} value={occ.id}>
+              <option key={occ.id} value={occ.id} className="bg-[#181311] text-[#FAF7F2]">
                 {occ.label}
               </option>
             ))}
@@ -103,19 +103,21 @@ export const ClosetTopShelf: React.FC<ClosetTopShelfProps> = ({
         </div>
 
         {/* CENTER COMPARTMENT — "LIVE MODESTY GAUGE" */}
-        <div className="bg-[#FAF7F2]/80 border border-[#D6CFCE] rounded-xl p-3 sm:px-6 shadow-sm flex items-center justify-center gap-4">
+        <div className="bg-[#241D1A]/90 border border-[#4B3F38]/60 rounded-2xl p-4 sm:px-6 shadow-lg backdrop-blur-md flex items-center justify-center gap-5 text-[#FAF7F2]">
           
-          {/* Circular SVG Gauge */}
+          {/* Circular SVG Gauge with Dark Track */}
           <div className="relative w-20 h-20 flex items-center justify-center shrink-0">
             <svg className="w-full h-full transform -rotate-90" viewBox="0 0 90 90">
+              {/* Soft Dark Espresso Background Track */}
               <circle
                 cx="45"
                 cy="45"
                 r={radius}
-                className="stroke-[#D6CFCE]/50"
+                className="stroke-[#3A2E28]"
                 strokeWidth="6"
                 fill="transparent"
               />
+              {/* Vibrant Glowing Progress Stroke */}
               <circle
                 cx="45"
                 cy="45"
@@ -132,26 +134,26 @@ export const ClosetTopShelf: React.FC<ClosetTopShelfProps> = ({
 
             {/* Percentage Number Inside Circle */}
             <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-              <span className={`text-lg font-extrabold font-mono ${gaugeTheme.text}`}>
+              <span className={`font-mono ${gaugeTheme.text}`}>
                 {averageMatchScore}%
               </span>
             </div>
           </div>
 
           {/* Focal Text & Label */}
-          <div className="space-y-1">
+          <div className="space-y-1.5">
             <div className="flex items-center gap-1.5">
-              <Sparkles className="w-4 h-4 text-[#8A6B5D]" />
-              <span className="font-serif italic text-lg font-bold text-[#4B3F38]">
+              <Sparkles className="w-4 h-4 text-amber-300" />
+              <span className="text-[#FAF7F2] font-serif italic font-bold text-lg md:text-xl">
                 Modest Match
               </span>
             </div>
 
-            <div className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border ${gaugeTheme.badgeBg}`}>
+            <div className={gaugeTheme.badgeBg}>
               {gaugeTheme.label}
             </div>
 
-            <p className="text-[11px] text-[#8A6B5D] font-semibold">
+            <p className="text-[#A89F91] text-xs font-sans mt-0.5">
               Live score across {totalItemsCount} Canadian items
             </p>
           </div>
@@ -159,25 +161,25 @@ export const ClosetTopShelf: React.FC<ClosetTopShelfProps> = ({
         </div>
 
         {/* RIGHT COMPARTMENT — "STORES" STORAGE BASKET/BIN */}
-        <div className="bg-[#FAF7F2] rounded-xl border border-[#D6CFCE] p-4 shadow-[0_4px_6px_rgba(75,63,56,0.08),inset_0_2px_4px_rgba(255,255,255,0.8)] flex flex-col items-center">
-          {/* Top Detail: Small Leather/Wood Handle Icon */}
+        <div className="bg-[#241D1A]/90 border border-[#4B3F38]/60 shadow-lg backdrop-blur-md rounded-2xl p-4 text-[#FAF7F2] flex flex-col items-center">
+          {/* Top Detail: Small Handle Accent */}
           <div className="w-8 h-1.5 bg-[#8A6B5D]/60 rounded-full mx-auto mb-2" />
 
           <div className="flex items-center gap-1.5 mb-2">
-            <Store className="w-3.5 h-3.5 text-[#8A6B5D]" />
-            <h3 className="text-[11px] font-bold tracking-[0.25em] text-[#8A6B5D] uppercase text-center">
+            <Store className="w-3.5 h-3.5 text-[#B89A8E]" />
+            <h3 className="text-[#D6CFCE] font-sans text-xs tracking-widest uppercase font-semibold text-center">
               STORES
             </h3>
           </div>
 
-          {/* Inset Select Box */}
+          {/* Dark Inset Select Box */}
           <select
             value={selectedStore}
             onChange={(e) => onSelectStore(e.target.value)}
-            className="w-full bg-white border border-[#B89A8E]/60 rounded-lg px-3.5 py-2 text-xs font-bold text-[#4B3F38] cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#8A6B5D] shadow-inner"
+            className="w-full bg-[#181311] border border-[#4B3F38] rounded-xl px-3 py-2 text-xs font-semibold text-[#FAF7F2] cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#8A6B5D] shadow-inner"
           >
             {stores.map((s) => (
-              <option key={s.id} value={s.id}>
+              <option key={s.id} value={s.id} className="bg-[#181311] text-[#FAF7F2]">
                 {s.label}
               </option>
             ))}
