@@ -1,15 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ShieldCheck, RotateCcw, Filter, Check, EyeOff, Layers, Scissors, HeartHandshake, DollarSign, ArrowUpDown, Tag, Info } from 'lucide-react';
+import { ShieldCheck, RotateCcw, Filter, Check, EyeOff, Layers, Scissors, DollarSign, ArrowUpDown, Tag, Info } from 'lucide-react';
 import { ModestyFilterState, Neckline, SleeveLength, Hemline } from '@/types/product';
 
 interface ModestyFiltersProps {
   filters: ModestyFilterState;
   onFilterChange: (updates: Partial<ModestyFilterState>) => void;
   onReset: () => void;
-  onApplyStrictPreset: () => void;
-  onApplySmartPreset: () => void;
   isMobileDrawer?: boolean;
   onCloseMobileDrawer?: () => void;
 }
@@ -18,27 +16,25 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
   filters,
   onFilterChange,
   onReset,
-  onApplyStrictPreset,
-  onApplySmartPreset,
   isMobileDrawer,
   onCloseMobileDrawer
 }) => {
   const [activeTab, setActiveTab] = useState<'modesty' | 'shopping'>('modesty');
 
-  // Exact 4 Setup Categories (No granular redundant options)
+  // Exact 4 Setup Categories
   const necklines: { id: Neckline; label: string; ids: Neckline[] }[] = [
     { id: 'high', label: 'High Neck', ids: ['high'] },
     { id: 'crew', label: 'Crewneck', ids: ['crew'] }
   ];
 
   const sleeveLengths: { id: string; label: string; ids: SleeveLength[] }[] = [
-    { id: 'long', label: 'Long Sleeve', ids: ['wrist'] },
-    { id: 'short', label: 'Short Sleeve', ids: ['elbow', '3/4', 'short'] }
+    { id: 'long', label: 'Long Sleeve', ids: ['wrist', '3/4'] },
+    { id: 'short', label: 'Short Sleeve', ids: ['elbow', 'short'] }
   ];
 
   const hemlines: { id: string; label: string; ids: Hemline[] }[] = [
-    { id: 'skirt', label: 'Maxi Skirt / Dress', ids: ['floor'] },
-    { id: 'pants', label: 'Pants / Trousers', ids: ['ankle'] }
+    { id: 'skirt', label: 'Maxi Skirt / Dress', ids: ['floor', 'ankle'] },
+    { id: 'pants', label: 'Pants / Trousers', ids: ['midi', 'knee'] }
   ];
 
   const categories = [
@@ -62,7 +58,7 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
     } else {
       updated = Array.from(new Set([...updated, ...ids]));
     }
-    onFilterChange({ sleeveLengths: updated.length > 0 ? updated : ['wrist'] });
+    onFilterChange({ sleeveLengths: updated });
   };
 
   const toggleNecklineOption = (ids: Neckline[]) => {
@@ -73,7 +69,7 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
     } else {
       updated = Array.from(new Set([...updated, ...ids]));
     }
-    onFilterChange({ necklines: updated.length > 0 ? updated : ['high'] });
+    onFilterChange({ necklines: updated });
   };
 
   const toggleHemlineOption = (ids: Hemline[]) => {
@@ -84,7 +80,7 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
     } else {
       updated = Array.from(new Set([...updated, ...ids]));
     }
-    onFilterChange({ hemlines: updated.length > 0 ? updated : ['floor'] });
+    onFilterChange({ hemlines: updated });
   };
 
   return (
@@ -143,30 +139,6 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
       {activeTab === 'modesty' && (
         <div className="space-y-5 animate-in fade-in duration-200">
           
-          {/* Quick Presets */}
-          <div>
-            <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider block mb-2">
-              Quick Modesty Presets
-            </label>
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                onClick={onApplyStrictPreset}
-                className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-[#3D312A] hover:bg-[#2A211B] text-white text-xs font-bold transition-all shadow-sm cursor-pointer"
-              >
-                <ShieldCheck className="w-3.5 h-3.5 text-amber-200" />
-                <span>Strict Coverage</span>
-              </button>
-
-              <button
-                onClick={onApplySmartPreset}
-                className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-[#8A6B5D] hover:bg-[#6E5D53] text-white text-xs font-bold transition-all shadow-sm cursor-pointer"
-              >
-                <HeartHandshake className="w-3.5 h-3.5 text-amber-200" />
-                <span>Smart Casual</span>
-              </button>
-            </div>
-          </div>
-
           {/* Hard Constraints Checkboxes */}
           <div className="space-y-2 bg-[#F2EDE6] p-3.5 rounded-xl border border-[#D6CFCE]">
             <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider block mb-1">
@@ -234,7 +206,7 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
             </button>
           </div>
 
-          {/* Sleeve Length Selector (Espresso Active Theme) */}
+          {/* Sleeve Length Selector */}
           <div>
             <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider block mb-2">
               Sleeve Length
@@ -260,7 +232,7 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
             </div>
           </div>
 
-          {/* Neckline Selector (Espresso Active Theme) */}
+          {/* Neckline Selector */}
           <div>
             <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider block mb-2">
               Neckline Preferred
@@ -286,7 +258,7 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
             </div>
           </div>
 
-          {/* Bottoms Selector (Espresso Active Theme) */}
+          {/* Bottoms Selector */}
           <div>
             <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider block mb-2">
               Bottoms Style

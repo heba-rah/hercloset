@@ -1,28 +1,4 @@
-import { Product, ModestyFilterState, CalculatedMatch, Neckline, SleeveLength, Hemline, GarmentFit } from '@/types/product';
-
-const SLEEVE_RANK: Record<SleeveLength, number> = {
-  'wrist': 5,
-  '3/4': 4,
-  'elbow': 3,
-  'short': 2,
-  'sleeveless': 1
-};
-
-const HEMLINE_RANK: Record<Hemline, number> = {
-  'floor': 5,
-  'ankle': 4,
-  'midi': 3,
-  'knee': 2,
-  'mini': 1
-};
-
-const NECKLINE_RANK: Record<Neckline, number> = {
-  'high': 5,
-  'crew': 4,
-  'scoop': 3,
-  'v-neck': 2,
-  'plunge': 1
-};
+import { Product, ModestyFilterState, CalculatedMatch, Neckline, SleeveLength, Hemline } from '@/types/product';
 
 const NON_APPAREL_REGEX = /\b(sock|socks|ring|rings|earring|earrings|necklace|bracelet|jewelry|scrunchie|scrunchies|hair|headband|bag|bags|tote|purse|backpack|wallet|perfume|fragrance|candle|shoe|shoes|slide|slides|sandal|sandals|boot|boots|sneaker|sneakers|gloss|lip|nail|polish)\b/i;
 const APPAREL_KEYWORD_REGEX = /\b(dress|dresses|top|tops|shirt|shirts|pant|pants|trouser|trousers|skirt|skirts|sweater|sweaters|hoodie|hoodies|blazer|blazers|cardigan|cardigans|jacket|jackets|coat|coats|vest|vests|suit|suits|bodysuit|bodysuits|romper|rompers|jumpsuit|jumpsuits|jogger|joggers|sweatpant|sweatpants|jeans|onesie|onesies)\b/i;
@@ -138,131 +114,55 @@ export function filterAndScoreProducts(
       continue;
     }
 
-    // DEMO MODE 1: BROKEN KEYWORD SEARCH
-    if (filters.demoMode === 'broken_keyword') {
-      let naiveScore = audit.modestyScore;
-      if (product.name.toLowerCase().includes('modest') || descStr.toLowerCase().includes('modest')) {
-        naiveScore = 95;
-        matchReasons.push('Tagged "Modest" in retailer catalog description');
-      } else {
-        matchReasons.push('Matched keyword search query');
-      }
-
-      if (audit.hasSlit) {
-        warnings.push('🚨 Retailer search ignores hidden leg slit!');
-      }
-      if (audit.isOpenBack) {
-        warnings.push('🚨 Retailer search ignores open back cutout!');
-      }
-      if (audit.isSheer) {
-        warnings.push('🚨 Retailer search ignores sheer unlined fabric!');
-      }
-
-      matches.push({
-        product,
-        matchPercentage: naiveScore,
-        passedFilters: true,
-        matchReasons,
-        warnings
-      });
+    // A. HARD RULES FILTER (EXCLUSIONS)
+    const textForAudit = `${product.name} ${(product.tags || []).join(' ')} ${descStr}`;
+    if (filters.noSlits && (/slit|split|cut-out|open back/i.test(textForAudit) || audit.hasSlit === true)) {
+      continue;
+    }
+    if (filters.noOpenBack && (/cutout|cut-out|backless|strapless|tube/i.test(textForAudit) || audit.isOpenBack === true)) {
+      continue;
+    }
+    if (filters.isOpaque && (/sheer|mesh|chiffon|lace|see-through|pareo/i.test(textForAudit) || audit.isSheer === true)) {
       continue;
     }
 
-    // DEMO MODE 2: AI VISION AUDIT SEARCH
-    let passedFilters = true;
-    let scorePenalty = 0;
-
-    // Hard Constraint Check 1: Slits
-    if (filters.noSlits && audit.hasSlit === true) {
-      passedFilters = false;
-      warnings.push('Failed "No Slits" rule (AI detected leg slit)');
-      scorePenalty += 35;
-    } else {
-      matchReasons.push('Verified no thigh or side slits');
-    }
-
-    // Hard Constraint Check 2: Open Back / Cutouts
-    if (filters.noOpenBack && audit.isOpenBack === true) {
-      passedFilters = false;
-      warnings.push('Failed "No Cutouts / Open Back" rule (AI detected back cutout)');
-      scorePenalty += 35;
-    } else {
-      matchReasons.push('Verified full back coverage & no cutouts');
-    }
-
-    // Hard Constraint Check 3: Sheerness / Opacity
-    if (filters.isOpaque && audit.isSheer === true) {
-      passedFilters = false;
-      warnings.push('Failed "100% Opaque" rule (AI detected sheer fabric)');
-      scorePenalty += 30;
-    } else {
-      matchReasons.push('Verified 100% opaque fabric');
-    }
-
-    // Neckline matching
-    if (filters.necklines && filters.necklines.length > 0) {
-      if (filters.necklines.includes(audit.neckline)) {
-        matchReasons.push(`Neckline (${audit.neckline.toUpperCase()}) matches preference`);
-      } else {
-        const preferredRank = Math.max(...filters.necklines.map(n => NECKLINE_RANK[n] || 3));
-        const actualRank = NECKLINE_RANK[audit.neckline] || 3;
-        if (actualRank < preferredRank) {
-          const diff = preferredRank - actualRank;
-          scorePenalty += diff * 10;
-          warnings.push(`Neckline (${audit.neckline}) lower than preferred`);
-        }
-      }
-    }
-
-    // Sleeve length matching
+    // B. SLEEVE FILTER (IF SELECTIONS EXIST)
     if (filters.sleeveLengths && filters.sleeveLengths.length > 0) {
-      if (filters.sleeveLengths.includes(audit.sleeveLength)) {
-        matchReasons.push(`Sleeve length (${audit.sleeveLength}) matches preference`);
-      } else {
-        const preferredRank = Math.max(...filters.sleeveLengths.map(s => SLEEVE_RANK[s] || 3));
-        const actualRank = SLEEVE_RANK[audit.sleeveLength] || 3;
-        if (actualRank < preferredRank) {
-          const diff = preferredRank - actualRank;
-          scorePenalty += diff * 12;
-          warnings.push(`Sleeve (${audit.sleeveLength}) shorter than requested`);
-        }
-      }
+      const hasShort = filters.sleeveLengths.some(s => /short|elbow/i.test(s));
+      const hasLong = filters.sleeveLengths.some(s => /long|wrist|3\/4/i.test(s));
+      const text = `${product.name} ${(product.tags || []).join(' ')} ${product.category} ${audit.sleeveLength}`.toLowerCase();
+
+      const isLong = /long sleeve|sweater|hoodie|cardigan|jacket|crewneck|wrist|3\/4/i.test(text);
+      const isShort = /short sleeve|t-shirt|tee|short|elbow/i.test(text);
+      const isSleeveless = /tank|tube|camisole|sleeveless|bikini/i.test(text);
+
+      if (hasLong && !hasShort && (isShort || isSleeveless)) continue;
+      if (hasShort && !hasLong && (isLong || isSleeveless)) continue;
+      if (!hasLong && !hasShort && isSleeveless) continue;
     }
 
-    // Hemline matching
+    // C. BOTTOMS FILTER (IF SELECTIONS EXIST)
     if (filters.hemlines && filters.hemlines.length > 0) {
-      if (filters.hemlines.includes(audit.hemline)) {
-        matchReasons.push(`Hemline (${audit.hemline}) matches preference`);
-      } else {
-        const preferredRank = Math.max(...filters.hemlines.map(h => HEMLINE_RANK[h] || 3));
-        const actualRank = HEMLINE_RANK[audit.hemline] || 3;
-        if (actualRank < preferredRank) {
-          const diff = preferredRank - actualRank;
-          scorePenalty += diff * 12;
-          warnings.push(`Hemline (${audit.hemline}) shorter than requested`);
-        }
-      }
+      const hasSkirt = filters.hemlines.some(b => /skirt|dress|maxi|floor|ankle/i.test(b));
+      const hasPants = filters.hemlines.some(b => /pant|trouser|jeans|sweatpant|jogger|midi|knee/i.test(b));
+      const text = `${product.name} ${(product.tags || []).join(' ')} ${product.category} ${audit.hemline}`.toLowerCase();
+
+      if (hasSkirt && !hasPants && !/skirt|dress|maxi|floor|ankle/i.test(text)) continue;
+      if (hasPants && !hasSkirt && !/pant|trouser|jean|legging|sweatpant|jogger/i.test(text)) continue;
     }
 
-    // Fit matching
-    if (filters.fits && filters.fits.length > 0 && !filters.fits.includes(audit.fit)) {
-      scorePenalty += 8;
-      warnings.push(`Fit (${audit.fit}) differs from preferred`);
-    } else if (filters.fits && filters.fits.length > 0 && filters.fits.includes(audit.fit)) {
-      matchReasons.push(`Fit (${audit.fit}) matches preference`);
-    }
-
-    let calculatedPercent = Math.max(0, Math.min(100, Math.round(audit.modestyScore - scorePenalty)));
-    if (!passedFilters) {
-      calculatedPercent = Math.min(calculatedPercent, 58);
-    }
+    // Match reasons & warnings for modesty score display
+    let score = audit.modestyScore;
+    if (audit.hasSlit) score -= 15;
+    if (audit.isOpenBack) score -= 15;
+    if (audit.isSheer) score -= 20;
 
     matches.push({
       product,
-      matchPercentage: calculatedPercent,
-      passedFilters,
-      matchReasons,
-      warnings
+      matchPercentage: Math.max(70, Math.min(100, Math.round(score))),
+      passedFilters: true,
+      matchReasons: ['Verified against active modesty preferences'],
+      warnings: []
     });
   }
 
@@ -288,7 +188,7 @@ export function filterAndScoreProducts(
 
       matches.push({
         product,
-        matchPercentage: Math.max(40, Math.min(100, Math.round(score))),
+        matchPercentage: Math.max(50, Math.min(100, Math.round(score))),
         passedFilters: true,
         matchReasons: ['Smart recommendation fallback — Top modest item in catalog'],
         warnings: ['Fallback match for strict filter criteria']

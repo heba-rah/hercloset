@@ -50,14 +50,14 @@ const INITIAL_PROFILE: ModestyProfile = {
 };
 
 const INITIAL_FILTERS: ModestyFilterState = {
-  necklines: ['high', 'crew'],
-  sleeveLengths: ['wrist', '3/4'],
-  hemlines: ['floor', 'ankle'],
+  necklines: [],
+  sleeveLengths: [],
+  hemlines: [],
   fits: [],
-  noSlits: true,
-  noOpenBack: true,
-  isOpaque: true,
-  minModestyScore: 70,
+  noSlits: false,
+  noOpenBack: false,
+  isOpaque: false,
+  minModestyScore: 0,
   searchQuery: '',
   selectedCategory: 'all',
   selectedRetailer: 'all',
@@ -161,6 +161,7 @@ export default function Home() {
   };
 
   const handleSkipGuest = () => {
+    setFilters(INITIAL_FILTERS);
     setShowAuthLandingPage(false);
     setIsFeedRevealed(false);
     setTimeout(() => setIsFeedRevealed(true), 50);
@@ -438,8 +439,6 @@ export default function Home() {
                     filters={filters}
                     onFilterChange={handleFilterChange}
                     onReset={handleResetFilters}
-                    onApplyStrictPreset={handleApplyStrictPreset}
-                    onApplySmartPreset={handleApplySmartPreset}
                   />
                 </div>
 
@@ -484,8 +483,6 @@ export default function Home() {
                   filters={filters}
                   onFilterChange={handleFilterChange}
                   onReset={handleResetFilters}
-                  onApplyStrictPreset={handleApplyStrictPreset}
-                  onApplySmartPreset={handleApplySmartPreset}
                   isMobileDrawer
                   onCloseMobileDrawer={() => setIsMobileFiltersOpen(false)}
                 />
