@@ -14,6 +14,7 @@ import { AuthLandingPage } from '@/components/AuthLandingPage';
 import { PermanentProfileModal } from '@/components/PermanentProfileModal';
 import { HamperDrawer } from '@/components/HamperDrawer';
 import { HamperButton } from '@/components/HamperButton';
+import { ClosetDoorTransition, DoorTransitionState } from '@/components/ClosetDoorTransition';
 import { Sparkles, ShieldCheck, X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 // 35 items + 1 avatar tile = 36 total grid items (perfect multiple of 6, 4, 3, 2 columns)
@@ -52,6 +53,7 @@ const INITIAL_FILTERS: ModestyFilterState = {
 export default function Home() {
   const [currentUser, setCurrentUser] = useState<UserAccount | null>(null);
   const [showAuthLandingPage, setShowAuthLandingPage] = useState<boolean>(true);
+  const [doorTransitionState, setDoorTransitionState] = useState<DoorTransitionState>('idle');
 
   const [profile, setProfile] = useState<ModestyProfile>(INITIAL_PROFILE);
   const [filters, setFilters] = useState<ModestyFilterState>(INITIAL_FILTERS);
@@ -98,20 +100,43 @@ export default function Home() {
     setCurrentPage(1);
   }, [filters]);
 
+  // CINEMATIC CLOSET DOORS TRANSITION HELPER
+  const triggerDoorTransitionToApp = (onCompleteAction?: () => void) => {
+    setDoorTransitionState('closing');
+    
+    setTimeout(() => {
+      setDoorTransitionState('closed');
+      if (onCompleteAction) onCompleteAction();
+      setShowAuthLandingPage(false);
+
+      setTimeout(() => {
+        setDoorTransitionState('opening');
+        setTimeout(() => {
+          setDoorTransitionState('done');
+        }, 700);
+      }, 250);
+    }, 600);
+  };
+
   const handleCompleteAuth = (account: UserAccount) => {
-    setCurrentUser(account);
-    setProfile(account.profile);
-    setFilters(prev => ({
-      ...prev,
-      necklines: account.profile.necklines,
-      sleeveLengths: account.profile.sleeveLengths,
-      hemlines: account.profile.hemlines,
-      fits: account.profile.fits,
-      noSlits: account.profile.noSlits,
-      noOpenBack: account.profile.noOpenBack,
-      isOpaque: account.profile.isOpaque,
-    }));
-    setShowAuthLandingPage(false);
+    triggerDoorTransitionToApp(() => {
+      setCurrentUser(account);
+      setProfile(account.profile);
+      setFilters(prev => ({
+        ...prev,
+        necklines: account.profile.necklines,
+        sleeveLengths: account.profile.sleeveLengths,
+        hemlines: account.profile.hemlines,
+        fits: account.profile.fits,
+        noSlits: account.profile.noSlits,
+        noOpenBack: account.profile.noOpenBack,
+        isOpaque: account.profile.isOpaque,
+      }));
+    });
+  };
+
+  const handleSkipGuest = () => {
+    triggerDoorTransitionToApp();
   };
 
   const handleSignOut = () => {
@@ -225,11 +250,14 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#F2EDE6] text-[#4B3F38] flex flex-col font-sans selection:bg-[#B89A8E] selection:text-white">
       
+      {/* CINEMATIC CLOSET DOORS TRANSITION OVERLAY */}
+      <ClosetDoorTransition state={doorTransitionState} />
+
       {/* Landing & Authentication Modal (Name & Gmail Login/Register + Modesty Profile Setup) */}
       {showAuthLandingPage && (
         <AuthLandingPage
           onCompleteAuth={handleCompleteAuth}
-          onSkipGuest={() => setShowAuthLandingPage(false)}
+          onSkipGuest={handleSkipGuest}
         />
       )}
 
