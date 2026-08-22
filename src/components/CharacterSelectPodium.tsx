@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, Check, Sparkles, Shirt, Scissors, EyeOff, Layers } from 'lucide-react';
-import { ModestyProfile, Neckline, SleeveLength, Hemline } from '@/types/product';
+import { ModestyProfile } from '@/types/product';
 
 interface CharacterSkin {
   id: string;
@@ -16,31 +16,23 @@ interface CharacterSkin {
 const SKINS: Record<'sleeve' | 'neckline' | 'skirt' | 'pants', CharacterSkin[]> = {
   sleeve: [
     {
-      id: 'long-sleeve',
-      name: 'Long Sleeve (Wrist)',
-      staticImg: '/avatars/long-sleeve.png',
-      gifImg: '/avatars/long-sleeve.gif',
-      categoryType: 'sleeve',
-      applyRule: (prev) => ({ ...prev, sleeveLengths: ['wrist'] })
-    },
-    {
       id: 'short-sleeve',
-      name: 'Short / Elbow Sleeve',
+      name: 'Short Sleeve',
       staticImg: '/avatars/short-sleeve.png',
       gifImg: '/avatars/short-sleeve.gif',
       categoryType: 'sleeve',
       applyRule: (prev) => ({ ...prev, sleeveLengths: ['elbow', '3/4', 'wrist'] })
+    },
+    {
+      id: 'long-sleeve',
+      name: 'Long Sleeve',
+      staticImg: '/avatars/long-sleeve.png',
+      gifImg: '/avatars/long-sleeve.gif',
+      categoryType: 'sleeve',
+      applyRule: (prev) => ({ ...prev, sleeveLengths: ['wrist'] })
     }
   ],
   neckline: [
-    {
-      id: 'highneck',
-      name: 'High Neck / Turtle',
-      staticImg: '/avatars/highneck.png',
-      gifImg: '/avatars/highneck.gif',
-      categoryType: 'neckline',
-      applyRule: (prev) => ({ ...prev, necklines: ['high'] })
-    },
     {
       id: 'crewneck',
       name: 'Crewneck',
@@ -48,42 +40,34 @@ const SKINS: Record<'sleeve' | 'neckline' | 'skirt' | 'pants', CharacterSkin[]> 
       gifImg: '/avatars/crewneck.gif',
       categoryType: 'neckline',
       applyRule: (prev) => ({ ...prev, necklines: ['crew', 'high'] })
+    },
+    {
+      id: 'highneck',
+      name: 'High Neck',
+      staticImg: '/avatars/highneck.png',
+      gifImg: '/avatars/highneck.gif',
+      categoryType: 'neckline',
+      applyRule: (prev) => ({ ...prev, necklines: ['high'] })
     }
   ],
   skirt: [
     {
       id: 'skirt',
-      name: 'Maxi Skirts & Dresses',
+      name: 'Maxi Skirt / Dress',
       staticImg: '/avatars/skirt.png',
       gifImg: '/avatars/skirt.gif',
       categoryType: 'skirt',
       applyRule: (prev) => ({ ...prev, hemlines: ['floor'] })
-    },
-    {
-      id: 'default',
-      name: 'Ankle / Midi Skirt',
-      staticImg: '/avatars/default.png',
-      gifImg: '/avatars/default.gif',
-      categoryType: 'skirt',
-      applyRule: (prev) => ({ ...prev, hemlines: ['floor', 'ankle'] })
     }
   ],
   pants: [
     {
       id: 'pants',
-      name: 'Pants & Trousers',
+      name: 'Pants / Trousers',
       staticImg: '/avatars/pants.png',
       gifImg: '/avatars/pants.gif',
       categoryType: 'pants',
       applyRule: (prev) => ({ ...prev, hemlines: ['ankle'] })
-    },
-    {
-      id: 'default-pants',
-      name: 'Wide Leg Trousers',
-      staticImg: '/avatars/default.png',
-      gifImg: '/avatars/default.gif',
-      categoryType: 'pants',
-      applyRule: (prev) => ({ ...prev, hemlines: ['ankle', 'midi'] })
     }
   ]
 };
@@ -140,25 +124,25 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
 
   const categoryName =
     subTab === 'sleeve'
-      ? 'Sleeves'
+      ? 'Sleeve'
       : subTab === 'neckline'
-      ? 'Necklines'
+      ? 'Neckline'
       : subTab === 'skirt'
-      ? 'Skirts & Dresses'
-      : 'Pants & Trousers';
+      ? 'Skirts'
+      : 'Pants';
 
   return (
     <div className="w-full max-w-4xl mx-auto p-4 sm:p-6 font-sans">
       
-      {/* 1. TITLE HEADER */}
-      <h2 className="text-2xl md:text-3xl font-serif italic text-[#3D312A] text-center mb-6 font-bold">
+      {/* 1. SCREEN TITLE */}
+      <h2 className="text-2xl md:text-3xl font-serif italic text-[#3D312A] text-center mb-8 font-bold">
         Let&apos;s set up your modesty profile
       </h2>
 
       {/* 2-COLUMN PODIUM SETUP */}
       <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-6 items-start">
         
-        {/* LEFT COLUMN: PRIMARY GROUP TOGGLE */}
+        {/* LEFT COLUMN: PRIMARY GROUP TOGGLE (TOPS / BOTTOMS STACKED PILLS) */}
         <div className="flex md:flex-col gap-2.5 bg-[#FAF7F2] p-3 rounded-2xl border border-[#D6CFCE] shadow-sm">
           <span className="text-[10px] font-bold uppercase tracking-wider text-[#8A6B5D] px-2 block mb-1 hidden md:block">
             Category
@@ -166,7 +150,7 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
           <button
             type="button"
             onClick={() => handleMainTabChange('tops')}
-            className={`flex-1 md:w-full px-5 py-3 rounded-xl text-sm font-semibold border transition-all cursor-pointer flex items-center justify-center gap-2 ${
+            className={`flex-1 md:w-full px-5 py-2.5 rounded-xl text-sm font-semibold border transition-all cursor-pointer flex items-center justify-center gap-2 ${
               mainTab === 'tops'
                 ? 'bg-[#3D312A] border-[#3D312A] text-[#FAF7F2] shadow-md'
                 : 'bg-white border-[#D6CFCE] text-[#3D312A] hover:bg-[#F2EDE6]'
@@ -179,7 +163,7 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
           <button
             type="button"
             onClick={() => handleMainTabChange('bottoms')}
-            className={`flex-1 md:w-full px-5 py-3 rounded-xl text-sm font-semibold border transition-all cursor-pointer flex items-center justify-center gap-2 ${
+            className={`flex-1 md:w-full px-5 py-2.5 rounded-xl text-sm font-semibold border transition-all cursor-pointer flex items-center justify-center gap-2 ${
               mainTab === 'bottoms'
                 ? 'bg-[#3D312A] border-[#3D312A] text-[#FAF7F2] shadow-md'
                 : 'bg-white border-[#D6CFCE] text-[#3D312A] hover:bg-[#F2EDE6]'
@@ -190,10 +174,10 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
           </button>
         </div>
 
-        {/* RIGHT CENTER STAGE: CHARACTER PODIUM & SUB-PILLS */}
+        {/* CENTER COLUMN: CHARACTER-SELECT SPOTLIGHT STAGE */}
         <div className="flex flex-col items-center">
           
-          {/* SUB-CATEGORY FILTER PILLS */}
+          {/* SUBCATEGORY FILTER PILLS ABOVE STAGE */}
           <div className="flex items-center gap-2 mb-6 bg-[#FAF7F2] p-1.5 rounded-full border border-[#D6CFCE] shadow-inner">
             {mainTab === 'tops' ? (
               <>
@@ -206,7 +190,7 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
                       : 'text-[#8A6B5D] hover:bg-[#F2EDE6]'
                   }`}
                 >
-                  Sleeve Length
+                  Sleeve
                 </button>
                 <button
                   type="button"
@@ -231,7 +215,7 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
                       : 'text-[#8A6B5D] hover:bg-[#F2EDE6]'
                   }`}
                 >
-                  Skirts &amp; Dresses
+                  Skirts
                 </button>
                 <button
                   type="button"
@@ -242,7 +226,7 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
                       : 'text-[#8A6B5D] hover:bg-[#F2EDE6]'
                   }`}
                 >
-                  Pants &amp; Trousers
+                  Pants
                 </button>
               </>
             )}
@@ -251,11 +235,11 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
           {/* 3D CHARACTER SELECT PODIUM STAGE */}
           <div className="relative w-full max-w-lg h-72 flex items-center justify-center my-2">
             
-            {/* OVERHEAD WARM SPOTLIGHT GLOW */}
+            {/* OVERHEAD SOFT WARM RADIAL SPOTLIGHT GLOW */}
             <div
               className="absolute top-0 left-1/2 -translate-x-1/2 w-72 h-60 pointer-events-none rounded-full"
               style={{
-                background: 'radial-gradient(circle, rgba(230,194,128,0.35) 0%, rgba(242,237,230,0) 70%)'
+                background: 'radial-gradient(circle, rgba(230,194,128,0.3) 0%, transparent 70%)'
               }}
             />
 
@@ -281,8 +265,8 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
                 className="w-[136px] h-[136px] object-contain drop-shadow-xl [image-rendering:pixelated]"
               />
 
-              {/* ELLIPTICAL 3D STAGE PLATFORM BASE */}
-              <div className="w-44 h-8 mx-auto -mt-3 rounded-[100%] bg-gradient-to-b from-[#D6CFCE] via-[#B89A8E] to-[#8A6B5D] shadow-lg border-t border-white/70 flex items-center justify-center">
+              {/* 3D ELLIPTICAL STAGE BASE UNDERNEATH AVATAR */}
+              <div className="w-44 h-8 mx-auto -mt-3 rounded-[100%] bg-gradient-to-b from-[#D6CFCE] to-[#A89F91] shadow-md border-t border-white/60 flex items-center justify-center">
                 <span className="text-[10px] font-mono font-bold text-[#FAF7F2] uppercase tracking-widest drop-shadow-xs">
                   {activeSkin.name}
                 </span>
@@ -384,8 +368,7 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
               onClick={onConfirm}
               className="bg-[#3D312A] hover:bg-[#2A211B] text-[#FAF7F2] px-10 py-3.5 rounded-full font-bold text-xs md:text-sm shadow-xl transition-all duration-300 flex items-center gap-2 cursor-pointer active:scale-95 group"
             >
-              <span>Confirm &amp; Enter My Closet</span>
-              <Sparkles className="w-4 h-4 text-amber-200 group-hover:rotate-12 transition-transform" />
+              <span>Confirm &amp; Enter My Closet &rarr;</span>
             </button>
           </div>
 
