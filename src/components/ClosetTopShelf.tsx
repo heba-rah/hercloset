@@ -10,6 +10,7 @@ interface ClosetTopShelfProps {
   onSelectStore: (store: string) => void;
   averageMatchScore: number;
   totalItemsCount: number;
+  hasActiveFilters?: boolean;
 }
 
 export const ClosetTopShelf: React.FC<ClosetTopShelfProps> = ({
@@ -18,7 +19,8 @@ export const ClosetTopShelf: React.FC<ClosetTopShelfProps> = ({
   selectedStore,
   onSelectStore,
   averageMatchScore,
-  totalItemsCount
+  totalItemsCount,
+  hasActiveFilters = false
 }) => {
   const occasions = [
     { id: 'all', label: 'All Occasions' },
@@ -102,59 +104,87 @@ export const ClosetTopShelf: React.FC<ClosetTopShelfProps> = ({
           </select>
         </div>
 
-        {/* CENTER COMPARTMENT — "LIVE MODESTY GAUGE" */}
+        {/* CENTER COMPARTMENT — "LIVE MODESTY GAUGE" (WITH GUEST EMPTY STATE) */}
         <div className="bg-[#FAF7F2]/80 border border-[#D6CFCE] rounded-xl p-3 sm:px-6 shadow-sm flex items-center justify-center gap-4">
 
-          {/* Circular SVG Gauge */}
-          <div className="relative w-20 h-20 flex items-center justify-center shrink-0">
-            <svg className="w-full h-full transform -rotate-90" viewBox="0 0 90 90">
-              <circle
-                cx="45"
-                cy="45"
-                r={radius}
-                className="stroke-[#D6CFCE]/50"
-                strokeWidth="6"
-                fill="transparent"
-              />
-              <circle
-                cx="45"
-                cy="45"
-                r={radius}
-                stroke={gaugeTheme.stroke}
-                strokeWidth="6"
-                strokeDasharray={circumference}
-                strokeDashoffset={strokeDashoffset}
-                strokeLinecap="round"
-                fill="transparent"
-                className="transition-all duration-700 ease-out"
-              />
-            </svg>
+          {hasActiveFilters ? (
+            /* ACTIVE FILTER STATE WITH LIVE RADIAL PROGRESS RING */
+            <>
+              <div className="relative w-20 h-20 flex items-center justify-center shrink-0">
+                <svg className="w-full h-full transform -rotate-90" viewBox="0 0 90 90">
+                  <circle
+                    cx="45"
+                    cy="45"
+                    r={radius}
+                    className="stroke-[#D6CFCE]/50"
+                    strokeWidth="6"
+                    fill="transparent"
+                  />
+                  <circle
+                    cx="45"
+                    cy="45"
+                    r={radius}
+                    stroke={gaugeTheme.stroke}
+                    strokeWidth="6"
+                    strokeDasharray={circumference}
+                    strokeDashoffset={strokeDashoffset}
+                    strokeLinecap="round"
+                    fill="transparent"
+                    className="transition-all duration-700 ease-out"
+                  />
+                </svg>
 
-            {/* Percentage Number Inside Circle */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-              <span className={`text-lg font-extrabold font-mono ${gaugeTheme.text}`}>
-                {averageMatchScore}%
-              </span>
-            </div>
-          </div>
+                {/* Percentage Number Inside Circle */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                  <span className={`text-lg font-extrabold font-mono ${gaugeTheme.text}`}>
+                    {averageMatchScore}%
+                  </span>
+                </div>
+              </div>
 
-          {/* Focal Text & Label */}
-          <div className="space-y-1">
-            <div className="flex items-center gap-1.5">
-              <Sparkles className="w-4 h-4 text-[#8A6B5D]" />
-              <span className="font-serif italic text-lg font-bold text-[#4B3F38]">
-                Modest Match
-              </span>
-            </div>
+              {/* Focal Text & Label */}
+              <div className="space-y-1">
+                <div className="flex items-center gap-1.5">
+                  <Sparkles className="w-4 h-4 text-[#8A6B5D]" />
+                  <span className="font-serif italic text-lg font-bold text-[#4B3F38]">
+                    Modest Match
+                  </span>
+                </div>
 
-            <div className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border ${gaugeTheme.badgeBg}`}>
-              {gaugeTheme.label}
-            </div>
+                <div className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border ${gaugeTheme.badgeBg}`}>
+                  {gaugeTheme.label}
+                </div>
 
-            <p className="text-[11px] text-[#8A6B5D] font-semibold">
-              Live score across {totalItemsCount} Canadian items
-            </p>
-          </div>
+                <p className="text-[11px] text-[#8A6B5D] font-semibold">
+                  Live score across {totalItemsCount} Canadian items
+                </p>
+              </div>
+            </>
+          ) : (
+            /* GUEST / UNFILTERED EMPTY STATE WITH NEUTRAL DASHED TRACK */
+            <>
+              <div className="w-20 h-20 rounded-full border-2 border-dashed border-[#D6CFCE] flex items-center justify-center shrink-0 bg-[#F2EDE6]/40">
+                <span className="text-xl font-bold font-mono text-[#8A6B5D]">—</span>
+              </div>
+
+              <div className="space-y-1">
+                <div className="flex items-center gap-1.5">
+                  <Sparkles className="w-4 h-4 text-[#8A6B5D]/60" />
+                  <span className="font-serif italic text-lg font-bold text-[#4B3F38]">
+                    Modest Match
+                  </span>
+                </div>
+
+                <div className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-[#EAE4DC] text-[#7A5C4D] border border-[#D6CFCE]/60">
+                  Unfiltered
+                </div>
+
+                <p className="text-[11px] text-[#8A6B5D] font-semibold">
+                  Browsing full catalog • Set filters to see match score
+                </p>
+              </div>
+            </>
+          )}
 
         </div>
 

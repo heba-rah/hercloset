@@ -265,6 +265,11 @@ export default function Home() {
 
   const activeFilterCount = useMemo(() => {
     let count = 0;
+    if (filters.selectedCategory !== 'all') count++;
+    if (filters.selectedRetailer !== 'all') count++;
+    if (filters.selectedOccasion !== 'all') count++;
+    if (filters.maxPrice) count++;
+    if (filters.searchQuery) count++;
     if (filters.noSlits) count++;
     if (filters.noOpenBack) count++;
     if (filters.isOpaque) count++;
@@ -274,6 +279,10 @@ export default function Home() {
     if (filters.fits.length > 0) count += filters.fits.length;
     return count;
   }, [filters]);
+
+  const hasActiveFilters = useMemo(() => {
+    return currentUser !== null || activeFilterCount > 0;
+  }, [currentUser, activeFilterCount]);
 
   return (
     <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#F2EDE6] text-[#4B3F38] flex flex-col font-sans selection:bg-[#B89A8E] selection:text-white">
@@ -321,6 +330,7 @@ export default function Home() {
             onSelectStore={(store) => handleFilterChange({ selectedRetailer: store })}
             averageMatchScore={averageMatchScore}
             totalItemsCount={calculatedMatches.length}
+            hasActiveFilters={hasActiveFilters}
           />
 
           {/* Main Full-Width Content Area with Persistent Stylist Tile in Position #1 */}
