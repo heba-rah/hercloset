@@ -114,6 +114,13 @@ export default function Home() {
     setShowAuthLandingPage(false);
   };
 
+  const handleSignOut = () => {
+    localStorage.removeItem('hercloset_user_account');
+    setCurrentUser(null);
+    setShowAuthLandingPage(true);
+    setIsPermanentProfileModalOpen(false);
+  };
+
   const handleSaveProfile = (newProfile: ModestyProfile) => {
     setProfile(newProfile);
     if (currentUser) {
@@ -232,6 +239,7 @@ export default function Home() {
           initialProfile={profile}
           onSaveProfile={handleSaveProfile}
           onClose={() => setIsPermanentProfileModalOpen(false)}
+          onSignOut={handleSignOut}
         />
       )}
 
@@ -244,6 +252,7 @@ export default function Home() {
         onOpenProfileModal={() => setIsPermanentProfileModalOpen(true)}
         currentUser={currentUser}
         onOpenAuth={() => setShowAuthLandingPage(true)}
+        onSignOut={handleSignOut}
       />
 
       {/* FULL-WIDTH HOLLOW WARDROBE TOP SHELF */}

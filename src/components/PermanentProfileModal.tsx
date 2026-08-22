@@ -1,19 +1,21 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ShieldCheck, X, Check, Save, UserCheck, HeartHandshake, Scissors, EyeOff, Layers } from 'lucide-react';
-import { ModestyProfile, Neckline, SleeveLength, Hemline, GarmentFit } from '@/types/product';
+import { ShieldCheck, X, Check, Save, UserCheck, HeartHandshake, Scissors, EyeOff, Layers, LogOut } from 'lucide-react';
+import { ModestyProfile, Neckline, SleeveLength, Hemline } from '@/types/product';
 
 interface PermanentProfileModalProps {
   initialProfile: ModestyProfile;
   onSaveProfile: (profile: ModestyProfile) => void;
   onClose: () => void;
+  onSignOut?: () => void;
 }
 
 export const PermanentProfileModal: React.FC<PermanentProfileModalProps> = ({
   initialProfile,
   onSaveProfile,
-  onClose
+  onClose,
+  onSignOut
 }) => {
   const [profile, setProfile] = useState<ModestyProfile>(initialProfile);
   const [savedSuccess, setSavedSuccess] = useState<boolean>(false);
@@ -269,10 +271,23 @@ export const PermanentProfileModal: React.FC<PermanentProfileModalProps> = ({
         </div>
 
         {/* Footer Action Bar */}
-        <div className="p-5 bg-[#F2EDE6] border-t border-[#D6CFCE] flex items-center justify-between">
-          <span className="text-xs text-[#8A6B5D] font-semibold">
-            {savedSuccess ? '✅ Profile Saved to Account!' : 'Changes auto-apply on login'}
-          </span>
+        <div className="p-5 bg-[#F2EDE6] border-t border-[#D6CFCE] flex items-center justify-between gap-3">
+          {onSignOut ? (
+            <button
+              onClick={() => {
+                onClose();
+                onSignOut();
+              }}
+              className="px-4 py-2.5 rounded-xl bg-white hover:bg-rose-50 border border-[#D6CFCE] hover:border-rose-300 text-xs font-semibold text-rose-700 transition-all flex items-center gap-1.5"
+            >
+              <LogOut className="w-4 h-4 text-rose-600" />
+              <span>Sign Out</span>
+            </button>
+          ) : (
+            <span className="text-xs text-[#8A6B5D] font-semibold">
+              {savedSuccess ? '✅ Profile Saved!' : 'Auto-applies on login'}
+            </span>
+          )}
 
           <button
             onClick={handleSave}

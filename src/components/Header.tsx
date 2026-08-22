@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Sparkles, Search, SlidersHorizontal, UserCheck, LogIn } from 'lucide-react';
+import { Sparkles, Search, SlidersHorizontal, UserCheck, LogIn, LogOut } from 'lucide-react';
 import { ModestyFilterState, UserAccount } from '@/types/product';
 
 interface HeaderProps {
@@ -12,6 +12,7 @@ interface HeaderProps {
   onOpenProfileModal: () => void;
   currentUser?: UserAccount | null;
   onOpenAuth?: () => void;
+  onSignOut?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -21,7 +22,8 @@ export const Header: React.FC<HeaderProps> = ({
   totalMatchesCount,
   onOpenProfileModal,
   currentUser,
-  onOpenAuth
+  onOpenAuth,
+  onSignOut
 }) => {
   return (
     <header className="sticky top-0 z-40 bg-[#FAF7F2]/95 backdrop-blur-md border-b border-[#D6CFCE] text-[#4B3F38] shadow-sm">
@@ -71,10 +73,10 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
 
-          {/* Top-Right Square User Profile Card Button */}
+          {/* Top-Right User Profile & Sign Out Controls */}
           <div className="flex items-center gap-3">
             {currentUser?.isLoggedIn ? (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2.5">
                 {/* User Name Badge (Hidden on mobile) */}
                 <div className="hidden sm:flex flex-col items-end text-right">
                   <span className="text-xs font-bold text-[#4B3F38] leading-none">
@@ -85,6 +87,7 @@ export const Header: React.FC<HeaderProps> = ({
                   </span>
                 </div>
 
+                {/* Profile Card Button */}
                 <button
                   onClick={onOpenProfileModal}
                   className="w-10 h-10 rounded-xl bg-[#FAF7F2] border border-[#D6CFCE] shadow-sm hover:border-[#8A6B5D] hover:shadow-md transition-all flex items-center justify-center cursor-pointer relative group"
@@ -96,9 +99,21 @@ export const Header: React.FC<HeaderProps> = ({
 
                   {/* Tooltip on Hover */}
                   <div className="absolute top-12 right-0 whitespace-nowrap pointer-events-none text-xs font-sans font-semibold bg-[#4B3F38] text-[#FAF7F2] px-3 py-1 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-200 z-50">
-                    Account: {currentUser.name} ({currentUser.email})
+                    Edit Account Default Profile
                   </div>
                 </button>
+
+                {/* Sign Out Button */}
+                {onSignOut && (
+                  <button
+                    onClick={onSignOut}
+                    className="p-2.5 rounded-xl bg-[#FAF7F2] hover:bg-rose-50 border border-[#D6CFCE] hover:border-rose-300 text-[#8A6B5D] hover:text-rose-700 shadow-sm transition-all flex items-center gap-1.5 font-sans text-xs font-semibold cursor-pointer group"
+                    title="Sign Out of Account"
+                  >
+                    <LogOut className="w-4 h-4 text-[#8A6B5D] group-hover:text-rose-700" />
+                    <span className="hidden md:inline">Sign Out</span>
+                  </button>
+                )}
               </div>
             ) : (
               <button
