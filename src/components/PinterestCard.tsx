@@ -49,8 +49,8 @@ export const PinterestCard: React.FC<PinterestCardProps> = ({
   return (
     <div className="break-inside-avoid mb-4 group relative rounded-2xl overflow-hidden transition-all duration-300 flex flex-col bg-transparent">
       
-      {/* GARMENT IMAGE & HOVER OVERLAY CONTAINER WITH DYNAMIC HIGH-FASHION CROP */}
-      <div className={`relative w-full ${aspectClass} rounded-2xl overflow-hidden bg-[#FAF7F2] dark:bg-[#2D2522] border border-[#D6CFCE]/60 dark:border-[#443732]/60 shadow-sm group-hover:shadow-xl transition-all duration-300`}>
+      {/* GARMENT IMAGE & HOVER OVERLAY CONTAINER WITH BORDERLESS SOFT SHADOW */}
+      <div className={`relative w-full ${aspectClass} rounded-2xl overflow-hidden bg-[#FAF7F2] border-none shadow-sm group-hover:shadow-md transition-all duration-300`}>
         <img
           src={imgSrc}
           alt={product.name}
@@ -58,18 +58,18 @@ export const PinterestCard: React.FC<PinterestCardProps> = ({
           className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 block"
         />
 
-        {/* PINTEREST-STYLE HOVER OVERLAY (Translucent dark backdrop bg-black/30 on hover) */}
+        {/* PINTEREST-STYLE HOVER OVERLAY (Translucent dark backdrop on hover) */}
         <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-between p-3 pointer-events-none group-hover:pointer-events-auto">
           
           {/* TOP HOVER BAR: Compact Modesty % Match Chip (Left) + Warm-Earth/Red Pin Save Button (Right) */}
           <div className="flex items-center justify-between gap-2">
             {/* Top-Left: Compact Modesty % Match Chip */}
-            <div className={`px-2.5 py-1 rounded-full text-[11px] font-bold backdrop-blur-md border shadow-md flex items-center gap-1 ${
+            <div className={`px-2.5 py-1 rounded-full text-[11px] font-bold backdrop-blur-md shadow-md flex items-center gap-1 ${
               !passedFilters || matchPercentage < 70
-                ? 'bg-rose-900/90 text-rose-100 border-rose-700'
+                ? 'bg-rose-900/90 text-rose-100'
                 : isHighMatch
-                  ? 'bg-[#8A6B5D]/90 text-white border-[#8A6B5D]'
-                  : 'bg-[#B89A8E]/90 text-white border-[#B89A8E]'
+                  ? 'bg-[#8A6B5D]/90 text-white'
+                  : 'bg-[#B89A8E]/90 text-white'
             }`}>
               {passedFilters ? <ShieldCheck className="w-3 h-3 text-emerald-300" /> : <AlertTriangle className="w-3 h-3 text-rose-300" />}
               <span>{matchPercentage}% Match</span>
@@ -83,7 +83,7 @@ export const PinterestCard: React.FC<PinterestCardProps> = ({
               }}
               className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all shadow-lg flex items-center gap-1 ${
                 isInHamper
-                  ? 'bg-slate-900 text-white border border-slate-700'
+                  ? 'bg-slate-900 text-white'
                   : 'bg-[#E60023] hover:bg-[#AD001B] text-white'
               }`}
             >
@@ -96,12 +96,12 @@ export const PinterestCard: React.FC<PinterestCardProps> = ({
           <div className="space-y-2">
             {/* Warning callout on hover if failed rules */}
             {!passedFilters && modestyAudit.hasSlit && (
-              <span className="px-2.5 py-1 rounded-md bg-rose-950/90 text-rose-200 border border-rose-800 text-[10px] font-bold block backdrop-blur-md">
+              <span className="px-2.5 py-1 rounded-md bg-rose-950/90 text-rose-200 text-[10px] font-bold block backdrop-blur-md">
                 🚨 Leg Slit Detected
               </span>
             )}
             {!passedFilters && modestyAudit.isOpenBack && (
-              <span className="px-2.5 py-1 rounded-md bg-rose-950/90 text-rose-200 border border-rose-800 text-[10px] font-bold block backdrop-blur-md">
+              <span className="px-2.5 py-1 rounded-md bg-rose-950/90 text-rose-200 text-[10px] font-bold block backdrop-blur-md">
                 🚨 Open Back Cutout
               </span>
             )}
@@ -137,16 +137,16 @@ export const PinterestCard: React.FC<PinterestCardProps> = ({
       </div>
 
       {/* DISCREET BOTTOM METADATA UNDERNEATH IMAGE */}
-      <div className="mt-2 px-1 flex items-start justify-between gap-2 text-[#4B3F38] dark:text-[#F2EDE6]">
+      <div className="mt-2 px-1 flex items-start justify-between gap-2 text-[#4B3F38]">
         <div className="min-w-0">
-          <span className="text-[10px] font-bold text-[#8A6B5D] dark:text-[#C4A497] uppercase tracking-wider block">
+          <span className="text-[10px] font-bold text-[#8A6B5D] uppercase tracking-wider block">
             {product.brand}
           </span>
-          <h4 className="text-xs font-semibold text-[#4B3F38] dark:text-[#F2EDE6] truncate leading-tight mt-0.5">
+          <h4 className="text-xs font-semibold text-[#4B3F38] truncate leading-tight mt-0.5">
             {product.name}
           </h4>
         </div>
-        <span className="text-xs font-bold text-[#8A6B5D] dark:text-[#C4A497] shrink-0 mt-0.5">{displayPrice}</span>
+        <span className="text-xs font-bold text-[#8A6B5D] shrink-0 mt-0.5">{displayPrice}</span>
       </div>
 
     </div>

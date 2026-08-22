@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ExternalLink, ShieldCheck, AlertTriangle, Sparkles, Eye, ShoppingBag } from 'lucide-react';
+import { ExternalLink, ShieldCheck, AlertTriangle, Eye, ShoppingBag } from 'lucide-react';
 import { CalculatedMatch, Product } from '@/types/product';
 
 interface ProductCardProps {
@@ -17,37 +17,35 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   onOpenAuditModal,
   cardIndex = 0
 }) => {
-  const { product, matchPercentage, passedFilters, warnings } = match;
-  const { modestyAudit } = product;
+  const { product, matchPercentage, passedFilters } = match;
 
   const isHighMatch = matchPercentage >= 90 && passedFilters;
 
   const badgeBg = !passedFilters || matchPercentage < 70
-    ? 'bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300 border-rose-300 dark:border-rose-800'
+    ? 'bg-rose-100 text-rose-800'
     : isHighMatch
-      ? 'bg-[#8A6B5D] text-white border-[#8A6B5D]'
-      : 'bg-[#B89A8E] text-white border-[#B89A8E]';
+      ? 'bg-[#8A6B5D] text-white'
+      : 'bg-[#B89A8E] text-white';
 
   const displayPrice = typeof product.price === 'string' && product.price.startsWith('$')
     ? product.price
     : `$${product.price}`;
 
-  // DYNAMIC ASYMMETRICAL ASPECT RATIOS BASED ON INDEX
   const getDynamicAspectClass = (idx: number) => {
     const mod = idx % 4;
-    if (mod === 0) return 'aspect-[3/5]';  // Tall editorial portrait
-    if (mod === 1) return 'aspect-[4/5]';  // Standard portrait
-    if (mod === 2) return 'aspect-[2/3]';  // Medium long shot
-    return 'aspect-[1/1]';                // Square/close-up crop
+    if (mod === 0) return 'aspect-[3/5]';
+    if (mod === 1) return 'aspect-[4/5]';
+    if (mod === 2) return 'aspect-[2/3]';
+    return 'aspect-[1/1]';
   };
 
   const aspectClass = getDynamicAspectClass(cardIndex);
 
   return (
-    <div className="break-inside-avoid mb-4 group relative bg-[#FAF7F2] dark:bg-[#2D2522] border border-[#D6CFCE] dark:border-[#443732] hover:border-[#B89A8E] dark:hover:border-[#8A6B5D] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col">
+    <div className="break-inside-avoid mb-4 group relative bg-[#FAF7F2] border-none rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col">
       
       {/* Garment Image & Overlay Badges */}
-      <div className={`relative w-full ${aspectClass} bg-[#F2EDE6] dark:bg-[#181412] overflow-hidden`}>
+      <div className={`relative w-full ${aspectClass} bg-[#F2EDE6] overflow-hidden rounded-2xl border-none`}>
         <img
           src={product.imageUrl}
           alt={product.name}
@@ -57,13 +55,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         {/* Top Badges */}
         <div className="absolute top-3 left-3 right-3 flex items-start justify-between gap-2">
           {/* Retailer Store Badge */}
-          <span className="px-2.5 py-1 rounded-lg bg-[#FAF7F2]/90 dark:bg-[#181412]/90 backdrop-blur-md text-[11px] font-extrabold text-[#4B3F38] dark:text-[#F2EDE6] border border-[#D6CFCE] dark:border-[#443732] shadow-sm uppercase tracking-wider flex items-center gap-1">
-            <ShoppingBag className="w-3 h-3 text-[#8A6B5D] dark:text-[#C4A497]" />
+          <span className="px-2.5 py-1 rounded-lg bg-[#FAF7F2]/90 backdrop-blur-md text-[11px] font-extrabold text-[#4B3F38] shadow-sm uppercase tracking-wider flex items-center gap-1">
+            <ShoppingBag className="w-3 h-3 text-[#8A6B5D]" />
             {product.brand}
           </span>
 
           {/* Modesty Match % Badge */}
-          <div className={`flex items-center gap-1.5 px-3 py-1 rounded-xl backdrop-blur-md text-xs font-bold border shadow-sm ${badgeBg}`}>
+          <div className={`flex items-center gap-1.5 px-3 py-1 rounded-xl backdrop-blur-md text-xs font-bold shadow-sm ${badgeBg}`}>
             {passedFilters ? (
               <ShieldCheck className="w-4 h-4 text-emerald-300 shrink-0" />
             ) : (
@@ -106,11 +104,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         <div>
           {/* Title & Price */}
           <div className="flex items-start justify-between gap-2">
-            <h3 className="font-semibold text-xs text-[#4B3F38] dark:text-[#F2EDE6] line-clamp-2 leading-snug group-hover:text-[#8A6B5D] dark:group-hover:text-[#C4A497] transition-colors">
+            <h3 className="font-semibold text-xs text-[#4B3F38] line-clamp-2 leading-snug group-hover:text-[#8A6B5D] transition-colors">
               {product.name}
             </h3>
             <div className="text-right shrink-0">
-              <span className="font-bold text-xs text-[#8A6B5D] dark:text-[#C4A497]">{displayPrice}</span>
+              <span className="font-bold text-xs text-[#8A6B5D]">{displayPrice}</span>
             </div>
           </div>
         </div>
