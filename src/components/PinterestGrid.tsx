@@ -14,7 +14,6 @@ interface PinterestGridProps {
   hamperProductIds: string[];
   onOpenFilters?: () => void;
   activeFilterCount?: number;
-  showStylistTile?: boolean;
 }
 
 export const PinterestGrid: React.FC<PinterestGridProps> = ({
@@ -24,8 +23,7 @@ export const PinterestGrid: React.FC<PinterestGridProps> = ({
   onAddToHamper,
   hamperProductIds,
   onOpenFilters,
-  activeFilterCount = 0,
-  showStylistTile = true
+  activeFilterCount = 0
 }) => {
   if (matches.length === 0) {
     return (
@@ -46,15 +44,15 @@ export const PinterestGrid: React.FC<PinterestGridProps> = ({
       {/* TRUE CSS MULTI-COLUMN MASONRY CONTAINER (FULL-WIDTH EDGE-TO-EDGE) */}
       <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 gap-4 space-y-4 w-full">
         
-        {/* POSITION #1: LEAD STYLIST TILE */}
-        {showStylistTile && onOpenFilters && (
+        {/* 1. PERSISTENT AVATAR STYLIST TILE (Renders unconditionally as first item on every page) */}
+        {onOpenFilters && (
           <ModestyStylistAvatar
             onOpenFilters={onOpenFilters}
             activeFilterCount={activeFilterCount}
           />
         )}
 
-        {/* REMAINING GARMENT CARDS FLOWING SEAMLESSLY AROUND POSITION #1 */}
+        {/* 2. CURRENT PAGE PRODUCT CARDS */}
         {matches.map((match, idx) => (
           <PinterestCard
             key={match.product.id}

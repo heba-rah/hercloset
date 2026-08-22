@@ -225,10 +225,10 @@ export default function Home() {
         totalItemsCount={calculatedMatches.length}
       />
 
-      {/* Main Full-Width Content Area with Integrated Stylist Tile in Position #1 */}
+      {/* Main Full-Width Content Area with Persistent Stylist Tile in Position #1 */}
       <main className="flex-1 max-w-[1800px] w-full mx-auto px-4 sm:px-6 lg:px-8 pb-20">
         
-        {/* FULL-WIDTH EDGE-TO-EDGE PINTEREST MASONRY GRID WITH STYLIST TILE AT POSITION #1 */}
+        {/* FULL-WIDTH EDGE-TO-EDGE PINTEREST MASONRY GRID (PERSISTENT STYLIST TILE AT POSITION #1 ON EVERY PAGE) */}
         <PinterestGrid
           matches={paginatedMatches}
           isAiMode={filters.demoMode === 'ai_search'}
@@ -237,7 +237,6 @@ export default function Home() {
           hamperProductIds={hamper.map(p => p.id)}
           onOpenFilters={() => setIsFiltersDrawerOpen(true)}
           activeFilterCount={activeFilterCount}
-          showStylistTile={currentPage === 1}
         />
 
         {/* CLEAN PAGINATION CONTROLS */}
