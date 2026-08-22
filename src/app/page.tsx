@@ -7,12 +7,11 @@ import { filterAndScoreProducts } from '@/utils/filterEngine';
 
 import { Header } from '@/components/Header';
 import { ClosetTopShelf } from '@/components/ClosetTopShelf';
+import { ModestyStylistAvatar } from '@/components/ModestyStylistAvatar';
 import { PinterestGrid } from '@/components/PinterestGrid';
-import { DemoBanner } from '@/components/DemoBanner';
 import { ModestyFilters } from '@/components/ModestyFilters';
 import { AuditModal } from '@/components/AuditModal';
 import { OnboardingWizard } from '@/components/OnboardingWizard';
-import { ProfileBadgeBar } from '@/components/ProfileBadgeBar';
 import { HamperDrawer } from '@/components/HamperDrawer';
 import { Sparkles, ShieldCheck, ShoppingBag, X } from 'lucide-react';
 
@@ -165,7 +164,7 @@ export default function Home() {
         activeFilterCount={activeFilterCount}
       />
 
-      {/* FULL-WIDTH HOLLOW WARDROBE TOP SHELF (Occupies full banner width) */}
+      {/* FULL-WIDTH HOLLOW WARDROBE TOP SHELF */}
       <ClosetTopShelf
         selectedOccasion={filters.selectedOccasion}
         onSelectOccasion={(occ) => handleFilterChange({ selectedOccasion: occ })}
@@ -175,31 +174,29 @@ export default function Home() {
         totalItemsCount={calculatedMatches.length}
       />
 
-      {/* Main Full-Width Pinterest Feed Content Container */}
+      {/* Main Content Area: Left Stylist Avatar Column + Right Pinterest Feed */}
       <main className="flex-1 max-w-[1800px] w-full mx-auto px-4 sm:px-6 lg:px-8 pb-20">
         
-        {/* Active Profile Summary */}
-        {profile.isProfileComplete && (
-          <ProfileBadgeBar
-            profile={profile}
-            onEditProfile={() => setShowWizardModal(true)}
+        <div className="flex gap-8 items-start">
+          
+          {/* LEFT COLUMN: MODESTY STYLIST AVATAR WITH SPEECH BUBBLE CTA */}
+          <ModestyStylistAvatar
+            onOpenFilters={() => setIsFiltersDrawerOpen(true)}
+            activeFilterCount={activeFilterCount}
           />
-        )}
 
-        {/* Compact Demo Mode Explanation Banner */}
-        <DemoBanner
-          filters={filters}
-          onFilterChange={handleFilterChange}
-        />
+          {/* RIGHT COLUMN: PINTEREST MASONRY PRODUCT FEED */}
+          <div className="flex-1 min-w-0">
+            <PinterestGrid
+              matches={calculatedMatches}
+              isAiMode={filters.demoMode === 'ai_search'}
+              onOpenAuditModal={(prod) => setSelectedAuditProduct(prod)}
+              onAddToHamper={handleToggleHamper}
+              hamperProductIds={hamper.map(p => p.id)}
+            />
+          </div>
 
-        {/* FULL-WIDTH EDGE-TO-EDGE PINTEREST MASONRY GRID (Starts right below wardrobe top shelf) */}
-        <PinterestGrid
-          matches={calculatedMatches}
-          isAiMode={filters.demoMode === 'ai_search'}
-          onOpenAuditModal={(prod) => setSelectedAuditProduct(prod)}
-          onAddToHamper={handleToggleHamper}
-          hamperProductIds={hamper.map(p => p.id)}
-        />
+        </div>
 
       </main>
 
@@ -246,7 +243,7 @@ export default function Home() {
               </span>
               <button
                 onClick={() => setIsFiltersDrawerOpen(false)}
-                className="px-5 py-2.5 rounded-xl bg-[#8A6B5D] hover:bg-[#4B3F38] text-white font-bold text-xs shadow-md transition-all"
+                className="px-5 py-2.5 rounded-xl bg-[#8A6B5D] hover:bg-[#4B3F38] text-[#FAF7F2] font-bold text-xs shadow-md transition-all"
               >
                 Apply &amp; View Feed
               </button>
@@ -259,11 +256,11 @@ export default function Home() {
       {/* Floating Hamper Button */}
       <button
         onClick={() => setIsHamperOpen(true)}
-        className="fixed bottom-6 right-6 z-40 px-4 py-3 rounded-full bg-[#8A6B5D] hover:bg-[#4B3F38] text-white font-extrabold text-xs shadow-xl flex items-center gap-2.5 transition-all hover:scale-105 active:scale-95 border border-[#B89A8E]"
+        className="fixed bottom-6 right-6 z-40 px-4 py-3 rounded-full bg-[#8A6B5D] hover:bg-[#4B3F38] text-[#FAF7F2] font-extrabold text-xs shadow-xl flex items-center gap-2.5 transition-all hover:scale-105 active:scale-95 border border-[#B89A8E]"
       >
-        <ShoppingBag className="w-4 h-4" />
+        <ShoppingBag className="w-4 h-4 text-[#FAF7F2]" />
         <span>My Hamper</span>
-        <span className="px-2 py-0.5 rounded-full bg-white text-[#8A6B5D] font-mono text-[11px] font-bold">
+        <span className="px-2 py-0.5 rounded-full bg-[#FAF7F2] text-[#8A6B5D] font-mono text-[11px] font-bold">
           {hamper.length}
         </span>
       </button>
