@@ -29,25 +29,26 @@ export const PinterestCard: React.FC<PinterestCardProps> = ({
     setImgSrc('https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=800&q=80');
   };
 
-  const displayPrice = typeof product.price === 'string' && product.price.startsWith('$')
-    ? product.price
-    : `$${product.price}`;
+  // Strip "CAD" from all prices and format strictly as $XX.XX
+  const rawPrice = String(product.price).replace(/CAD/gi, '').trim();
+  const displayPrice = rawPrice.startsWith('$') ? rawPrice : `$${rawPrice}`;
 
   const isHighMatch = matchPercentage >= 90 && passedFilters;
 
-  // DYNAMIC ASYMMETRICAL ASPECT RATIOS BASED ON INDEX
+  // DYNAMIC ASYMMETRICAL ASPECT RATIOS BASED ON INDEX % 5
   const getDynamicAspectClass = (idx: number) => {
-    const mod = idx % 4;
-    if (mod === 0) return 'aspect-[3/5]';  // Tall editorial portrait
+    const mod = idx % 5;
+    if (mod === 0) return 'aspect-[3/5]';  // Tall editorial crop
     if (mod === 1) return 'aspect-[4/5]';  // Standard portrait
-    if (mod === 2) return 'aspect-[2/3]';  // Medium long shot
-    return 'aspect-[1/1]';                // Square/close-up crop
+    if (mod === 2) return 'aspect-[3/4]';  // Mid portrait
+    if (mod === 3) return 'aspect-[2/3]';  // Editorial long shot
+    return 'aspect-[1/1]';                // Square close-up
   };
 
   const aspectClass = getDynamicAspectClass(cardIndex);
 
   return (
-    <div className="break-inside-avoid mb-4 group relative rounded-2xl overflow-hidden transition-all duration-300 flex flex-col bg-transparent font-sans">
+    <div className="break-inside-avoid mb-4 inline-block w-full group relative rounded-2xl overflow-hidden transition-all duration-300 flex flex-col bg-transparent font-sans">
       
       {/* GARMENT IMAGE & HOVER OVERLAY CONTAINER WITH BORDERLESS SOFT SHADOW */}
       <div className={`relative w-full ${aspectClass} rounded-2xl overflow-hidden bg-[#FAF7F2] border-none shadow-sm group-hover:shadow-md transition-all duration-300`}>
@@ -55,7 +56,7 @@ export const PinterestCard: React.FC<PinterestCardProps> = ({
           src={imgSrc}
           alt={product.name}
           onError={handleImageError}
-          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 block"
+          className="w-full h-full object-cover object-center rounded-2xl group-hover:scale-105 transition-transform duration-500 block"
         />
 
         {/* PINTEREST-STYLE HOVER OVERLAY (Translucent dark backdrop on hover) */}

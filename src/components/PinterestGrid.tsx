@@ -35,9 +35,9 @@ export const PinterestGrid: React.FC<PinterestGridProps> = ({
   }
 
   return (
-    <div className="my-2">
-      {/* FULL-WIDTH EDGE-TO-EDGE PINTEREST MASONRY COLUMNS LAYOUT */}
-      <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 gap-4">
+    <div className="my-2 w-full">
+      {/* TRUE CSS MULTI-COLUMN MASONRY CONTAINER */}
+      <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 gap-4 space-y-4 w-full">
         {matches.map((match, idx) => (
           <PinterestCard
             key={match.product.id}

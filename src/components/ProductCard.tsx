@@ -27,29 +27,31 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       ? 'bg-[#8A6B5D] text-white'
       : 'bg-[#B89A8E] text-white';
 
-  const displayPrice = typeof product.price === 'string' && product.price.startsWith('$')
-    ? product.price
-    : `$${product.price}`;
+  // Strip "CAD" from all prices and format strictly as $XX.XX
+  const rawPrice = String(product.price).replace(/CAD/gi, '').trim();
+  const displayPrice = rawPrice.startsWith('$') ? rawPrice : `$${rawPrice}`;
 
+  // DYNAMIC ASYMMETRICAL ASPECT RATIOS BASED ON INDEX % 5
   const getDynamicAspectClass = (idx: number) => {
-    const mod = idx % 4;
-    if (mod === 0) return 'aspect-[3/5]';
-    if (mod === 1) return 'aspect-[4/5]';
-    if (mod === 2) return 'aspect-[2/3]';
-    return 'aspect-[1/1]';
+    const mod = idx % 5;
+    if (mod === 0) return 'aspect-[3/5]';  // Tall editorial crop
+    if (mod === 1) return 'aspect-[4/5]';  // Standard portrait
+    if (mod === 2) return 'aspect-[3/4]';  // Mid portrait
+    if (mod === 3) return 'aspect-[2/3]';  // Editorial long shot
+    return 'aspect-[1/1]';                // Square close-up
   };
 
   const aspectClass = getDynamicAspectClass(cardIndex);
 
   return (
-    <div className="break-inside-avoid mb-4 group relative bg-[#FAF7F2] border-none rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col">
+    <div className="break-inside-avoid mb-4 inline-block w-full group relative bg-[#FAF7F2] border-none rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col font-sans">
       
       {/* Garment Image & Overlay Badges */}
       <div className={`relative w-full ${aspectClass} bg-[#F2EDE6] overflow-hidden rounded-2xl border-none`}>
         <img
           src={product.imageUrl}
           alt={product.name}
-          className="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-500 block"
+          className="h-full w-full object-cover object-center rounded-2xl group-hover:scale-105 transition-transform duration-500 block"
         />
 
         {/* Top Badges */}
@@ -104,11 +106,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         <div>
           {/* Title & Price */}
           <div className="flex items-start justify-between gap-2">
-            <h3 className="font-semibold text-xs text-[#4B3F38] line-clamp-2 leading-snug group-hover:text-[#8A6B5D] transition-colors">
+            <h3 className="font-sans font-medium text-[13px] text-[#4B3F38] line-clamp-1 leading-snug group-hover:text-[#8A6B5D] transition-colors">
               {product.name}
             </h3>
             <div className="text-right shrink-0">
-              <span className="font-bold text-xs text-[#8A6B5D]">{displayPrice}</span>
+              <span className="font-sans font-semibold text-[13px] text-[#4B3F38]">{displayPrice}</span>
             </div>
           </div>
         </div>
