@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Sparkles, Search, SlidersHorizontal, ShieldCheck, AlertTriangle, Store, Filter } from 'lucide-react';
+import { Sparkles, Search, SlidersHorizontal, ShieldCheck, AlertTriangle, Filter } from 'lucide-react';
 import { ModestyFilterState } from '@/types/product';
 
 interface HeaderProps {
@@ -21,12 +21,6 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenFiltersDrawer,
   activeFilterCount
 }) => {
-  const stores = [
-    { id: 'all', label: 'All Stores' },
-    { id: 'urban planet', label: 'Urban Planet' },
-    { id: 'ardene', label: 'Ardene' },
-  ];
-
   const isAiMode = filters.demoMode === 'ai_search';
 
   return (
@@ -147,29 +141,6 @@ export const Header: React.FC<HeaderProps> = ({
               className="w-full bg-white border border-[#D6CFCE] rounded-xl pl-10 pr-4 py-2 text-sm text-[#4B3F38] placeholder-[#B89A8E]"
             />
           </div>
-        </div>
-
-        {/* Store Navigation Pills Bar */}
-        <div className="flex items-center gap-2 overflow-x-auto py-2.5 border-t border-[#D6CFCE] scrollbar-none">
-          <span className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider flex items-center gap-1 mr-1 shrink-0">
-            <Store className="w-3.5 h-3.5 text-[#8A6B5D]" /> Stores:
-          </span>
-          {stores.map((s) => (
-            <button
-              key={s.id}
-              onClick={() => onFilterChange({ selectedRetailer: s.id })}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
-                filters.selectedRetailer === s.id
-                  ? 'bg-[#8A6B5D] text-white border border-[#8A6B5D] shadow-sm'
-                  : 'bg-white text-[#4B3F38] border border-[#D6CFCE] hover:bg-[#F2EDE6]'
-              }`}
-            >
-              {s.label}
-            </button>
-          ))}
-          <span className="ml-auto text-xs text-[#8A6B5D] font-mono hidden sm:block">
-            {totalMatchesCount} Canadian items
-          </span>
         </div>
 
       </div>
