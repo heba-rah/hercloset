@@ -32,22 +32,20 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Top Header Bar */}
         <div className="flex items-center justify-between h-20 gap-4">
 
-          {/* Logo */}
-          <div className="flex items-center gap-3">
-            <div className="h-11 w-11 rounded-2xl bg-gradient-to-tr from-[#8A6B5D] via-[#B89A8E] to-[#3D312A] p-0.5 shadow-md">
-              <div className="h-full w-full bg-[#FAF7F2] rounded-[14px] flex items-center justify-center p-1.5 overflow-hidden">
-                <img src="/logo/logo.png" alt="hercloset logo" className="w-full h-full object-contain" />
-              </div>
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-serif italic font-bold text-2xl tracking-tight text-[#3D312A]">
-                  hercloset
-                </span>
-                <span className="text-[10px] font-sans font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full bg-[#B89A8E]/20 text-[#8A6B5D] border border-[#B89A8E]/40">
-                  AI Fashion Engine
-                </span>
-              </div>
+          {/* Logo Component (Freestanding Icon & Mixed Typography Wordmark) */}
+          <div className="flex items-center gap-3 cursor-pointer">
+            <img
+              src="/logo/logo.png"
+              alt="hercloset logo"
+              className="w-10 h-10 md:w-12 md:h-12 object-contain drop-shadow-xs"
+            />
+            <div className="flex items-baseline">
+              <span className="font-serif italic font-normal text-3xl md:text-4xl text-[#3D312A]">
+                her
+              </span>
+              <span className="font-serif not-italic font-medium text-3xl md:text-4xl text-[#3D312A] tracking-tight">
+                closet
+              </span>
             </div>
           </div>
 
