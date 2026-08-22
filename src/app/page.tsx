@@ -69,9 +69,25 @@ export default function Home() {
   // Pagination State
   const [currentPage, setCurrentPage] = useState<number>(1);
 
-  // Load permanent user account from localStorage on mount
+  // Load permanent user account and modesty profile from localStorage on mount
   useEffect(() => {
     try {
+      const storedProfile = localStorage.getItem('user_modesty_profile');
+      if (storedProfile) {
+        const parsedProf: ModestyProfile = JSON.parse(storedProfile);
+        setProfile(parsedProf);
+        setFilters(prev => ({
+          ...prev,
+          necklines: parsedProf.necklines || prev.necklines,
+          sleeveLengths: parsedProf.sleeveLengths || prev.sleeveLengths,
+          hemlines: parsedProf.hemlines || prev.hemlines,
+          fits: parsedProf.fits || prev.fits,
+          noSlits: parsedProf.noSlits ?? prev.noSlits,
+          noOpenBack: parsedProf.noOpenBack ?? prev.noOpenBack,
+          isOpaque: parsedProf.isOpaque ?? prev.isOpaque,
+        }));
+      }
+
       const storedUser = localStorage.getItem('hercloset_user_account');
       if (storedUser) {
         const parsedUser: UserAccount = JSON.parse(storedUser);

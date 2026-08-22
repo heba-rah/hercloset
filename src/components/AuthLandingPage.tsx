@@ -84,17 +84,23 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
   };
 
   const handleFinishProfileSetup = () => {
+    const finalProfile: ModestyProfile = {
+      ...profile,
+      name: `${fullName.trim() || 'My'}'s Modesty Rules`,
+      isProfileComplete: true
+    };
     const finalUser: UserAccount = {
       name: fullName.trim() || 'Amina Syed',
       email: email.trim(),
       isLoggedIn: true,
-      profile: {
-        ...profile,
-        name: `${fullName.trim()}'s Modesty Rules`,
-        isProfileComplete: true
-      }
+      profile: finalProfile
     };
-    localStorage.setItem('hercloset_user_account', JSON.stringify(finalUser));
+    try {
+      localStorage.setItem('user_modesty_profile', JSON.stringify(finalProfile));
+      localStorage.setItem('hercloset_user_account', JSON.stringify(finalUser));
+    } catch {
+      // ignore
+    }
     onCompleteAuth(finalUser);
   };
 

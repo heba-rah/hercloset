@@ -90,6 +90,9 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
   const [skinIndex, setSkinIndex] = useState<number>(0);
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [selectedNotice, setSelectedNotice] = useState<string>('');
+  
+  // Track completed steps for conditional CTA visibility
+  const [completedSteps, setCompletedSteps] = useState<number[]>([]);
 
   const currentSkins = SKINS[subTab] || SKINS.sleeve;
   const activeSkin = currentSkins[skinIndex % currentSkins.length];
@@ -134,6 +137,8 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
     setSelectedNotice(`Selected ${activeSkin.name}!`);
     setTimeout(() => setSelectedNotice(''), 1500);
 
+    setCompletedSteps(prev => Array.from(new Set([...prev, currentStep])));
+
     // STEP-BY-STEP AUTOMATIC PROGRESSION FLOW
     if (currentStep === 1) {
       // Step 1 (Tops -> Sleeve) -> Auto-advance to Step 2 (Tops -> Neckline)
@@ -147,6 +152,16 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
     }
   };
 
+  const handleFinalConfirm = () => {
+    // Save modesty profile object to localStorage for client persistence
+    try {
+      localStorage.setItem('user_modesty_profile', JSON.stringify(profile));
+    } catch {
+      // ignore
+    }
+    onConfirm();
+  };
+
   const categoryStepLabel =
     currentStep === 1
       ? 'Sleeve'
@@ -155,6 +170,9 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
       : currentStep === 3
       ? 'Skirt'
       : 'Pants';
+
+  // Check if profile setup is ready for final confirmation
+  const isConfirmReady = currentStep === 4 || completedSteps.length >= 2;
 
   return (
     <div className="min-h-screen w-full bg-[#F2EDE6] p-6 sm:p-10 md:p-12 flex flex-col justify-between font-sans selection:bg-[#B89A8E] selection:text-white">
@@ -279,24 +297,25 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
             </button>
           </div>
 
-          {/* BOTTOM MAIN CTA: CONFIRM AND ENTER CLOSET */}
-          <button
-            type="button"
-            onClick={onConfirm}
-            className={`w-full py-4 px-6 rounded-2xl font-bold text-sm shadow-xl transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer active:scale-95 ${
-              currentStep === 4
-                ? 'bg-[#3D312A] hover:bg-[#2A211B] text-[#FAF7F2] ring-4 ring-amber-300/50 scale-102'
-                : 'bg-[#3D312A] hover:bg-[#2A211B] text-[#FAF7F2]'
-            }`}
-          >
-            <span>Confirm and Enter Closet</span>
-            <ArrowRight className="w-4 h-4 text-amber-200" />
-          </button>
+          {/* BOTTOM MAIN CTA: CONFIRM AND ENTER CLOSET (CONDITIONALLY VISIBLE ONCE STEPS ARE ADVANCED) */}
+          <div className={`transition-all duration-500 ${
+            isConfirmReady
+              ? 'opacity-100 translate-y-0 pointer-events-auto'
+              : 'opacity-0 translate-y-4 pointer-events-none'
+          }`}>
+            <button
+              type="button"
+              onClick={handleFinalConfirm}
+              className="w-full py-4 px-6 rounded-2xl font-bold text-sm bg-[#3D312A] hover:bg-[#2A211B] text-[#FAF7F2] shadow-xl transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer active:scale-95 ring-4 ring-amber-300/40"
+            >
+              <span>Confirm and Enter Closet &rarr;</span>
+            </button>
+          </div>
 
         </div>
 
         {/* RIGHT COLUMN: CENTER/RIGHT CHARACTER PODIUM & STEPPER */}
-        <div className="flex flex-col items-center justify-center bg-[#FAF7F2] p-6 sm:p-8 rounded-3xl border border-[#D6CFCE] shadow-sm relative min-h-[480px]">
+        <div className="flex flex-col items-center justify-center bg-[#FAF7F2] p-6 sm:p-8 rounded-3xl border border-[#D6CFCE] shadow-sm relative min-h-[520px]">
           
           {/* TOP STEPPER PILLS & BACK BUTTON */}
           <div className="w-full flex items-center justify-between mb-6 px-2">
@@ -312,117 +331,123 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
               <span>Back</span>
             </button>
 
-            {/* STEPPER SUB-PILLS */}
+            {/* DYNAMIC SUBCATEGORY FILTER PILLS (SHOW ONLY TOPS OR BOTTOMS PILLS) */}
             <div className="flex items-center gap-2 bg-[#F2EDE6] p-1.5 rounded-full border border-[#D6CFCE]">
-              <button
-                type="button"
-                onClick={() => goToStep(1)}
-                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                  currentStep === 1
-                    ? 'bg-[#3D312A] text-white shadow-xs'
-                    : 'text-[#8A6B5D] hover:bg-white'
-                }`}
-              >
-                Sleeve
-              </button>
+              {mainTab === 'tops' ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => goToStep(1)}
+                    className={`px-5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                      currentStep === 1
+                        ? 'bg-[#3D312A] text-white shadow-xs'
+                        : 'text-[#8A6B5D] hover:bg-white'
+                    }`}
+                  >
+                    Sleeve
+                  </button>
 
-              <button
-                type="button"
-                onClick={() => goToStep(2)}
-                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                  currentStep === 2
-                    ? 'bg-[#3D312A] text-white shadow-xs'
-                    : 'text-[#8A6B5D] hover:bg-white'
-                }`}
-              >
-                Neckline
-              </button>
+                  <button
+                    type="button"
+                    onClick={() => goToStep(2)}
+                    className={`px-5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                      currentStep === 2
+                        ? 'bg-[#3D312A] text-white shadow-xs'
+                        : 'text-[#8A6B5D] hover:bg-white'
+                    }`}
+                  >
+                    Neckline
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => goToStep(3)}
+                    className={`px-5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                      currentStep === 3
+                        ? 'bg-[#3D312A] text-white shadow-xs'
+                        : 'text-[#8A6B5D] hover:bg-white'
+                    }`}
+                  >
+                    Skirt
+                  </button>
 
-              <button
-                type="button"
-                onClick={() => goToStep(3)}
-                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                  currentStep === 3
-                    ? 'bg-[#3D312A] text-white shadow-xs'
-                    : 'text-[#8A6B5D] hover:bg-white'
-                }`}
-              >
-                Skirt
-              </button>
-
-              <button
-                type="button"
-                onClick={() => goToStep(4)}
-                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                  currentStep === 4
-                    ? 'bg-[#3D312A] text-white shadow-xs'
-                    : 'text-[#8A6B5D] hover:bg-white'
-                }`}
-              >
-                Pants
-              </button>
+                  <button
+                    type="button"
+                    onClick={() => goToStep(4)}
+                    className={`px-5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                      currentStep === 4
+                        ? 'bg-[#3D312A] text-white shadow-xs'
+                        : 'text-[#8A6B5D] hover:bg-white'
+                    }`}
+                  >
+                    Pants
+                  </button>
+                </>
+              )}
             </div>
 
             <div className="w-12" /> {/* Spacer */}
           </div>
 
-          {/* 3D CHARACTER PODIUM STAGE */}
-          <div className="relative w-full max-w-lg h-72 flex items-center justify-center my-4">
+          {/* ENLARGED 3D CHARACTER PODIUM STAGE & SPOTLIGHT */}
+          <div className="relative w-full max-w-lg h-80 flex items-center justify-center my-4">
             
-            {/* OVERHEAD RADIAL SPOTLIGHT GLOW */}
+            {/* ENLARGED OVERHEAD RADIAL SPOTLIGHT GLOW */}
             <div
-              className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-64 pointer-events-none rounded-full"
+              className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-72 pointer-events-none rounded-full"
               style={{
-                background: 'radial-gradient(circle, rgba(230,194,128,0.35) 0%, transparent 70%)'
+                background: 'radial-gradient(circle, rgba(230,194,128,0.4) 0%, transparent 70%)'
               }}
             />
 
             {/* ADJACENT PREVIEW (LEFT) */}
-            <div className="absolute left-4 top-6 z-0 scale-75 opacity-40 blur-[0.5px] pointer-events-none transition-all duration-300 hidden sm:block">
+            <div className="absolute left-2 top-8 z-0 scale-75 opacity-40 blur-[0.5px] pointer-events-none transition-all duration-300 hidden sm:block">
               <img
                 src={prevSkin.staticImg}
                 alt={prevSkin.name}
-                className="w-24 h-24 object-contain"
+                className="w-28 h-28 object-contain"
               />
             </div>
 
-            {/* CENTER ACTIVE CHARACTER */}
+            {/* ENLARGED CENTER ACTIVE CHARACTER */}
             <div
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
               className="relative z-10 flex flex-col items-center group cursor-pointer transition-transform duration-300 hover:scale-105"
             >
-              {/* Sprite Image */}
+              {/* ENLARGED ACTIVE AVATAR SPRITE (w-[204px] h-[204px]) */}
               <img
                 src={isHovered ? activeSkin.gifImg : activeSkin.staticImg}
                 alt={activeSkin.name}
-                className="w-[136px] h-[136px] object-contain drop-shadow-xl [image-rendering:pixelated]"
+                className="w-[204px] h-[204px] object-contain drop-shadow-2xl [image-rendering:pixelated]"
               />
 
-              {/* 3D OVAL PODIUM BASE */}
-              <div className="w-44 h-8 mx-auto -mt-3 rounded-[100%] bg-gradient-to-b from-[#D6CFCE] via-[#B89A8E] to-[#8A6B5D] shadow-md border-t border-white/60 flex items-center justify-center">
-                <span className="text-[10px] font-mono font-bold text-[#FAF7F2] uppercase tracking-widest drop-shadow-xs">
+              {/* ENLARGED 3D OVAL PODIUM BASE (w-56 h-10) */}
+              <div className="w-56 h-10 mx-auto -mt-4 rounded-[100%] bg-gradient-to-b from-[#D6CFCE] via-[#B89A8E] to-[#8A6B5D] shadow-lg border-t border-white/70 flex items-center justify-center">
+                <span className="text-[11px] font-mono font-bold text-[#FAF7F2] uppercase tracking-widest drop-shadow-xs">
                   {activeSkin.name}
                 </span>
               </div>
             </div>
 
             {/* ADJACENT PREVIEW (RIGHT) */}
-            <div className="absolute right-4 top-6 z-0 scale-75 opacity-40 blur-[0.5px] pointer-events-none transition-all duration-300 hidden sm:block">
+            <div className="absolute right-2 top-8 z-0 scale-75 opacity-40 blur-[0.5px] pointer-events-none transition-all duration-300 hidden sm:block">
               <img
                 src={nextSkin.staticImg}
                 alt={nextSkin.name}
-                className="w-24 h-24 object-contain"
+                className="w-28 h-28 object-contain"
               />
             </div>
 
-            {/* ARROWS */}
+            {/* CAROUSEL ARROWS */}
             {currentSkins.length > 1 && (
               <>
                 <button
                   type="button"
                   onClick={handlePrevSkin}
-                  className="absolute left-2 z-20 p-2.5 rounded-full bg-white/90 hover:bg-white text-[#3D312A] border border-[#D6CFCE] shadow-md transition-all cursor-pointer hover:scale-110 active:scale-95"
+                  className="absolute left-2 z-20 p-3 rounded-full bg-white/90 hover:bg-white text-[#3D312A] border border-[#D6CFCE] shadow-md transition-all cursor-pointer hover:scale-110 active:scale-95"
                 >
                   <ChevronLeft className="w-5 h-5 text-[#8A6B5D]" />
                 </button>
@@ -430,7 +455,7 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
                 <button
                   type="button"
                   onClick={handleNextSkin}
-                  className="absolute right-2 z-20 p-2.5 rounded-full bg-white/90 hover:bg-white text-[#3D312A] border border-[#D6CFCE] shadow-md transition-all cursor-pointer hover:scale-110 active:scale-95"
+                  className="absolute right-2 z-20 p-3 rounded-full bg-white/90 hover:bg-white text-[#3D312A] border border-[#D6CFCE] shadow-md transition-all cursor-pointer hover:scale-110 active:scale-95"
                 >
                   <ChevronRight className="w-5 h-5 text-[#8A6B5D]" />
                 </button>
@@ -439,7 +464,7 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
 
           </div>
 
-          {/* PRIMARY STEP SELECT BUTTON WITH AUTO PROGRESSION */}
+          {/* PRIMARY STEP SELECT BUTTON WITH CLEAN SINGLE CHECKMARK LABEL */}
           <div className="mt-4 flex flex-col items-center gap-2">
             <button
               type="button"
@@ -447,7 +472,7 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
               className="bg-[#3D312A] hover:bg-[#2A211B] text-[#FAF7F2] px-8 py-3 rounded-full font-bold shadow-md transition-all cursor-pointer active:scale-95 flex items-center gap-2 text-xs md:text-sm"
             >
               <Check className="w-4 h-4 text-amber-200" />
-              <span>✓ Select for {categoryStepLabel}</span>
+              <span>Select for {categoryStepLabel}</span>
             </button>
 
             {selectedNotice && (
