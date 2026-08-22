@@ -5,8 +5,8 @@ import React, { useEffect, useState } from 'react';
 // Detailed SVG Realistic Garment Vector Silhouette Renderer
 const RealisticGarmentSvg: React.FC<{ type: 'trench' | 'abaya' | 'dress' | 'cardigan' | 'duster'; color: string; height: string; width: string }> = ({ type, color, height, width }) => {
   return (
-    <div className={`relative ${height} ${width} drop-shadow-2xl shrink-0 transition-transform duration-500`}>
-      {/* Wooden Hanger Hook */}
+    <div className={`relative ${height} ${width} drop-shadow-2xl shrink-0`}>
+      {/* Wooden Hanger Hook (Pivot Contact Point) */}
       <svg className="w-12 h-8 mx-auto block mb-[-2px]" viewBox="0 0 40 28" fill="none">
         <path d="M20 18 C15 14, 12 10, 16 5 C19 1, 24 2, 23 7 C22 10, 20 12, 20 18 Z" stroke="#C99E56" strokeWidth="2.5" fill="none" strokeLinecap="round" />
         <path d="M4 25 L20 18 L36 25 L32 27 L20 20 L8 27 Z" fill="#8A6B5D" stroke="#4B3F38" strokeWidth="1" />
@@ -73,7 +73,7 @@ const RealisticGarmentSvg: React.FC<{ type: 'trench' | 'abaya' | 'dress' | 'card
           <g>
             <path d="M36 0 L104 0 L130 80 L140 595 L0 595 L10 80 Z" fill={`url(#grad-${type}-${color.replace('#','')})`} />
             <path d="M36 0 L68 80 L8 55 Z" fill="#000" fillOpacity="0.25" />
-            <path d="M104 0 L72 80 L132 55 Z" fill="#000" fillOpacity="0.25" />
+            <path d="M104 0 L72 80 L130 55 Z" fill="#000" fillOpacity="0.25" />
             <rect x="18" y="280" width="34" height="40" rx="3" fill="#000" fillOpacity="0.2" />
             <rect x="88" y="280" width="34" height="40" rx="3" fill="#000" fillOpacity="0.2" />
             <path d="M70 80 Q65 340 70 595" stroke="#000" strokeOpacity="0.35" strokeWidth="4" />
@@ -89,15 +89,15 @@ export const PartingClothesReveal: React.FC = () => {
   const [isDone, setIsDone] = useState<boolean>(false);
 
   useEffect(() => {
-    // 1. Initial 700ms pause so dense wardrobe rack is clearly registered
+    // 1. Initial 700ms pause so dense wardrobe rack is clearly registered with idle breeze sways
     const timer1 = setTimeout(() => {
       setIsParted(true);
     }, 700);
 
-    // 2. Unmount overlay completely after animation finishes (2.8s) so no pointer-events block clicks
+    // 2. Unmount overlay completely after animation finishes (3.2s) so no pointer-events block clicks
     const timer2 = setTimeout(() => {
       setIsDone(true);
-    }, 2900);
+    }, 3200);
 
     return () => {
       clearTimeout(timer1);
@@ -108,31 +108,30 @@ export const PartingClothesReveal: React.FC = () => {
   if (isDone) return null;
 
   // High-Fashion Editorial Colors: Espresso (#241B18), Camel (#A67C52), Olive (#424637), Burgundy (#4A2129), Ivory (#D8CEBE), Slate (#2D3136)
-  // ORGANIC DENSE OVERLAPPING GARMENTS (Extended h-[720px] and h-[660px] to conceal "hercloset" text completely)
-  const leftClusterItems: { type: 'trench' | 'abaya' | 'dress' | 'cardigan' | 'duster'; color: string; height: string; width: string; offset: string; vOffset: string }[] = [
-    { type: 'trench', color: '#A67C52', height: 'h-[680px]', width: 'w-44', offset: 'ml-0', vOffset: 'pt-0' },
-    { type: 'abaya', color: '#241B18', height: 'h-[740px]', width: 'w-48', offset: '-ml-16', vOffset: 'pt-4' },
-    { type: 'dress', color: '#4A2129', height: 'h-[660px]', width: 'w-40', offset: '-ml-14', vOffset: 'pt-1' },
-    { type: 'duster', color: '#424637', height: 'h-[720px]', width: 'w-44', offset: '-ml-16', vOffset: 'pt-5' },
-    { type: 'cardigan', color: '#D8CEBE', height: 'h-[620px]', width: 'w-40', offset: '-ml-14', vOffset: 'pt-2' },
-    { type: 'trench', color: '#2D3136', height: 'h-[700px]', width: 'w-44', offset: '-ml-16', vOffset: 'pt-0' },
-    { type: 'abaya', color: '#241B18', height: 'h-[750px]', width: 'w-48', offset: '-ml-16', vOffset: 'pt-6' },
-    { type: 'dress', color: '#A67C52', height: 'h-[650px]', width: 'w-40', offset: '-ml-14', vOffset: 'pt-3' },
-    { type: 'duster', color: '#4A2129', height: 'h-[710px]', width: 'w-44', offset: '-ml-16', vOffset: 'pt-1' },
-    { type: 'cardigan', color: '#424637', height: 'h-[630px]', width: 'w-40', offset: '-ml-14', vOffset: 'pt-4' },
+  const leftClusterItems: { type: 'trench' | 'abaya' | 'dress' | 'cardigan' | 'duster'; color: string; height: string; width: string; offset: string; vOffset: string; tilt: string }[] = [
+    { type: 'trench', color: '#A67C52', height: 'h-[680px]', width: 'w-44', offset: 'ml-0', vOffset: 'pt-0', tilt: 'rotate-[6deg]' },
+    { type: 'abaya', color: '#241B18', height: 'h-[740px]', width: 'w-48', offset: '-ml-16', vOffset: 'pt-4', tilt: 'rotate-[4deg]' },
+    { type: 'dress', color: '#4A2129', height: 'h-[660px]', width: 'w-40', offset: '-ml-14', vOffset: 'pt-1', tilt: 'rotate-[7deg]' },
+    { type: 'duster', color: '#424637', height: 'h-[720px]', width: 'w-44', offset: '-ml-16', vOffset: 'pt-5', tilt: 'rotate-[5deg]' },
+    { type: 'cardigan', color: '#D8CEBE', height: 'h-[620px]', width: 'w-40', offset: '-ml-14', vOffset: 'pt-2', tilt: 'rotate-[6deg]' },
+    { type: 'trench', color: '#2D3136', height: 'h-[700px]', width: 'w-44', offset: '-ml-16', vOffset: 'pt-0', tilt: 'rotate-[4deg]' },
+    { type: 'abaya', color: '#241B18', height: 'h-[750px]', width: 'w-48', offset: '-ml-16', vOffset: 'pt-6', tilt: 'rotate-[6deg]' },
+    { type: 'dress', color: '#A67C52', height: 'h-[650px]', width: 'w-40', offset: '-ml-14', vOffset: 'pt-3', tilt: 'rotate-[5deg]' },
+    { type: 'duster', color: '#4A2129', height: 'h-[710px]', width: 'w-44', offset: '-ml-16', vOffset: 'pt-1', tilt: 'rotate-[7deg]' },
+    { type: 'cardigan', color: '#424637', height: 'h-[630px]', width: 'w-40', offset: '-ml-14', vOffset: 'pt-4', tilt: 'rotate-[5deg]' },
   ];
 
-  const rightClusterItems: { type: 'trench' | 'abaya' | 'dress' | 'cardigan' | 'duster'; color: string; height: string; width: string; offset: string; vOffset: string }[] = [
-    { type: 'cardigan', color: '#D8CEBE', height: 'h-[630px]', width: 'w-40', offset: 'mr-0', vOffset: 'pt-4' },
-    { type: 'duster', color: '#424637', height: 'h-[710px]', width: 'w-44', offset: '-mr-14', vOffset: 'pt-1' },
-    { type: 'dress', color: '#A67C52', height: 'h-[650px]', width: 'w-40', offset: '-mr-14', vOffset: 'pt-3' },
-    { type: 'abaya', color: '#241B18', height: 'h-[750px]', width: 'w-48', offset: '-mr-16', vOffset: 'pt-6' },
-    { type: 'trench', color: '#2D3136', height: 'h-[700px]', width: 'w-44', offset: '-mr-16', vOffset: 'pt-0' },
-    { type: 'cardigan', color: '#4A2129', height: 'h-[620px]', width: 'w-40', offset: '-mr-14', vOffset: 'pt-2' },
-    { type: 'duster', color: '#424637', height: 'h-[720px]', width: 'w-44', offset: '-mr-16', vOffset: 'pt-5' },
-    { type: 'dress', color: '#D8CEBE', height: 'h-[660px]', width: 'w-40', offset: '-mr-14', vOffset: 'pt-1' },
-    { type: 'abaya', color: '#241B18', height: 'h-[740px]', width: 'w-48', offset: '-mr-16', vOffset: 'pt-4' },
-    { type: 'trench', color: '#A67C52', height: 'h-[680px]', width: 'w-44', offset: '-mr-14', vOffset: 'pt-0' },
+  const rightClusterItems: { type: 'trench' | 'abaya' | 'dress' | 'cardigan' | 'duster'; color: string; height: string; width: string; offset: string; vOffset: string; tilt: string }[] = [
+    { type: 'cardigan', color: '#D8CEBE', height: 'h-[630px]', width: 'w-40', offset: 'mr-0', vOffset: 'pt-4', tilt: 'rotate-[-5deg]' },
+    { type: 'duster', color: '#424637', height: 'h-[710px]', width: 'w-44', offset: '-mr-14', vOffset: 'pt-1', tilt: 'rotate-[-7deg]' },
+    { type: 'dress', color: '#A67C52', height: 'h-[650px]', width: 'w-40', offset: '-mr-14', vOffset: 'pt-3', tilt: 'rotate-[-5deg]' },
+    { type: 'abaya', color: '#241B18', height: 'h-[750px]', width: 'w-48', offset: '-mr-16', vOffset: 'pt-6', tilt: 'rotate-[-6deg]' },
+    { type: 'trench', color: '#2D3136', height: 'h-[700px]', width: 'w-44', offset: '-mr-16', vOffset: 'pt-0', tilt: 'rotate-[-4deg]' },
+    { type: 'cardigan', color: '#4A2129', height: 'h-[620px]', width: 'w-40', offset: '-mr-14', vOffset: 'pt-2', tilt: 'rotate-[-6deg]' },
+    { type: 'duster', color: '#424637', height: 'h-[720px]', width: 'w-44', offset: '-mr-16', vOffset: 'pt-5', tilt: 'rotate-[-5deg]' },
+    { type: 'dress', color: '#D8CEBE', height: 'h-[660px]', width: 'w-40', offset: '-mr-14', vOffset: 'pt-1', tilt: 'rotate-[-7deg]' },
+    { type: 'abaya', color: '#241B18', height: 'h-[740px]', width: 'w-48', offset: '-mr-16', vOffset: 'pt-4', tilt: 'rotate-[-4deg]' },
+    { type: 'trench', color: '#A67C52', height: 'h-[680px]', width: 'w-44', offset: '-mr-14', vOffset: 'pt-0', tilt: 'rotate-[-6deg]' },
   ];
 
   return (
@@ -141,25 +140,28 @@ export const PartingClothesReveal: React.FC = () => {
     }`}>
       
       {/* 
-        NO TOP POLE OR RAIL — GARMENTS HANG FREELY FROM TOP OF VIEWPORT DOWN PAST CENTER (h-screen coverage)
-      */}
-
-      {/* 
-        LEFT CLUSTER (10 ORGANIC HIGH-FIDELITY LAYERED GARMENTS COVERING CENTER)
+        ========================================================================
+        LEFT CLUSTER WITH TOP HANGER PIVOT ORIGIN & STAGGERED MOMENTUM SWINGS
+        ========================================================================
       */}
       <div
         className={`absolute top-0 left-0 w-1/2 h-full flex items-start justify-end pr-1 transition-all duration-[2200ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
           isParted
-            ? '-translate-x-[125%] rotate-[-3deg]'
-            : 'translate-x-0 rotate-0'
+            ? '-translate-x-[125%]'
+            : 'translate-x-0'
         }`}
       >
         <div className="flex items-start">
           {leftClusterItems.map((item, idx) => (
             <div
               key={idx}
-              className={`${item.offset} ${item.vOffset} shrink-0`}
-              style={{ zIndex: idx + 1 }}
+              className={`${item.offset} ${item.vOffset} shrink-0 origin-top transition-all duration-[2200ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
+                isParted ? item.tilt : 'rotate-0'
+              }`}
+              style={{
+                zIndex: idx + 1,
+                transitionDelay: isParted ? `${idx * 40}ms` : '0ms'
+              }}
             >
               <RealisticGarmentSvg type={item.type} color={item.color} height={item.height} width={item.width} />
             </div>
@@ -168,21 +170,28 @@ export const PartingClothesReveal: React.FC = () => {
       </div>
 
       {/* 
-        RIGHT CLUSTER (10 ORGANIC HIGH-FIDELITY LAYERED GARMENTS COVERING CENTER)
+        ========================================================================
+        RIGHT CLUSTER WITH TOP HANGER PIVOT ORIGIN & STAGGERED MOMENTUM SWINGS
+        ========================================================================
       */}
       <div
         className={`absolute top-0 right-0 w-1/2 h-full flex items-start justify-start pl-1 transition-all duration-[2200ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
           isParted
-            ? 'translate-x-[125%] rotate-[3deg]'
-            : 'translate-x-0 rotate-0'
+            ? 'translate-x-[125%]'
+            : 'translate-x-0'
         }`}
       >
         <div className="flex items-start">
           {rightClusterItems.map((item, idx) => (
             <div
               key={idx}
-              className={`${item.offset} ${item.vOffset} shrink-0`}
-              style={{ zIndex: rightClusterItems.length - idx }}
+              className={`${item.offset} ${item.vOffset} shrink-0 origin-top transition-all duration-[2200ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
+                isParted ? item.tilt : 'rotate-0'
+              }`}
+              style={{
+                zIndex: rightClusterItems.length - idx,
+                transitionDelay: isParted ? `${(rightClusterItems.length - 1 - idx) * 40}ms` : '0ms'
+              }}
             >
               <RealisticGarmentSvg type={item.type} color={item.color} height={item.height} width={item.width} />
             </div>
