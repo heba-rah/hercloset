@@ -26,7 +26,7 @@ export const Header: React.FC<HeaderProps> = ({
   const isAiMode = filters.demoMode === 'ai_search';
 
   return (
-    <header className="sticky top-0 z-40 bg-slate-950/95 backdrop-blur-md border-b border-slate-800 text-slate-100 shadow-xl">
+    <header className="sticky top-0 z-40 bg-[#FAF7F2]/95 backdrop-blur-md border-b border-[#D6CFCE] text-[#4B3F38] shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Top Header Bar */}
@@ -34,21 +34,21 @@ export const Header: React.FC<HeaderProps> = ({
           
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <div className="h-11 w-11 rounded-2xl bg-gradient-to-tr from-purple-600 via-indigo-500 to-teal-400 p-0.5 shadow-lg shadow-purple-950/40">
-              <div className="h-full w-full bg-slate-950 rounded-[14px] flex items-center justify-center">
-                <Sparkles className="w-6 h-6 text-purple-400 animate-pulse" />
+            <div className="h-11 w-11 rounded-2xl bg-gradient-to-tr from-[#8A6B5D] via-[#B89A8E] to-[#4B3F38] p-0.5 shadow-md">
+              <div className="h-full w-full bg-[#FAF7F2] rounded-[14px] flex items-center justify-center">
+                <Sparkles className="w-6 h-6 text-[#8A6B5D]" />
               </div>
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-2xl tracking-tight bg-gradient-to-r from-purple-400 via-indigo-200 to-teal-200 bg-clip-text text-transparent">
+                <span className="font-bold text-2xl tracking-tight bg-gradient-to-r from-[#8A6B5D] via-[#B89A8E] to-[#4B3F38] bg-clip-text text-transparent">
                   hercloset
                 </span>
-                <span className="text-[10px] font-semibold tracking-wider uppercase px-2 py-0.5 rounded-full bg-purple-950/80 text-purple-300 border border-purple-800/60">
+                <span className="text-[10px] font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full bg-[#B89A8E]/20 text-[#8A6B5D] border border-[#B89A8E]/40">
                   AI Fashion Engine
                 </span>
               </div>
-              <p className="text-xs text-slate-400 hidden sm:block">
+              <p className="text-xs text-[#8A6B5D] hidden sm:block">
                 Modesty search across live Urban Planet &amp; Ardene Canada catalogs
               </p>
             </div>
@@ -57,18 +57,18 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Search Input */}
           <div className="flex-1 max-w-md hidden md:block">
             <div className="relative">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-400" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8A6B5D]" />
               <input
                 type="text"
                 placeholder="Search Urban Planet &amp; Ardene items..."
                 value={filters.searchQuery}
                 onChange={(e) => onFilterChange({ searchQuery: e.target.value })}
-                className="w-full bg-slate-900/90 border border-slate-800 rounded-xl pl-10 pr-10 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                className="w-full bg-white border border-[#D6CFCE] rounded-xl pl-10 pr-10 py-2.5 text-sm text-[#4B3F38] placeholder-[#B89A8E] focus:outline-none focus:ring-2 focus:ring-[#8A6B5D]/40 shadow-inner"
               />
               {filters.searchQuery && (
                 <button
                   onClick={() => onFilterChange({ searchQuery: '' })}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-200"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#8A6B5D] hover:text-[#4B3F38]"
                 >
                   Clear
                 </button>
@@ -78,16 +78,16 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Demo Mode Toggle Switch */}
           <div className="flex items-center gap-3">
-            <div className="hidden xl:flex items-center gap-2 bg-slate-900/90 p-1.5 rounded-xl border border-slate-800">
+            <div className="hidden xl:flex items-center gap-2 bg-[#F2EDE6] p-1.5 rounded-xl border border-[#D6CFCE]">
               <button
                 onClick={() => onFilterChange({ demoMode: 'broken_keyword' })}
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                   !isAiMode
-                    ? 'bg-rose-950/80 text-rose-300 border border-rose-800/80 shadow-md'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-rose-100 text-rose-800 border border-rose-300 shadow-sm'
+                    : 'text-[#4B3F38]/70 hover:text-[#4B3F38]'
                 }`}
               >
-                <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
+                <AlertTriangle className="w-3.5 h-3.5 text-rose-600" />
                 <span>Broken Keyword Search</span>
               </button>
 
@@ -95,18 +95,18 @@ export const Header: React.FC<HeaderProps> = ({
                 onClick={() => onFilterChange({ demoMode: 'ai_search' })}
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                   isAiMode
-                    ? 'bg-purple-950/90 text-purple-300 border border-purple-700/80 shadow-md shadow-purple-950'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-[#8A6B5D] text-white shadow-sm'
+                    : 'text-[#4B3F38]/70 hover:text-[#4B3F38]'
                 }`}
               >
-                <ShieldCheck className="w-3.5 h-3.5 text-purple-400" />
+                <ShieldCheck className="w-3.5 h-3.5 text-[#F2EDE6]" />
                 <span>AI Vision Modesty Search</span>
               </button>
             </div>
 
             <button
               onClick={onToggleMobileFilters}
-              className="lg:hidden p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white"
+              className="lg:hidden p-2.5 rounded-xl bg-[#FAF7F2] border border-[#D6CFCE] text-[#4B3F38] hover:bg-[#F2EDE6]"
               aria-label="Open Filters"
             >
               <SlidersHorizontal className="w-5 h-5" />
@@ -118,21 +118,21 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Mobile Search Bar */}
         <div className="pb-3 md:hidden">
           <div className="relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-400" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8A6B5D]" />
             <input
               type="text"
               placeholder="Search modest fashion..."
               value={filters.searchQuery}
               onChange={(e) => onFilterChange({ searchQuery: e.target.value })}
-              className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-sm text-slate-100 placeholder-slate-500"
+              className="w-full bg-white border border-[#D6CFCE] rounded-xl pl-10 pr-4 py-2 text-sm text-[#4B3F38] placeholder-[#B89A8E]"
             />
           </div>
         </div>
 
         {/* Store Navigation Pills Bar */}
-        <div className="flex items-center gap-2 overflow-x-auto py-2.5 border-t border-slate-900 scrollbar-none">
-          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1 mr-1 shrink-0">
-            <Store className="w-3.5 h-3.5 text-purple-400" /> Stores:
+        <div className="flex items-center gap-2 overflow-x-auto py-2.5 border-t border-[#D6CFCE] scrollbar-none">
+          <span className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider flex items-center gap-1 mr-1 shrink-0">
+            <Store className="w-3.5 h-3.5 text-[#8A6B5D]" /> Stores:
           </span>
           {stores.map((s) => (
             <button
@@ -140,14 +140,14 @@ export const Header: React.FC<HeaderProps> = ({
               onClick={() => onFilterChange({ selectedRetailer: s.id })}
               className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
                 filters.selectedRetailer === s.id
-                  ? 'bg-purple-500/20 text-purple-300 border border-purple-500/60'
-                  : 'bg-slate-900/60 text-slate-400 border border-slate-800/60 hover:text-slate-200'
+                  ? 'bg-[#8A6B5D] text-white border border-[#8A6B5D] shadow-sm'
+                  : 'bg-white text-[#4B3F38] border border-[#D6CFCE] hover:bg-[#F2EDE6]'
               }`}
             >
               {s.label}
             </button>
           ))}
-          <span className="ml-auto text-xs text-slate-500 font-mono hidden sm:block">
+          <span className="ml-auto text-xs text-[#8A6B5D] font-mono hidden sm:block">
             {totalMatchesCount} Canadian items
           </span>
         </div>

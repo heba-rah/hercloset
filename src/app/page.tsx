@@ -125,7 +125,7 @@ export default function Home() {
   }, [filters]);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-purple-500 selection:text-slate-950">
+    <div className="min-h-screen bg-[#F2EDE6] text-[#4B3F38] flex flex-col font-sans selection:bg-[#B89A8E] selection:text-white">
       
       {/* Onboarding Profile Wizard Modal */}
       {(!profile.isProfileComplete || showWizardModal) && (
@@ -208,11 +208,11 @@ export default function Home() {
       {/* Floating Hamper Button */}
       <button
         onClick={() => setIsHamperOpen(true)}
-        className="fixed bottom-6 right-6 z-40 px-4 py-3 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-extrabold text-xs shadow-2xl shadow-purple-950 flex items-center gap-2.5 transition-all hover:scale-105 active:scale-95 border border-purple-400/40"
+        className="fixed bottom-6 right-6 z-40 px-4 py-3 rounded-full bg-[#8A6B5D] hover:bg-[#4B3F38] text-white font-extrabold text-xs shadow-xl flex items-center gap-2.5 transition-all hover:scale-105 active:scale-95 border border-[#B89A8E]"
       >
         <ShoppingBag className="w-4 h-4" />
         <span>My Hamper</span>
-        <span className="px-2 py-0.5 rounded-full bg-slate-950 text-purple-300 border border-purple-500/60 font-mono text-[11px]">
+        <span className="px-2 py-0.5 rounded-full bg-white text-[#8A6B5D] font-mono text-[11px] font-bold">
           {hamper.length}
         </span>
       </button>
@@ -228,8 +228,8 @@ export default function Home() {
 
       {/* Mobile Filters Drawer */}
       {isMobileFiltersOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden flex flex-col justify-end bg-slate-950/80 backdrop-blur-md">
-          <div className="max-h-[85vh] overflow-y-auto p-4 bg-slate-900 rounded-t-3xl border-t border-slate-800">
+        <div className="fixed inset-0 z-50 lg:hidden flex flex-col justify-end bg-[#4B3F38]/60 backdrop-blur-md">
+          <div className="max-h-[85vh] overflow-y-auto p-4 bg-[#FAF7F2] rounded-t-3xl border-t border-[#D6CFCE]">
             <ModestyFilters
               filters={filters}
               onFilterChange={handleFilterChange}
@@ -250,19 +250,19 @@ export default function Home() {
       />
 
       {/* Footer */}
-      <footer className="mt-auto border-t border-slate-900 bg-slate-950 py-8 text-xs text-slate-500">
+      <footer className="mt-auto border-t border-[#D6CFCE] bg-[#FAF7F2] py-8 text-xs text-[#8A6B5D]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="h-6 w-6 rounded-lg bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-purple-400">
+            <div className="h-6 w-6 rounded-lg bg-[#F2EDE6] border border-[#B89A8E] flex items-center justify-center text-[#8A6B5D]">
               <Sparkles className="w-3.5 h-3.5" />
             </div>
-            <span className="font-semibold text-slate-300">hercloset</span>
+            <span className="font-semibold text-[#4B3F38]">hercloset</span>
             <span>— AI-powered visual fashion search engine</span>
           </div>
 
-          <div className="flex items-center gap-4 text-slate-400">
+          <div className="flex items-center gap-4 text-[#4B3F38]">
             <span className="flex items-center gap-1">
-              <ShieldCheck className="w-3.5 h-3.5 text-purple-400" /> Urban Planet &amp; Ardene Live Catalog
+              <ShieldCheck className="w-3.5 h-3.5 text-[#8A6B5D]" /> Urban Planet &amp; Ardene Live Catalog
             </span>
           </div>
         </div>
