@@ -7,7 +7,6 @@ import { filterAndScoreProducts } from '@/utils/filterEngine';
 
 import { Header } from '@/components/Header';
 import { OccasionHeader } from '@/components/OccasionHeader';
-import { AnythingSpecificSearch } from '@/components/AnythingSpecificSearch';
 import { PinterestGrid } from '@/components/PinterestGrid';
 import { DemoBanner } from '@/components/DemoBanner';
 import { StatsBar } from '@/components/StatsBar';
@@ -156,22 +155,16 @@ export default function Home() {
           />
         )}
 
-        {/* SKETCH PART 1: "what's the occasion?" Header & Pills */}
-        <OccasionHeader
-          selectedOccasion={filters.selectedOccasion}
-          onSelectOccasion={(occ) => handleFilterChange({ selectedOccasion: occ })}
-        />
-
-        {/* SKETCH PART 2: "anything specific?" Rounded Search Bar */}
-        <AnythingSpecificSearch
-          searchQuery={filters.searchQuery}
-          onSearchChange={(q) => handleFilterChange({ searchQuery: q })}
-        />
-
-        {/* Demo Mode Explanation Banner */}
+        {/* Compact Demo Mode Explanation Banner */}
         <DemoBanner
           filters={filters}
           onFilterChange={handleFilterChange}
+        />
+
+        {/* "what's the occasion?" Header & Pills */}
+        <OccasionHeader
+          selectedOccasion={filters.selectedOccasion}
+          onSelectOccasion={(occ) => handleFilterChange({ selectedOccasion: occ })}
         />
 
         {/* Live Match Statistics Bar */}
@@ -180,7 +173,7 @@ export default function Home() {
           isAiMode={filters.demoMode === 'ai_search'}
         />
 
-        {/* SKETCH PART 3 & 4: PINTEREST-STYLE MASONRY GRID FEED */}
+        {/* PINTEREST-STYLE MASONRY GRID FEED */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           
           {/* Desktop Sidebar Filters */}
