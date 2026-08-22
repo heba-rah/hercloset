@@ -141,24 +141,36 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
               : 'translate-x-0 opacity-100 relative pointer-events-auto'
           }`}>
             
-            {/* ENLARGED HERCLOSET DEEP ESPRESSO HEADING */}
-            <h1 className="text-7xl md:text-9xl font-serif italic font-bold text-[#3D312A] tracking-tight drop-shadow-sm mb-3">
-              hercloset
+            {/* LARGE CENTERED HANGER LOGO EMBLEM */}
+            <img
+              src="/logo/logo.png"
+              alt="hercloset logo"
+              className="w-24 h-24 md:w-32 md:h-32 object-contain mb-4 drop-shadow-sm mx-auto"
+            />
+
+            {/* DUAL-COLOR HERCLOSET WORDMARK */}
+            <h1 className="flex items-baseline justify-center tracking-tight mb-2">
+              <span className="font-serif italic font-normal text-5xl md:text-7xl text-[#7A5C4D]">
+                her
+              </span>
+              <span className="font-serif not-italic font-normal text-5xl md:text-7xl text-[#3D312A] tracking-tight">
+                closet
+              </span>
             </h1>
             
-            {/* SLOGAN TEXT */}
-            <p className="font-serif italic text-lg md:text-xl text-[#6E5D53] tracking-wide text-center uppercase mt-3">
-              Fashion curated for your coverage.
+            {/* SUBTITLE */}
+            <p className="text-xs md:text-sm tracking-[0.25em] text-[#8A6B5D] font-sans font-semibold uppercase mt-3 mb-8 text-center">
+              FASHION CURATED FOR YOUR COVERAGE.
             </p>
 
             {/* REFINED ENTER BUTTON */}
-            <div className="mt-10">
+            <div>
               <button
                 onClick={() => setPanelState('entered')}
-                className="bg-[#3D312A] hover:bg-[#2A211B] text-[#FAF7F2] px-10 py-4 rounded-full font-medium tracking-widest text-sm md:text-base uppercase shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-3 mx-auto cursor-pointer active:scale-95 group"
+                className="bg-[#7A5C4D] hover:bg-[#684C3F] text-[#FAF7F2] px-10 py-3 rounded-full text-sm font-semibold tracking-widest uppercase shadow-md transition-all duration-300 flex items-center gap-3 mx-auto cursor-pointer active:scale-95 group"
               >
                 <span>ENTER</span>
-                <ArrowRight className="w-5 h-5 text-amber-200 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-4 h-4 text-amber-200 group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
 
