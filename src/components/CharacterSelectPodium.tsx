@@ -471,8 +471,7 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
               onClick={handleSelectCurrentSkin}
               className="bg-[#3D312A] hover:bg-[#2A211B] text-[#FAF7F2] px-8 py-3 rounded-full font-bold shadow-md transition-all cursor-pointer active:scale-95 flex items-center gap-2 text-xs md:text-sm"
             >
-              <Check className="w-4 h-4 text-amber-200" />
-              <span>Select for {categoryStepLabel}</span>
+              <span>✓ Select for {categoryStepLabel}</span>
             </button>
 
             {selectedNotice && (
