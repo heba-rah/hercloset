@@ -151,11 +151,11 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
               : 'translate-x-0 opacity-100 relative pointer-events-auto'
           }`}>
             
-            {/* SUBSTANTIALLY ENLARGED HANGER LOGO EMBLEM WITH SMOOTH ENTRANCE */}
+            {/* GRAND STATEMENT HANGER LOGO EMBLEM WITH SMOOTH ENTRANCE */}
             <img
               src="/logo/logo.png"
               alt="hercloset logo"
-              className={`w-36 h-36 md:w-52 md:h-52 object-contain mb-6 drop-shadow-sm mx-auto transition-all duration-1000 ease-out transform ${
+              className={`w-64 h-64 md:w-80 md:h-80 lg:w-[380px] lg:h-[380px] object-contain mb-8 drop-shadow-md mx-auto transition-all duration-1000 ease-out transform ${
                 isMounted ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-6 scale-95'
               }`}
             />
