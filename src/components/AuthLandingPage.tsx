@@ -49,10 +49,10 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
   const [profile, setProfile] = useState<ModestyProfile>(DEFAULT_PROFILE);
 
   useEffect(() => {
-    // Wait for the wardrobe clothes parting animation to finish sliding away (2.5s) before revealing logo & text
+    // Reveal logo & text at 1100ms right as clothes start parting
     const timer = setTimeout(() => {
       setIsMounted(true);
-    }, 2500);
+    }, 1100);
     return () => clearTimeout(timer);
   }, []);
 
@@ -156,14 +156,14 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
             <img
               src="/logo/logo.png"
               alt="hercloset logo"
-              className={`w-64 h-64 md:w-80 md:h-80 lg:w-[380px] lg:h-[380px] object-contain mb-8 drop-shadow-md mx-auto transition-all duration-1000 ease-out transform ${
-                isMounted ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-6 scale-95'
+              className={`w-64 h-64 md:w-80 md:h-80 lg:w-[380px] lg:h-[380px] object-contain mb-8 drop-shadow-md mx-auto transition-all duration-700 ease-out transform ${
+                isMounted ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-4 scale-95'
               }`}
             />
 
             {/* DUAL-COLOR HERCLOSET WORDMARK WITH STAGGERED FADE-IN */}
-            <h1 className={`flex items-baseline justify-center tracking-tight mb-2 transition-all duration-1000 ease-out delay-150 transform ${
-              isMounted ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-6 scale-95'
+            <h1 className={`flex items-baseline justify-center tracking-tight mb-2 transition-all duration-700 ease-out delay-75 transform ${
+              isMounted ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-4 scale-95'
             }`}>
               <span className="font-serif italic font-normal text-5xl md:text-7xl text-[#7A5C4D]">
                 her
@@ -174,15 +174,15 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
             </h1>
             
             {/* SUBTITLE WITH STAGGERED DELAY */}
-            <p className={`text-xs md:text-sm tracking-[0.25em] text-[#8A6B5D] font-sans font-semibold uppercase mt-3 mb-8 text-center transition-all duration-1000 ease-out delay-300 transform ${
-              isMounted ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-6 scale-95'
+            <p className={`text-xs md:text-sm tracking-[0.25em] text-[#8A6B5D] font-sans font-semibold uppercase mt-3 mb-8 text-center transition-all duration-700 ease-out delay-150 transform ${
+              isMounted ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-4 scale-95'
             }`}>
               FASHION CURATED FOR YOUR COVERAGE.
             </p>
 
             {/* REFINED ENTER BUTTON WITH STAGGERED DELAY */}
-            <div className={`transition-all duration-1000 ease-out delay-500 transform ${
-              isMounted ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-6 scale-95'
+            <div className={`transition-all duration-700 ease-out delay-250 transform ${
+              isMounted ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-4 scale-95'
             }`}>
               <button
                 onClick={() => setPanelState('entered')}
