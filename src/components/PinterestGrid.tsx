@@ -3,6 +3,7 @@
 import React from 'react';
 import { CalculatedMatch, Product } from '@/types/product';
 import { PinterestCard } from './PinterestCard';
+import { ModestyStylistAvatar } from './ModestyStylistAvatar';
 import { AlertCircle } from 'lucide-react';
 
 interface PinterestGridProps {
@@ -11,6 +12,9 @@ interface PinterestGridProps {
   onOpenAuditModal: (product: Product) => void;
   onAddToHamper: (product: Product) => void;
   hamperProductIds: string[];
+  onOpenFilters?: () => void;
+  activeFilterCount?: number;
+  showStylistTile?: boolean;
 }
 
 export const PinterestGrid: React.FC<PinterestGridProps> = ({
@@ -18,7 +22,10 @@ export const PinterestGrid: React.FC<PinterestGridProps> = ({
   isAiMode,
   onOpenAuditModal,
   onAddToHamper,
-  hamperProductIds
+  hamperProductIds,
+  onOpenFilters,
+  activeFilterCount = 0,
+  showStylistTile = true
 }) => {
   if (matches.length === 0) {
     return (
@@ -36,8 +43,18 @@ export const PinterestGrid: React.FC<PinterestGridProps> = ({
 
   return (
     <div className="my-2 w-full">
-      {/* TRUE CSS MULTI-COLUMN MASONRY CONTAINER */}
+      {/* TRUE CSS MULTI-COLUMN MASONRY CONTAINER (FULL-WIDTH EDGE-TO-EDGE) */}
       <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 gap-4 space-y-4 w-full">
+        
+        {/* POSITION #1: LEAD STYLIST TILE */}
+        {showStylistTile && onOpenFilters && (
+          <ModestyStylistAvatar
+            onOpenFilters={onOpenFilters}
+            activeFilterCount={activeFilterCount}
+          />
+        )}
+
+        {/* REMAINING GARMENT CARDS FLOWING SEAMLESSLY AROUND POSITION #1 */}
         {matches.map((match, idx) => (
           <PinterestCard
             key={match.product.id}

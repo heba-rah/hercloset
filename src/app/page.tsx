@@ -7,7 +7,6 @@ import { filterAndScoreProducts } from '@/utils/filterEngine';
 
 import { Header } from '@/components/Header';
 import { ClosetTopShelf } from '@/components/ClosetTopShelf';
-import { ModestyStylistAvatar } from '@/components/ModestyStylistAvatar';
 import { PinterestGrid } from '@/components/PinterestGrid';
 import { ModestyFilters } from '@/components/ModestyFilters';
 import { AuditModal } from '@/components/AuditModal';
@@ -226,75 +225,64 @@ export default function Home() {
         totalItemsCount={calculatedMatches.length}
       />
 
-      {/* Main Content Area: Left Stylist Avatar Column + Right Pinterest Feed */}
+      {/* Main Full-Width Content Area with Integrated Stylist Tile in Position #1 */}
       <main className="flex-1 max-w-[1800px] w-full mx-auto px-4 sm:px-6 lg:px-8 pb-20">
         
-        <div className="flex gap-8 items-start">
-          
-          {/* LEFT COLUMN: MODESTY STYLIST AVATAR WITH SESSION ADJUSTMENT BUTTON */}
-          <ModestyStylistAvatar
-            onOpenFilters={() => setIsFiltersDrawerOpen(true)}
-            activeFilterCount={activeFilterCount}
-          />
+        {/* FULL-WIDTH EDGE-TO-EDGE PINTEREST MASONRY GRID WITH STYLIST TILE AT POSITION #1 */}
+        <PinterestGrid
+          matches={paginatedMatches}
+          isAiMode={filters.demoMode === 'ai_search'}
+          onOpenAuditModal={(prod) => setSelectedAuditProduct(prod)}
+          onAddToHamper={handleToggleHamper}
+          hamperProductIds={hamper.map(p => p.id)}
+          onOpenFilters={() => setIsFiltersDrawerOpen(true)}
+          activeFilterCount={activeFilterCount}
+          showStylistTile={currentPage === 1}
+        />
 
-          {/* RIGHT COLUMN: PINTEREST MASONRY PRODUCT FEED */}
-          <div className="flex-1 min-w-0 flex flex-col">
-            
-            <PinterestGrid
-              matches={paginatedMatches}
-              isAiMode={filters.demoMode === 'ai_search'}
-              onOpenAuditModal={(prod) => setSelectedAuditProduct(prod)}
-              onAddToHamper={handleToggleHamper}
-              hamperProductIds={hamper.map(p => p.id)}
-            />
+        {/* CLEAN PAGINATION CONTROLS */}
+        {calculatedMatches.length > 0 && (
+          <div className="mt-8 pt-6 border-t border-[#D6CFCE] flex flex-col sm:flex-row items-center justify-between gap-4 font-sans">
+            <span className="text-xs text-[#4B3F38] font-semibold">
+              Page <span className="font-bold text-[#8A6B5D]">{currentPage}</span> of{' '}
+              <span className="font-bold text-[#8A6B5D]">{totalPages}</span> — Showing{' '}
+              <span className="font-mono text-[#8A6B5D]">
+                {paginatedMatches.length} of {calculatedMatches.length}
+              </span>{' '}
+              Canadian garments
+            </span>
 
-            {/* CLEAN PAGINATION CONTROLS */}
-            {calculatedMatches.length > 0 && (
-              <div className="mt-8 pt-6 border-t border-[#D6CFCE] flex flex-col sm:flex-row items-center justify-between gap-4 font-sans">
-                <span className="text-xs text-[#4B3F38] font-semibold">
-                  Page <span className="font-bold text-[#8A6B5D]">{currentPage}</span> of{' '}
-                  <span className="font-bold text-[#8A6B5D]">{totalPages}</span> — Showing{' '}
-                  <span className="font-mono text-[#8A6B5D]">
-                    {paginatedMatches.length} of {calculatedMatches.length}
-                  </span>{' '}
-                  Canadian garments
-                </span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  setCurrentPage(prev => Math.max(1, prev - 1));
+                  window.scrollTo({ top: 300, behavior: 'smooth' });
+                }}
+                disabled={currentPage === 1}
+                className="bg-[#8A6B5D] hover:bg-[#6e5346] text-[#FAF7F2] font-sans text-xs font-semibold px-4 py-2 rounded-xl shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
+              >
+                <ChevronLeft className="w-4 h-4 text-white" />
+                <span>Previous</span>
+              </button>
 
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => {
-                      setCurrentPage(prev => Math.max(1, prev - 1));
-                      window.scrollTo({ top: 300, behavior: 'smooth' });
-                    }}
-                    disabled={currentPage === 1}
-                    className="bg-[#8A6B5D] hover:bg-[#6e5346] text-[#FAF7F2] font-sans text-xs font-semibold px-4 py-2 rounded-xl shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
-                  >
-                    <ChevronLeft className="w-4 h-4 text-white" />
-                    <span>Previous</span>
-                  </button>
+              <span className="px-3 py-1.5 rounded-lg bg-[#FAF7F2] border border-[#D6CFCE] text-xs font-mono font-bold text-[#4B3F38]">
+                {currentPage} / {totalPages}
+              </span>
 
-                  <span className="px-3 py-1.5 rounded-lg bg-[#FAF7F2] border border-[#D6CFCE] text-xs font-mono font-bold text-[#4B3F38]">
-                    {currentPage} / {totalPages}
-                  </span>
-
-                  <button
-                    onClick={() => {
-                      setCurrentPage(prev => Math.min(totalPages, prev + 1));
-                      window.scrollTo({ top: 300, behavior: 'smooth' });
-                    }}
-                    disabled={currentPage === totalPages}
-                    className="bg-[#8A6B5D] hover:bg-[#6e5346] text-[#FAF7F2] font-sans text-xs font-semibold px-4 py-2 rounded-xl shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
-                  >
-                    <span>Next</span>
-                    <ChevronRight className="w-4 h-4 text-white" />
-                  </button>
-                </div>
-              </div>
-            )}
-
+              <button
+                onClick={() => {
+                  setCurrentPage(prev => Math.min(totalPages, prev + 1));
+                  window.scrollTo({ top: 300, behavior: 'smooth' });
+                }}
+                disabled={currentPage === totalPages}
+                className="bg-[#8A6B5D] hover:bg-[#6e5346] text-[#FAF7F2] font-sans text-xs font-semibold px-4 py-2 rounded-xl shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
+              >
+                <span>Next</span>
+                <ChevronRight className="w-4 h-4 text-white" />
+              </button>
+            </div>
           </div>
-
-        </div>
+        )}
 
       </main>
 
