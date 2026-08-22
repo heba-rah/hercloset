@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { ShieldCheck, ArrowRight, User, Mail, Lock, Check, Store, Scissors, EyeOff, Layers, LogIn, UserPlus } from 'lucide-react';
 import { UserAccount, ModestyProfile, Neckline, SleeveLength, Hemline } from '@/types/product';
-import { WoodenClosetDoorsIntro } from '@/components/WoodenClosetDoorsIntro';
+import { PartingClothesReveal } from '@/components/PartingClothesReveal';
 
 interface AuthLandingPageProps {
   onCompleteAuth: (account: UserAccount) => void;
@@ -127,45 +127,45 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#F2EDE6] font-sans selection:bg-[#B89A8E] selection:text-white overflow-hidden p-4">
       
-      {/* STEP 1: INITIAL PAGE LOAD WOODEN CLOSET DOORS OPENING */}
-      <WoodenClosetDoorsIntro />
+      {/* PARTING HANGING CLOTHES WARDROBE REVEAL OVERLAY */}
+      <PartingClothesReveal />
 
       {/* SOFT WARM LIGHTING GLOW BACKDROP */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#FAF7F2] via-[#F2EDE6] to-[#E5DCD3] pointer-events-none" />
 
-      {/* WARM LINEN STAGE CONTAINER */}
-      <div className="relative w-full max-w-5xl h-[650px] overflow-hidden rounded-3xl border border-[#D6CFCE] shadow-xl flex flex-col items-center justify-center bg-[#FAF7F2] p-6 md:p-10">
+      {/* CLEAN LINEN STAGE CONTAINER (NO WHITE CARD WRAPPER / BORDERS / CARD SHADOWS) */}
+      <div className="relative w-full max-w-5xl h-[650px] overflow-hidden flex flex-col items-center justify-center bg-transparent p-6 md:p-10">
         
         {/* SLIDING PANELS CONTAINER */}
         <div className="relative z-20 w-full flex-1 flex items-center justify-center px-4 overflow-hidden">
           
           {/* 
-            PANEL A: LANDING HERO CONTENT
+            PANEL A: LANDING HERO CONTENT (SITS DIRECTLY ON #F2EDE6 CANVAS WITH NO WHITE BOX CARD)
           */}
-          <div className={`w-full max-w-2xl flex flex-col items-center justify-center text-center transition-all duration-700 ease-in-out ${
+          <div className={`w-full max-w-3xl flex flex-col items-center justify-center text-center transition-all duration-700 ease-in-out ${
             panelState === 'entered'
               ? '-translate-x-full opacity-0 pointer-events-none absolute'
               : 'translate-x-0 opacity-100 relative pointer-events-auto'
           }`}>
             
             {/* ENLARGED HERCLOSET DEEP ESPRESSO HEADING */}
-            <h1 className="text-6xl md:text-8xl font-serif italic font-bold text-[#3D312A] tracking-tight drop-shadow-sm mb-3">
+            <h1 className="text-7xl md:text-9xl font-serif italic font-bold text-[#3D312A] tracking-tight drop-shadow-sm mb-3">
               hercloset
             </h1>
             
             {/* SLOGAN TEXT */}
-            <p className="font-serif italic text-base md:text-lg text-[#6E5D53] tracking-wide text-center uppercase mt-3">
+            <p className="font-serif italic text-lg md:text-xl text-[#6E5D53] tracking-wide text-center uppercase mt-3">
               Fashion curated for your coverage.
             </p>
 
             {/* REFINED ENTER BUTTON */}
-            <div className="mt-8">
+            <div className="mt-10">
               <button
                 onClick={() => setPanelState('entered')}
-                className="bg-[#3D312A] hover:bg-[#2A211B] text-[#FAF7F2] px-8 py-3.5 rounded-full font-medium tracking-wide shadow-md transition-all duration-300 flex items-center gap-3 mx-auto mt-8 cursor-pointer active:scale-95 group"
+                className="bg-[#3D312A] hover:bg-[#2A211B] text-[#FAF7F2] px-10 py-4 rounded-full font-medium tracking-widest text-sm md:text-base uppercase shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-3 mx-auto cursor-pointer active:scale-95 group"
               >
                 <span>ENTER</span>
-                <ArrowRight className="w-4 h-4 text-amber-200 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-5 h-5 text-amber-200 group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
 
