@@ -5,15 +5,18 @@ import React, { useState } from 'react';
 interface HamperButtonProps {
   itemCount: number;
   onClick: () => void;
+  isHidden?: boolean;
 }
 
-export const HamperButton: React.FC<HamperButtonProps> = ({ itemCount, onClick }) => {
+export const HamperButton: React.FC<HamperButtonProps> = ({ itemCount, onClick, isHidden }) => {
   const [imgError, setImgError] = useState<boolean>(false);
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 group cursor-pointer">
+    <div className={`fixed bottom-6 right-6 z-30 group cursor-pointer transition-all duration-300 ${
+      isHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'
+    }`}>
       {/* Tooltip on Hover */}
-      <div className="absolute -top-9 right-0 whitespace-nowrap pointer-events-none text-xs font-bold bg-[#4B3F38] text-[#FAF7F2] px-3 py-1 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-200 translate-y-1 group-hover:translate-y-0">
+      <div className="absolute -top-9 right-0 whitespace-nowrap pointer-events-none text-xs font-bold bg-[#3D312A] text-[#FAF7F2] px-3 py-1 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-200 translate-y-1 group-hover:translate-y-0">
         Open My Modest Hamper
       </div>
 

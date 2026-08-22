@@ -370,8 +370,8 @@ export default function Home() {
 
           {/* SLIDE-OVER MODESTY FILTERS DRAWER (For Current Session Tweaks) */}
           {isFiltersDrawerOpen && (
-            <div className="fixed inset-0 z-50 flex justify-end bg-[#4B3F38]/60 backdrop-blur-md animate-in fade-in duration-200">
-              <div className="relative w-full max-w-md h-full bg-[#FAF7F2] border-l border-[#D6CFCE] shadow-2xl flex flex-col justify-between text-[#4B3F38]">
+            <div className="fixed inset-0 z-[100] flex justify-end bg-[#4B3F38]/60 backdrop-blur-md animate-in fade-in duration-200">
+              <div className="relative w-full max-w-md h-full bg-[#FAF7F2] border-l border-[#D6CFCE] shadow-2xl flex flex-col justify-between text-[#3D312A]">
                 
                 {/* Drawer Header */}
                 <div className="p-5 border-b border-[#D6CFCE] flex items-center justify-between bg-[#F2EDE6]">
@@ -380,21 +380,21 @@ export default function Home() {
                       <ShieldCheck className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="font-serif italic font-bold text-base text-[#4B3F38]">Session Filter Tweaks</h3>
+                      <h3 className="font-serif italic font-bold text-base text-[#3D312A]">Session Filter Tweaks</h3>
                       <p className="text-xs text-[#8A6B5D]">Temporary adjustment for this search</p>
                     </div>
                   </div>
 
                   <button
                     onClick={() => setIsFiltersDrawerOpen(false)}
-                    className="p-2 rounded-full bg-white text-[#4B3F38] hover:bg-[#FAF7F2] border border-[#D6CFCE]"
+                    className="p-2 rounded-full bg-white text-[#3D312A] hover:bg-[#FAF7F2] border border-[#D6CFCE] cursor-pointer"
                   >
                     <X className="w-5 h-5" />
                   </button>
                 </div>
 
-                {/* Scrollable Filters Body */}
-                <div className="flex-1 overflow-y-auto p-5">
+                {/* Scrollable Filters Body (pb-28 for clear scrolling) */}
+                <div className="flex-1 overflow-y-auto p-5 pb-28">
                   <ModestyFilters
                     filters={filters}
                     onFilterChange={handleFilterChange}
@@ -404,14 +404,14 @@ export default function Home() {
                   />
                 </div>
 
-                {/* Footer */}
-                <div className="p-4 bg-[#F2EDE6] border-t border-[#D6CFCE] flex items-center justify-between">
-                  <span className="text-xs text-[#8A6B5D] font-semibold">
+                {/* Footer Bar */}
+                <div className="p-4 bg-[#F2EDE6] border-t border-[#D6CFCE] flex items-center justify-between z-20 relative shadow-lg">
+                  <span className="text-xs text-[#8A6B5D] font-bold">
                     {calculatedMatches.length} items match
                   </span>
                   <button
                     onClick={() => setIsFiltersDrawerOpen(false)}
-                    className="px-5 py-2.5 rounded-xl bg-[#8A6B5D] hover:bg-[#4B3F38] text-[#FAF7F2] font-bold text-xs shadow-md transition-all"
+                    className="px-6 py-3 rounded-xl bg-[#3D312A] hover:bg-[#2A211B] text-[#FAF7F2] font-bold text-xs shadow-md transition-all cursor-pointer"
                   >
                     Apply to Feed
                   </button>
@@ -421,10 +421,11 @@ export default function Home() {
             </div>
           )}
 
-          {/* Floating Aesthetic Woven Laundry Hamper Button */}
+          {/* Floating Aesthetic Woven Laundry Hamper Button (Hidden when any modal/drawer is open) */}
           <HamperButton
             itemCount={hamper.length}
             onClick={() => setIsHamperOpen(true)}
+            isHidden={isFiltersDrawerOpen || isMobileFiltersOpen || isPermanentProfileModalOpen || isHamperOpen}
           />
 
           {/* Hamper Drawer */}
