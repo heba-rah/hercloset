@@ -103,7 +103,7 @@ export const PermanentProfileModal: React.FC<PermanentProfileModalProps> = ({
               <h3 className="font-serif italic font-bold text-xl text-[#3D312A]">
                 Permanent Modesty Profile
               </h3>
-              <p className="text-xs text-[#8A6B5D] font-sans">
+              <p className="text-xs text-[#8A6B5D] font-sans font-medium">
                 These settings are saved to your account and automatically applied whenever you log in.
               </p>
             </div>
@@ -120,8 +120,8 @@ export const PermanentProfileModal: React.FC<PermanentProfileModalProps> = ({
         {/* Scrollable Body */}
         <div className="p-6 overflow-y-auto space-y-6 flex-1">
           
-          {/* AVATAR CAROUSEL WITH MODESTY PRESET SYNC */}
-          <div className="bg-[#F2EDE6] p-4 rounded-2xl border border-[#D6CFCE]">
+          {/* STYLIST AVATAR & WARM GREETING CONTAINER */}
+          <div className="bg-[#F2EDE6] p-6 rounded-3xl border border-[#D6CFCE]">
             <AvatarCarousel
               profile={profile}
               onChangeProfile={(updated) => setProfile(prev => ({ ...prev, ...updated }))}
@@ -142,7 +142,7 @@ export const PermanentProfileModal: React.FC<PermanentProfileModalProps> = ({
                     onClick={() => toggleSleeveOption(item.ids)}
                     className={`px-3 py-2.5 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                       selected
-                        ? 'bg-[#3D312A] border-[#3D312A] text-white shadow-sm'
+                        ? 'bg-[#3D312A] border-[#3D312A] text-[#FAF7F2] shadow-sm'
                         : 'bg-white border-[#D6CFCE] text-[#6E5D53] hover:bg-[#F2EDE6]'
                     }`}
                   >
@@ -168,7 +168,7 @@ export const PermanentProfileModal: React.FC<PermanentProfileModalProps> = ({
                     onClick={() => toggleNecklineOption(item.ids)}
                     className={`px-3 py-2.5 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                       selected
-                        ? 'bg-[#3D312A] border-[#3D312A] text-white shadow-sm'
+                        ? 'bg-[#3D312A] border-[#3D312A] text-[#FAF7F2] shadow-sm'
                         : 'bg-white border-[#D6CFCE] text-[#6E5D53] hover:bg-[#F2EDE6]'
                     }`}
                   >
@@ -194,7 +194,7 @@ export const PermanentProfileModal: React.FC<PermanentProfileModalProps> = ({
                     onClick={() => toggleHemlineOption(item.ids)}
                     className={`px-3 py-2.5 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                       selected
-                        ? 'bg-[#3D312A] border-[#3D312A] text-white shadow-sm'
+                        ? 'bg-[#3D312A] border-[#3D312A] text-[#FAF7F2] shadow-sm'
                         : 'bg-white border-[#D6CFCE] text-[#6E5D53] hover:bg-[#F2EDE6]'
                     }`}
                   >
@@ -254,7 +254,7 @@ export const PermanentProfileModal: React.FC<PermanentProfileModalProps> = ({
 
             <button
               type="button"
-              onClick={() => setProfile(prev => ({ ...prev, isOpaque: !prev.isOpaque }))}
+              onClick={() => setProfile(prev => ({ ...prev, isOpaque: !profile.isOpaque }))}
               className={`w-full p-2.5 rounded-xl border text-xs font-bold flex items-center justify-between transition-all cursor-pointer ${
                 profile.isOpaque
                   ? 'bg-white border-[#3D312A] text-[#3D312A] shadow-xs'
@@ -296,7 +296,7 @@ export const PermanentProfileModal: React.FC<PermanentProfileModalProps> = ({
 
           <button
             onClick={handleSave}
-            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#3D312A] hover:bg-[#2A211B] text-white font-bold text-xs shadow-md transition-all cursor-pointer"
+            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#3D312A] hover:bg-[#2A211B] text-[#FAF7F2] font-bold text-xs shadow-md transition-all cursor-pointer"
           >
             {savedSuccess ? (
               <>
