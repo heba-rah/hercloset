@@ -6,10 +6,9 @@ import { mockProducts } from '@/data/mockProducts';
 import { filterAndScoreProducts } from '@/utils/filterEngine';
 
 import { Header } from '@/components/Header';
-import { OccasionHeader } from '@/components/OccasionHeader';
+import { ClosetTopShelf } from '@/components/ClosetTopShelf';
 import { PinterestGrid } from '@/components/PinterestGrid';
 import { DemoBanner } from '@/components/DemoBanner';
-import { StatsBar } from '@/components/StatsBar';
 import { ModestyFilters } from '@/components/ModestyFilters';
 import { AuditModal } from '@/components/AuditModal';
 import { OnboardingWizard } from '@/components/OnboardingWizard';
@@ -125,6 +124,12 @@ export default function Home() {
     return filterAndScoreProducts(mockProducts, filters);
   }, [filters]);
 
+  const averageMatchScore = useMemo(() => {
+    if (calculatedMatches.length === 0) return 0;
+    const sum = calculatedMatches.reduce((acc, m) => acc + m.matchPercentage, 0);
+    return Math.round(sum / calculatedMatches.length);
+  }, [calculatedMatches]);
+
   const activeFilterCount = useMemo(() => {
     let count = 0;
     if (filters.noSlits) count++;
@@ -177,16 +182,14 @@ export default function Home() {
           onFilterChange={handleFilterChange}
         />
 
-        {/* "what's the occasion?" Header & Pills */}
-        <OccasionHeader
+        {/* CLOSET TOP SHELF & CIRCULAR MODESTY GAUGE (Left Drawer: Occasion | Center: Meter | Right Drawer: Stores) */}
+        <ClosetTopShelf
           selectedOccasion={filters.selectedOccasion}
           onSelectOccasion={(occ) => handleFilterChange({ selectedOccasion: occ })}
-        />
-
-        {/* Live Match Statistics Bar */}
-        <StatsBar
-          matches={calculatedMatches}
-          isAiMode={filters.demoMode === 'ai_search'}
+          selectedStore={filters.selectedRetailer}
+          onSelectStore={(store) => handleFilterChange({ selectedRetailer: store })}
+          averageMatchScore={averageMatchScore}
+          totalItemsCount={calculatedMatches.length}
         />
 
         {/* FULL-WIDTH EDGE-TO-EDGE PINTEREST MASONRY GRID */}
