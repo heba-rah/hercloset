@@ -14,7 +14,7 @@ import { AuthLandingPage } from '@/components/AuthLandingPage';
 import { PermanentProfileModal } from '@/components/PermanentProfileModal';
 import { HamperDrawer } from '@/components/HamperDrawer';
 import { HamperButton } from '@/components/HamperButton';
-import { VelvetCurtainTransition, CurtainState } from '@/components/VelvetCurtainTransition';
+import { GlassmorphismLoadingScreen } from '@/components/GlassmorphismLoadingScreen';
 import { Sparkles, ShieldCheck, X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const ITEMS_PER_PAGE = 35;
@@ -53,8 +53,8 @@ export default function Home() {
   const [currentUser, setCurrentUser] = useState<UserAccount | null>(null);
   const [showAuthLandingPage, setShowAuthLandingPage] = useState<boolean>(true);
   
-  // Velvet Curtains Animation State: 'initial_closed' -> 'opening' -> 'opened' -> 'closing' -> 'closed' -> 'reopening' -> 'done'
-  const [curtainState, setCurtainState] = useState<CurtainState>('initial_closed');
+  // Step 3 & 4 Glassmorphism Loading Screen State ("Preparing your modest closet...")
+  const [isGlassLoading, setIsGlassLoading] = useState<boolean>(false);
 
   const [profile, setProfile] = useState<ModestyProfile>(INITIAL_PROFILE);
   const [filters, setFilters] = useState<ModestyFilterState>(INITIAL_FILTERS);
@@ -68,22 +68,6 @@ export default function Home() {
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState<number>(1);
-
-  // Initial Reveal: Curtains open smoothly on mount over 1.2s to reveal #F2EDE6 landing page
-  useEffect(() => {
-    const timer1 = setTimeout(() => {
-      setCurtainState('opening');
-    }, 200);
-
-    const timer2 = setTimeout(() => {
-      setCurtainState('opened');
-    }, 1200);
-
-    return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
-    };
-  }, []);
 
   // Load permanent user account from localStorage on mount
   useEffect(() => {
@@ -117,31 +101,24 @@ export default function Home() {
     setCurrentPage(1);
   }, [filters]);
 
-  // REUSABLE VELVET CURTAINS TRANSITION CONTROLLER
-  const triggerCurtainTransition = (onMidpointAction: () => void) => {
-    setCurtainState('closing');
-    
-    setTimeout(() => {
-      setCurtainState('closed');
-      onMidpointAction();
+  // STEP 3 & 4: GLASSMORPHISM LOADING SCREEN TRANSITION (Preparing Your Closet -> Fade into Feed)
+  const triggerGlassmorphismTransition = (onApplyState: () => void) => {
+    setIsGlassLoading(true);
+    onApplyState();
+    setShowAuthLandingPage(false);
 
-      setTimeout(() => {
-        setCurtainState('reopening');
-        setTimeout(() => {
-          setCurtainState('done');
-        }, 800);
-      }, 250);
-    }, 700);
+    // After 1.2s delay (simulating catalog curation and preference loading), fade out glass screen
+    setTimeout(() => {
+      setIsGlassLoading(false);
+    }, 1200);
   };
 
-  const handleOpenAuthWithCurtains = () => {
-    triggerCurtainTransition(() => {
-      setShowAuthLandingPage(true);
-    });
+  const handleOpenAuth = () => {
+    setShowAuthLandingPage(true);
   };
 
   const handleCompleteAuth = (account: UserAccount) => {
-    triggerCurtainTransition(() => {
+    triggerGlassmorphismTransition(() => {
       setCurrentUser(account);
       setProfile(account.profile);
       setFilters(prev => ({
@@ -154,23 +131,18 @@ export default function Home() {
         noOpenBack: account.profile.noOpenBack,
         isOpaque: account.profile.isOpaque,
       }));
-      setShowAuthLandingPage(false);
     });
   };
 
   const handleSkipGuest = () => {
-    triggerCurtainTransition(() => {
-      setShowAuthLandingPage(false);
-    });
+    triggerGlassmorphismTransition(() => {});
   };
 
   const handleSignOut = () => {
-    triggerCurtainTransition(() => {
-      localStorage.removeItem('hercloset_user_account');
-      setCurrentUser(null);
-      setShowAuthLandingPage(true);
-      setIsPermanentProfileModalOpen(false);
-    });
+    localStorage.removeItem('hercloset_user_account');
+    setCurrentUser(null);
+    setShowAuthLandingPage(true);
+    setIsPermanentProfileModalOpen(false);
   };
 
   const handleSaveProfile = (newProfile: ModestyProfile) => {
@@ -277,10 +249,10 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#F2EDE6] text-[#4B3F38] flex flex-col font-sans selection:bg-[#B89A8E] selection:text-white">
       
-      {/* ESPRESSO VELVET CURTAINS TRANSITION OVERLAY */}
-      <VelvetCurtainTransition state={curtainState} />
+      {/* STEP 3 & 4: GLASSMORPHISM LOADING SCREEN ("Preparing your modest closet...") */}
+      <GlassmorphismLoadingScreen isLoading={isGlassLoading} />
 
-      {/* Landing & Authentication Modal (Name & Gmail Login/Register + Modesty Profile Setup) */}
+      {/* STEP 1 & 2: LANDING HERO & AUTHENTICATION FLOW */}
       {showAuthLandingPage && (
         <AuthLandingPage
           onCompleteAuth={handleCompleteAuth}
@@ -306,7 +278,7 @@ export default function Home() {
         totalMatchesCount={calculatedMatches.length}
         onOpenProfileModal={() => setIsPermanentProfileModalOpen(true)}
         currentUser={currentUser}
-        onOpenAuth={handleOpenAuthWithCurtains}
+        onOpenAuth={handleOpenAuth}
         onSignOut={handleSignOut}
       />
 

@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ShieldCheck, ArrowRight, User, Mail, Lock, Check, Store, Scissors, EyeOff, Layers, LogIn, UserPlus } from 'lucide-react';
 import { UserAccount, ModestyProfile, Neckline, SleeveLength, Hemline } from '@/types/product';
+import { WoodenClosetDoorsIntro } from '@/components/WoodenClosetDoorsIntro';
 
 interface AuthLandingPageProps {
   onCompleteAuth: (account: UserAccount) => void;
@@ -126,6 +127,9 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#F2EDE6] font-sans selection:bg-[#B89A8E] selection:text-white overflow-hidden p-4">
       
+      {/* STEP 1: INITIAL PAGE LOAD WOODEN CLOSET DOORS OPENING */}
+      <WoodenClosetDoorsIntro />
+
       {/* SOFT WARM LIGHTING GLOW BACKDROP */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#FAF7F2] via-[#F2EDE6] to-[#E5DCD3] pointer-events-none" />
 
@@ -136,7 +140,7 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
         <div className="relative z-20 w-full flex-1 flex items-center justify-center px-4 overflow-hidden">
           
           {/* 
-            PANEL A: LANDING HERO CONTENT (WARM LINEN LIGHT THEME)
+            PANEL A: LANDING HERO CONTENT
           */}
           <div className={`w-full max-w-2xl flex flex-col items-center justify-center text-center transition-all duration-700 ease-in-out ${
             panelState === 'entered'
@@ -168,7 +172,7 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
           </div>
 
           {/* 
-            PANEL B: STREAMLINED EXPANDED AUTH FORM CONTAINER (WARM LINEN CREAM LIGHT THEME)
+            PANEL B: STREAMLINED EXPANDED AUTH FORM CONTAINER
           */}
           <div className={`w-full max-w-lg md:max-w-xl mx-auto p-8 md:p-10 rounded-3xl bg-[#FAF7F2]/95 border border-[#D6CFCE] shadow-2xl text-[#3D312A] transition-all duration-700 ease-in-out max-h-[520px] overflow-y-auto ${
             panelState === 'entered'
