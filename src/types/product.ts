@@ -77,6 +77,8 @@ export interface ModestyFilterState {
   selectedRetailer: string;
   selectedOccasion: string;
   demoMode: 'ai_search' | 'broken_keyword';
+  sortBy?: 'relevance' | 'price_low' | 'price_high';
+  maxPrice?: number;
 }
 
 export interface CalculatedMatch {

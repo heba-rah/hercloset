@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
-import { ShieldCheck, RotateCcw, Filter, Check, EyeOff, Layers, Scissors, HeartHandshake } from 'lucide-react';
+import React, { useState } from 'react';
+import { ShieldCheck, RotateCcw, Filter, Check, EyeOff, Layers, Scissors, HeartHandshake, DollarSign, ArrowUpDown, Tag } from 'lucide-react';
 import { ModestyFilterState, Neckline, SleeveLength, Hemline, GarmentFit } from '@/types/product';
 
 interface ModestyFiltersProps {
@@ -23,6 +23,8 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
   isMobileDrawer,
   onCloseMobileDrawer
 }) => {
+  const [activeTab, setActiveTab] = useState<'modesty' | 'shopping'>('modesty');
+
   const necklines: { id: Neckline; label: string }[] = [
     { id: 'high', label: 'High Neck' },
     { id: 'crew', label: 'Crew' },
@@ -54,6 +56,15 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
     { id: 'bodycon', label: 'Bodycon' },
   ];
 
+  const categories = [
+    { id: 'all', label: 'All Categories' },
+    { id: 'Tops', label: 'Tops & Shirts' },
+    { id: 'Dresses', label: 'Dresses & Rompers' },
+    { id: 'Skirts', label: 'Skirts' },
+    { id: 'Pants', label: 'Pants & Trousers' },
+    { id: 'Outerwear', label: 'Sweaters & Jackets' },
+  ];
+
   const toggleArrayItem = <T extends string>(current: T[], item: T): T[] => {
     return current.includes(item)
       ? current.filter(x => x !== item)
@@ -61,16 +72,17 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
   };
 
   return (
-    <div className="bg-[#FAF7F2] border border-[#D6CFCE] rounded-2xl p-5 text-[#4B3F38] shadow-sm space-y-6">
-      {/* Header & Title */}
-      <div className="flex items-center justify-between border-b border-[#D6CFCE] pb-4">
+    <div className="bg-[#FAF7F2] border border-[#D6CFCE] rounded-2xl p-5 text-[#4B3F38] shadow-sm space-y-5 font-sans">
+      
+      {/* Drawer Header & Title */}
+      <div className="flex items-center justify-between border-b border-[#D6CFCE] pb-3">
         <div className="flex items-center gap-2.5">
           <div className="p-2 rounded-xl bg-[#F2EDE6] border border-[#B89A8E] text-[#8A6B5D]">
             <Filter className="w-4 h-4" />
           </div>
           <div>
-            <h3 className="font-bold text-base tracking-tight text-[#4B3F38]">Modesty Criteria</h3>
-            <p className="text-xs text-[#8A6B5D]">Personalized visual rules</p>
+            <h3 className="font-serif italic font-bold text-base text-[#4B3F38]">Shopping Preferences</h3>
+            <p className="text-xs text-[#8A6B5D]">Customize your coverage &amp; store filters</p>
           </div>
         </div>
 
@@ -84,178 +96,313 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
         )}
       </div>
 
-      {/* Quick Presets */}
-      <div>
-        <label className="text-xs font-semibold text-[#8A6B5D] uppercase tracking-wider block mb-2.5">
-          Quick Modesty Presets
-        </label>
-        <div className="grid grid-cols-2 gap-2">
-          <button
-            onClick={onApplyStrictPreset}
-            className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-[#8A6B5D] hover:bg-[#4B3F38] text-white text-xs font-semibold transition-all shadow-sm"
-          >
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>Strict Coverage</span>
-          </button>
+      {/* DUAL TAB SWITCHER BAR */}
+      <div className="flex bg-[#F2EDE6] p-1 rounded-xl border border-[#D6CFCE]">
+        <button
+          onClick={() => setActiveTab('modesty')}
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold transition-all ${
+            activeTab === 'modesty'
+              ? 'bg-[#8A6B5D] text-white shadow-sm'
+              : 'text-[#4B3F38]/70 hover:text-[#4B3F38]'
+          }`}
+        >
+          <ShieldCheck className="w-3.5 h-3.5" />
+          <span>Modesty Rules</span>
+        </button>
 
-          <button
-            onClick={onApplySmartPreset}
-            className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-[#B89A8E] hover:bg-[#8A6B5D] text-white text-xs font-semibold transition-all shadow-sm"
-          >
-            <HeartHandshake className="w-3.5 h-3.5" />
-            <span>Smart Casual</span>
-          </button>
-        </div>
+        <button
+          onClick={() => setActiveTab('shopping')}
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold transition-all ${
+            activeTab === 'shopping'
+              ? 'bg-[#8A6B5D] text-white shadow-sm'
+              : 'text-[#4B3F38]/70 hover:text-[#4B3F38]'
+          }`}
+        >
+          <DollarSign className="w-3.5 h-3.5" />
+          <span>Shopping Filters</span>
+        </button>
       </div>
 
-      {/* Hard Constraints Checkboxes */}
-      <div className="space-y-2.5 bg-[#F2EDE6] p-3.5 rounded-xl border border-[#D6CFCE]">
-        <label className="text-xs font-semibold text-[#8A6B5D] uppercase tracking-wider block mb-1">
-          Hard Constraints (Must Pass)
-        </label>
+      {/* TAB 1: MODESTY RULES */}
+      {activeTab === 'modesty' && (
+        <div className="space-y-5 animate-in fade-in duration-200">
+          
+          {/* Quick Presets */}
+          <div>
+            <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider block mb-2">
+              Quick Modesty Presets
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={onApplyStrictPreset}
+                className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-[#8A6B5D] hover:bg-[#4B3F38] text-white text-xs font-semibold transition-all shadow-sm"
+              >
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>Strict Coverage</span>
+              </button>
 
-        {/* No Slits */}
-        <label className="flex items-center justify-between p-2 rounded-lg hover:bg-white cursor-pointer transition-all">
-          <div className="flex items-center gap-2.5">
-            <Scissors className="w-4 h-4 text-rose-700 shrink-0" />
-            <span className="text-xs font-medium text-[#4B3F38]">No Slits (Thigh or Back)</span>
+              <button
+                onClick={onApplySmartPreset}
+                className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-[#B89A8E] hover:bg-[#8A6B5D] text-white text-xs font-semibold transition-all shadow-sm"
+              >
+                <HeartHandshake className="w-3.5 h-3.5" />
+                <span>Smart Casual</span>
+              </button>
+            </div>
           </div>
-          <input
-            type="checkbox"
-            checked={filters.noSlits}
-            onChange={(e) => onFilterChange({ noSlits: e.target.checked })}
-            className="w-4 h-4 rounded border-[#D6CFCE] bg-white text-[#8A6B5D] focus:ring-[#8A6B5D]"
-          />
-        </label>
 
-        {/* No Open Back */}
-        <label className="flex items-center justify-between p-2 rounded-lg hover:bg-white cursor-pointer transition-all">
-          <div className="flex items-center gap-2.5">
-            <EyeOff className="w-4 h-4 text-[#8A6B5D] shrink-0" />
-            <span className="text-xs font-medium text-[#4B3F38]">No Open Back / Cutouts</span>
+          {/* Hard Constraints Checkboxes */}
+          <div className="space-y-2 bg-[#F2EDE6] p-3.5 rounded-xl border border-[#D6CFCE]">
+            <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider block mb-1">
+              Hard Constraints (Must Pass)
+            </label>
+
+            {/* No Slits */}
+            <label className="flex items-center justify-between p-2 rounded-lg hover:bg-white cursor-pointer transition-all">
+              <div className="flex items-center gap-2.5">
+                <Scissors className="w-4 h-4 text-rose-700 shrink-0" />
+                <span className="text-xs font-medium text-[#4B3F38]">No Slits (Thigh or Back)</span>
+              </div>
+              <input
+                type="checkbox"
+                checked={filters.noSlits}
+                onChange={(e) => onFilterChange({ noSlits: e.target.checked })}
+                className="w-4 h-4 rounded border-[#D6CFCE] bg-white text-[#8A6B5D] focus:ring-[#8A6B5D]"
+              />
+            </label>
+
+            {/* No Open Back */}
+            <label className="flex items-center justify-between p-2 rounded-lg hover:bg-white cursor-pointer transition-all">
+              <div className="flex items-center gap-2.5">
+                <EyeOff className="w-4 h-4 text-[#8A6B5D] shrink-0" />
+                <span className="text-xs font-medium text-[#4B3F38]">No Open Back / Cutouts</span>
+              </div>
+              <input
+                type="checkbox"
+                checked={filters.noOpenBack}
+                onChange={(e) => onFilterChange({ noOpenBack: e.target.checked })}
+                className="w-4 h-4 rounded border-[#D6CFCE] bg-white text-[#8A6B5D] focus:ring-[#8A6B5D]"
+              />
+            </label>
+
+            {/* 100% Opaque */}
+            <label className="flex items-center justify-between p-2 rounded-lg hover:bg-white cursor-pointer transition-all">
+              <div className="flex items-center gap-2.5">
+                <Layers className="w-4 h-4 text-[#B89A8E] shrink-0" />
+                <span className="text-xs font-medium text-[#4B3F38]">100% Opaque (No Sheer)</span>
+              </div>
+              <input
+                type="checkbox"
+                checked={filters.isOpaque}
+                onChange={(e) => onFilterChange({ isOpaque: e.target.checked })}
+                className="w-4 h-4 rounded border-[#D6CFCE] bg-white text-[#8A6B5D] focus:ring-[#8A6B5D]"
+              />
+            </label>
           </div>
-          <input
-            type="checkbox"
-            checked={filters.noOpenBack}
-            onChange={(e) => onFilterChange({ noOpenBack: e.target.checked })}
-            className="w-4 h-4 rounded border-[#D6CFCE] bg-white text-[#8A6B5D] focus:ring-[#8A6B5D]"
-          />
-        </label>
 
-        {/* 100% Opaque */}
-        <label className="flex items-center justify-between p-2 rounded-lg hover:bg-white cursor-pointer transition-all">
-          <div className="flex items-center gap-2.5">
-            <Layers className="w-4 h-4 text-[#B89A8E] shrink-0" />
-            <span className="text-xs font-medium text-[#4B3F38]">100% Opaque (No Sheer)</span>
+          {/* Neckline Selector */}
+          <div>
+            <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider block mb-2">
+              Neckline Preferred
+            </label>
+            <div className="flex flex-wrap gap-1.5">
+              {necklines.map((item) => {
+                const selected = filters.necklines.includes(item.id);
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => onFilterChange({ necklines: toggleArrayItem(filters.necklines, item.id) })}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1 border ${selected
+                        ? 'bg-[#8A6B5D] border-[#8A6B5D] text-white font-semibold'
+                        : 'bg-white border-[#D6CFCE] text-[#4B3F38] hover:bg-[#F2EDE6]'
+                      }`}
+                  >
+                    {selected && <Check className="w-3 h-3 text-white" />}
+                    <span>{item.label}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
-          <input
-            type="checkbox"
-            checked={filters.isOpaque}
-            onChange={(e) => onFilterChange({ isOpaque: e.target.checked })}
-            className="w-4 h-4 rounded border-[#D6CFCE] bg-white text-[#8A6B5D] focus:ring-[#8A6B5D]"
-          />
-        </label>
-      </div>
 
-      {/* Neckline Selector */}
-      <div>
-        <label className="text-xs font-semibold text-[#8A6B5D] uppercase tracking-wider block mb-2">
-          Neckline Preferred
-        </label>
-        <div className="flex flex-wrap gap-1.5">
-          {necklines.map((item) => {
-            const selected = filters.necklines.includes(item.id);
-            return (
-              <button
-                key={item.id}
-                onClick={() => onFilterChange({ necklines: toggleArrayItem(filters.necklines, item.id) })}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1 border ${selected
-                    ? 'bg-[#8A6B5D] border-[#8A6B5D] text-white font-semibold'
-                    : 'bg-white border-[#D6CFCE] text-[#4B3F38] hover:bg-[#F2EDE6]'
-                  }`}
-              >
-                {selected && <Check className="w-3 h-3 text-white" />}
-                <span>{item.label}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+          {/* Sleeve Length Selector */}
+          <div>
+            <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider block mb-2">
+              Sleeve Length
+            </label>
+            <div className="flex flex-wrap gap-1.5">
+              {sleeveLengths.map((item) => {
+                const selected = filters.sleeveLengths.includes(item.id);
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => onFilterChange({ sleeveLengths: toggleArrayItem(filters.sleeveLengths, item.id) })}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1 border ${selected
+                        ? 'bg-[#8A6B5D] border-[#8A6B5D] text-white font-semibold'
+                        : 'bg-white border-[#D6CFCE] text-[#4B3F38] hover:bg-[#F2EDE6]'
+                      }`}
+                  >
+                    {selected && <Check className="w-3 h-3 text-white" />}
+                    <span>{item.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
-      {/* Sleeve Length Selector */}
-      <div>
-        <label className="text-xs font-semibold text-[#8A6B5D] uppercase tracking-wider block mb-2">
-          Sleeve Length
-        </label>
-        <div className="flex flex-wrap gap-1.5">
-          {sleeveLengths.map((item) => {
-            const selected = filters.sleeveLengths.includes(item.id);
-            return (
-              <button
-                key={item.id}
-                onClick={() => onFilterChange({ sleeveLengths: toggleArrayItem(filters.sleeveLengths, item.id) })}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1 border ${selected
-                    ? 'bg-[#8A6B5D] border-[#8A6B5D] text-white font-semibold'
-                    : 'bg-white border-[#D6CFCE] text-[#4B3F38] hover:bg-[#F2EDE6]'
-                  }`}
-              >
-                {selected && <Check className="w-3 h-3 text-white" />}
-                <span>{item.label}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+          {/* Hemline Selector */}
+          <div>
+            <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider block mb-2">
+              Hemline Length
+            </label>
+            <div className="flex flex-wrap gap-1.5">
+              {hemlines.map((item) => {
+                const selected = filters.hemlines.includes(item.id);
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => onFilterChange({ hemlines: toggleArrayItem(filters.hemlines, item.id) })}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1 border ${selected
+                        ? 'bg-[#8A6B5D] border-[#8A6B5D] text-white font-semibold'
+                        : 'bg-white border-[#D6CFCE] text-[#4B3F38] hover:bg-[#F2EDE6]'
+                      }`}
+                  >
+                    {selected && <Check className="w-3 h-3 text-white" />}
+                    <span>{item.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
-      {/* Hemline Selector */}
-      <div>
-        <label className="text-xs font-semibold text-[#8A6B5D] uppercase tracking-wider block mb-2">
-          Hemline Length
-        </label>
-        <div className="flex flex-wrap gap-1.5">
-          {hemlines.map((item) => {
-            const selected = filters.hemlines.includes(item.id);
-            return (
-              <button
-                key={item.id}
-                onClick={() => onFilterChange({ hemlines: toggleArrayItem(filters.hemlines, item.id) })}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1 border ${selected
-                    ? 'bg-[#8A6B5D] border-[#8A6B5D] text-white font-semibold'
-                    : 'bg-white border-[#D6CFCE] text-[#4B3F38] hover:bg-[#F2EDE6]'
-                  }`}
-              >
-                {selected && <Check className="w-3 h-3 text-white" />}
-                <span>{item.label}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+          {/* Fit Selector */}
+          <div>
+            <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider block mb-2">
+              Silhouette Fit
+            </label>
+            <div className="flex flex-wrap gap-1.5">
+              {fits.map((item) => {
+                const selected = filters.fits.includes(item.id);
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => onFilterChange({ fits: toggleArrayItem(filters.fits, item.id) })}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1 border ${selected
+                        ? 'bg-[#8A6B5D] border-[#8A6B5D] text-white font-semibold'
+                        : 'bg-white border-[#D6CFCE] text-[#4B3F38] hover:bg-[#F2EDE6]'
+                      }`}
+                  >
+                    {selected && <Check className="w-3 h-3 text-white" />}
+                    <span>{item.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
-      {/* Fit Selector */}
-      <div>
-        <label className="text-xs font-semibold text-[#8A6B5D] uppercase tracking-wider block mb-2">
-          Silhouette Fit
-        </label>
-        <div className="flex flex-wrap gap-1.5">
-          {fits.map((item) => {
-            const selected = filters.fits.includes(item.id);
-            return (
-              <button
-                key={item.id}
-                onClick={() => onFilterChange({ fits: toggleArrayItem(filters.fits, item.id) })}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1 border ${selected
-                    ? 'bg-[#8A6B5D] border-[#8A6B5D] text-white font-semibold'
-                    : 'bg-white border-[#D6CFCE] text-[#4B3F38] hover:bg-[#F2EDE6]'
-                  }`}
-              >
-                {selected && <Check className="w-3 h-3 text-white" />}
-                <span>{item.label}</span>
-              </button>
-            );
-          })}
         </div>
-      </div>
+      )}
+
+      {/* TAB 2: SHOPPING FILTERS */}
+      {activeTab === 'shopping' && (
+        <div className="space-y-5 animate-in fade-in duration-200">
+          
+          {/* Price Sort Order */}
+          <div>
+            <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider flex items-center gap-1 mb-2">
+              <ArrowUpDown className="w-3.5 h-3.5 text-[#8A6B5D]" /> Sort Catalog By
+            </label>
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                onClick={() => onFilterChange({ sortBy: 'relevance' })}
+                className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all border ${
+                  !filters.sortBy || filters.sortBy === 'relevance'
+                    ? 'bg-[#8A6B5D] text-white border-[#8A6B5D]'
+                    : 'bg-white border-[#D6CFCE] text-[#4B3F38] hover:bg-[#F2EDE6]'
+                }`}
+              >
+                AI Relevance
+              </button>
+
+              <button
+                onClick={() => onFilterChange({ sortBy: 'price_low' })}
+                className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all border ${
+                  filters.sortBy === 'price_low'
+                    ? 'bg-[#8A6B5D] text-white border-[#8A6B5D]'
+                    : 'bg-white border-[#D6CFCE] text-[#4B3F38] hover:bg-[#F2EDE6]'
+                }`}
+              >
+                Price: Low to High
+              </button>
+
+              <button
+                onClick={() => onFilterChange({ sortBy: 'price_high' })}
+                className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all border ${
+                  filters.sortBy === 'price_high'
+                    ? 'bg-[#8A6B5D] text-white border-[#8A6B5D]'
+                    : 'bg-white border-[#D6CFCE] text-[#4B3F38] hover:bg-[#F2EDE6]'
+                }`}
+              >
+                Price: High to Low
+              </button>
+            </div>
+          </div>
+
+          {/* Max Price Range Filter Slider */}
+          <div className="bg-[#F2EDE6] p-3.5 rounded-xl border border-[#D6CFCE] space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider">
+                Max Price Limit
+              </label>
+              <span className="text-xs font-mono font-bold text-[#8A6B5D]">
+                {filters.maxPrice && filters.maxPrice > 0 ? `$${filters.maxPrice} CAD` : 'Any Price'}
+              </span>
+            </div>
+
+            <input
+              type="range"
+              min="10"
+              max="200"
+              step="5"
+              value={filters.maxPrice || 200}
+              onChange={(e) => {
+                const val = parseInt(e.target.value);
+                onFilterChange({ maxPrice: val >= 200 ? undefined : val });
+              }}
+              className="w-full accent-[#8A6B5D] cursor-pointer"
+            />
+            
+            <div className="flex justify-between text-[10px] text-[#8A6B5D] font-mono">
+              <span>$10 CAD</span>
+              <span>$100 CAD</span>
+              <span>$200+ CAD (No Limit)</span>
+            </div>
+          </div>
+
+          {/* Garment Categories Selector */}
+          <div>
+            <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider flex items-center gap-1 mb-2">
+              <Tag className="w-3.5 h-3.5 text-[#8A6B5D]" /> Garment Category
+            </label>
+            <div className="flex flex-wrap gap-1.5">
+              {categories.map((c) => (
+                <button
+                  key={c.id}
+                  onClick={() => onFilterChange({ selectedCategory: c.id })}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border ${
+                    filters.selectedCategory === c.id
+                      ? 'bg-[#8A6B5D] border-[#8A6B5D] text-white'
+                      : 'bg-white border-[#D6CFCE] text-[#4B3F38] hover:bg-[#F2EDE6]'
+                  }`}
+                >
+                  {c.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+        </div>
+      )}
 
       {/* Reset Filters Button */}
       <div className="pt-2 border-t border-[#D6CFCE]">
@@ -264,7 +411,7 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
           className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-[#F2EDE6] border border-[#D6CFCE] text-xs font-semibold text-[#4B3F38] transition-all"
         >
           <RotateCcw className="w-3.5 h-3.5 text-[#8A6B5D]" />
-          <span>Reset All Filters</span>
+          <span>Reset All Preferences</span>
         </button>
       </div>
 

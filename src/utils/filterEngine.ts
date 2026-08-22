@@ -27,6 +27,12 @@ const NECKLINE_RANK: Record<Neckline, number> = {
 const NON_APPAREL_REGEX = /\b(sock|socks|ring|rings|earring|earrings|necklace|bracelet|jewelry|scrunchie|scrunchies|hair|headband|bag|bags|tote|purse|backpack|wallet|perfume|fragrance|candle|shoe|shoes|slide|slides|sandal|sandals|boot|boots|sneaker|sneakers|gloss|lip|nail|polish)\b/i;
 const APPAREL_KEYWORD_REGEX = /\b(dress|dresses|top|tops|shirt|shirts|pant|pants|trouser|trousers|skirt|skirts|sweater|sweaters|hoodie|hoodies|blazer|blazers|cardigan|cardigans|jacket|jackets|coat|coats|vest|vests|suit|suits|bodysuit|bodysuits|romper|rompers|jumpsuit|jumpsuits|jogger|joggers|sweatpant|sweatpants|jeans)\b/i;
 
+export function parsePrice(price: string | number): number {
+  if (typeof price === 'number') return price;
+  const cleaned = price.replace(/[^0-9.]/g, '');
+  return parseFloat(cleaned) || 0;
+}
+
 export function filterAndScoreProducts(
   products: Product[],
   filters: ModestyFilterState
@@ -56,6 +62,12 @@ export function filterAndScoreProducts(
 
     // Occasion filter
     if (filters.selectedOccasion !== 'all' && product.occasion !== filters.selectedOccasion) {
+      continue;
+    }
+
+    // Max price filter
+    const numericPrice = parsePrice(product.price);
+    if (filters.maxPrice && filters.maxPrice > 0 && numericPrice > filters.maxPrice) {
       continue;
     }
 
@@ -201,6 +213,13 @@ export function filterAndScoreProducts(
       matchReasons,
       warnings
     });
+  }
+
+  // Sorting logic
+  if (filters.sortBy === 'price_low') {
+    return matches.sort((a, b) => parsePrice(a.product.price) - parsePrice(b.product.price));
+  } else if (filters.sortBy === 'price_high') {
+    return matches.sort((a, b) => parsePrice(b.product.price) - parsePrice(a.product.price));
   }
 
   return matches.sort((a, b) => b.matchPercentage - a.matchPercentage);
