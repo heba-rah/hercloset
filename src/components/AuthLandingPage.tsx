@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ShieldCheck, ArrowRight, User, Mail, Lock, Check, Store, Scissors, EyeOff, Layers, LogIn, UserPlus } from 'lucide-react';
-import { UserAccount, ModestyProfile, Neckline, SleeveLength, Hemline } from '@/types/product';
+import { ArrowRight, User, Mail, Lock, Store, LogIn, UserPlus } from 'lucide-react';
+import { UserAccount, ModestyProfile } from '@/types/product';
 import { PartingClothesReveal } from '@/components/PartingClothesReveal';
-import { AvatarCarousel } from '@/components/AvatarCarousel';
+import { CharacterSelectPodium } from '@/components/CharacterSelectPodium';
 
 interface AuthLandingPageProps {
   onCompleteAuth: (account: UserAccount) => void;
@@ -46,25 +46,6 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
   const [profile, setProfile] = useState<ModestyProfile>(DEFAULT_PROFILE);
 
   const availableStores = ['Urban Planet', 'Ardene'];
-  
-  const necklines: { id: Neckline; label: string }[] = [
-    { id: 'high', label: 'High Neck / Mock Neck' },
-    { id: 'crew', label: 'Crew Neck' },
-    { id: 'scoop', label: 'Scoop Neck' },
-    { id: 'v-neck', label: 'V-Neck' },
-  ];
-
-  const sleeveLengths: { id: SleeveLength; label: string }[] = [
-    { id: 'wrist', label: 'Full Wrist Sleeve' },
-    { id: '3/4', label: '3/4 Sleeve' },
-    { id: 'elbow', label: 'Elbow Sleeve' },
-  ];
-
-  const hemlines: { id: Hemline; label: string }[] = [
-    { id: 'floor', label: 'Floor Maxi' },
-    { id: 'ankle', label: 'Ankle Length' },
-    { id: 'midi', label: 'Midi Length' },
-  ];
 
   const toggleArrayItem = <T extends string>(current: T[], item: T): T[] => {
     return current.includes(item)
@@ -134,14 +115,14 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
       {/* SOFT WARM LIGHTING GLOW BACKDROP */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#FAF7F2] via-[#F2EDE6] to-[#E5DCD3] pointer-events-none" />
 
-      {/* CLEAN LINEN STAGE CONTAINER (NO WHITE CARD WRAPPER / BORDERS / CARD SHADOWS) */}
-      <div className="relative w-full max-w-5xl h-[650px] overflow-hidden flex flex-col items-center justify-center bg-transparent p-6 md:p-10">
+      {/* CLEAN LINEN STAGE CONTAINER */}
+      <div className="relative w-full max-w-5xl h-[680px] overflow-hidden flex flex-col items-center justify-center bg-transparent p-4 md:p-8">
         
         {/* SLIDING PANELS CONTAINER */}
-        <div className="relative z-20 w-full flex-1 flex items-center justify-center px-4 overflow-hidden">
+        <div className="relative z-20 w-full flex-1 flex items-center justify-center px-2 overflow-hidden">
           
           {/* 
-            PANEL A: LANDING HERO CONTENT (SITS DIRECTLY ON #F2EDE6 CANVAS WITH NO WHITE BOX CARD)
+            PANEL A: LANDING HERO CONTENT
           */}
           <div className={`w-full max-w-3xl flex flex-col items-center justify-center text-center transition-all duration-700 ease-in-out ${
             panelState === 'entered'
@@ -173,9 +154,9 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
           </div>
 
           {/* 
-            PANEL B: STREAMLINED EXPANDED AUTH FORM CONTAINER WITH AVATAR CAROUSEL
+            PANEL B: VIDEO-GAME STYLE CHARACTER SELECT PODIUM FORM CONTAINER
           */}
-          <div className={`w-full max-w-lg md:max-w-xl mx-auto p-8 md:p-10 rounded-3xl bg-[#FAF7F2]/95 border border-[#D6CFCE] shadow-2xl text-[#3D312A] transition-all duration-700 ease-in-out max-h-[560px] overflow-y-auto ${
+          <div className={`w-full max-w-2xl mx-auto p-6 md:p-8 rounded-3xl bg-[#FAF7F2]/95 border border-[#D6CFCE] shadow-2xl text-[#3D312A] transition-all duration-700 ease-in-out max-h-[620px] overflow-y-auto ${
             panelState === 'entered'
               ? 'translate-x-0 opacity-100 relative pointer-events-auto'
               : 'translate-x-full opacity-0 pointer-events-none absolute'
@@ -331,32 +312,16 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
               </form>
             )}
 
-            {/* STEP 2: MODESTY PROFILE SETUP WITH AVATAR CAROUSEL */}
+            {/* STEP 2: CHARACTER SELECT PODIUM SCREEN */}
             {step === 'profile_setup' && (
               <div className="space-y-4">
-                <div className="text-center">
-                  <span className="text-xs font-bold uppercase tracking-wider text-[#8A6B5D] flex items-center justify-center gap-1">
-                    <ShieldCheck className="w-4 h-4" /> Modesty Profile Setup
-                  </span>
-                  <h3 className="font-serif italic font-bold text-xl text-[#3D312A] mt-1">
-                    Welcome, {fullName || 'Fashion Lover'}!
-                  </h3>
-                </div>
-
-                {/* INTERACTIVE AVATAR CAROUSEL WITH 2-WAY FILTER SYNC */}
-                <div className="bg-[#F2EDE6] p-4 rounded-2xl border border-[#D6CFCE]">
-                  <AvatarCarousel
-                    profile={profile}
-                    onChangeProfile={(updated) => setProfile(prev => ({ ...prev, ...updated }))}
-                  />
-                </div>
-
-                {/* Stores Selector */}
-                <div>
-                  <label className="text-xs font-bold text-[#8A6B5D] uppercase tracking-wider block mb-2">
+                
+                {/* Retailers Quick Selector */}
+                <div className="mb-4">
+                  <label className="text-xs font-bold text-[#8A6B5D] uppercase tracking-wider block mb-2 text-center">
                     Preferred Retailers
                   </label>
-                  <div className="grid grid-cols-2 gap-2.5">
+                  <div className="grid grid-cols-2 gap-2.5 max-w-sm mx-auto">
                     {availableStores.map((store) => {
                       const selected = profile.selectedRetailers.includes(store);
                       return (
@@ -367,7 +332,7 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
                             ...prev,
                             selectedRetailers: toggleArrayItem(prev.selectedRetailers, store)
                           }))}
-                          className={`p-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                          className={`p-2.5 rounded-xl border text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
                             selected
                               ? 'bg-[#3D312A] border-[#3D312A] text-white shadow-sm'
                               : 'bg-white border-[#D6CFCE] text-[#3D312A] hover:bg-[#F2EDE6]'
@@ -381,51 +346,12 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
                   </div>
                 </div>
 
-                {/* Necklines Preferred */}
-                <div>
-                  <label className="text-xs font-bold text-[#8A6B5D] uppercase tracking-wider block mb-1.5">
-                    Necklines Preferred
-                  </label>
-                  <div className="flex flex-wrap gap-2">
-                    {necklines.map((item) => {
-                      const selected = profile.necklines.includes(item.id);
-                      return (
-                        <button
-                          key={item.id}
-                          type="button"
-                          onClick={() => setProfile(prev => ({ ...prev, necklines: toggleArrayItem(prev.necklines, item.id) }))}
-                          className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all flex items-center gap-1.5 border cursor-pointer ${
-                            selected
-                              ? 'bg-[#3D312A] border-[#3D312A] text-white font-semibold'
-                              : 'bg-white border-[#D6CFCE] text-[#3D312A] hover:bg-[#F2EDE6]'
-                          }`}
-                        >
-                          {selected && <Check className="w-3.5 h-3.5 text-white" />}
-                          <span>{item.label}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Finish Registration Button */}
-                <div className="pt-4 border-t border-[#D6CFCE] flex items-center justify-between gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setStep('credentials')}
-                    className="px-4 py-2 rounded-xl bg-white border border-[#D6CFCE] text-xs font-semibold text-[#3D312A] cursor-pointer"
-                  >
-                    Back
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleFinishProfileSetup}
-                    className="flex-1 py-3.5 px-4 rounded-xl bg-[#3D312A] hover:bg-[#2A211B] text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    <span>Save &amp; Open My Closet &rarr;</span>
-                  </button>
-                </div>
+                {/* CHARACTER SELECT STAGE PODIUM */}
+                <CharacterSelectPodium
+                  profile={profile}
+                  onChangeProfile={(updated) => setProfile(updated)}
+                  onConfirm={handleFinishProfileSetup}
+                />
 
               </div>
             )}
