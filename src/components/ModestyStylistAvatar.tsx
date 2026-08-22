@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Sparkles, SlidersHorizontal } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 interface ModestyStylistAvatarProps {
   onOpenFilters: () => void;
@@ -30,7 +30,7 @@ export const ModestyStylistAvatar: React.FC<ModestyStylistAvatarProps> = ({
         </div>
       </div>
 
-      {/* 2. AVATAR STANDALONE TRANSPARENT CUTOUT (No White Box Card) */}
+      {/* 2. AVATAR STANDALONE TRANSPARENT CUTOUT */}
       <div className="w-full flex items-center justify-center py-2 relative group">
         {!imgError ? (
           <img
@@ -51,11 +51,11 @@ export const ModestyStylistAvatar: React.FC<ModestyStylistAvatarProps> = ({
               <path d="M 32 30 C 45 20, 55 20, 68 30" />
               <path d="M 30 38 C 45 42, 55 42, 70 38" />
 
-              {/* Elegant Neck & Shoulders */}
+              {/* Neck & Shoulders */}
               <path d="M 45 54 L 45 64 C 32 68, 22 76, 18 90 L 18 150" />
               <path d="M 55 54 L 55 64 C 68 68, 78 76, 82 90 L 82 150" />
 
-              {/* Modest Long Dress Lines */}
+              {/* Modest Dress Silhouette */}
               <path d="M 35 90 C 45 100, 55 100, 65 90" />
               <path d="M 24 120 L 76 120" strokeDasharray="3 3" />
               <path d="M 18 150 L 82 150" />
@@ -69,13 +69,13 @@ export const ModestyStylistAvatar: React.FC<ModestyStylistAvatarProps> = ({
         )}
       </div>
 
-      {/* 3. BOTTOM "UPDATE SHOPPING PREFERENCES" BUTTON */}
+      {/* 3. BOTTOM "ADJUST FILTERS FOR THIS SESSION" BUTTON */}
       <button
         onClick={onOpenFilters}
         className="w-full bg-[#8A6B5D] hover:bg-[#6e5346] text-[#FAF7F2] font-sans text-xs font-semibold py-2.5 px-4 rounded-xl shadow-sm transition-all text-center cursor-pointer flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98]"
       >
         <Sparkles className="w-4 h-4 text-[#FAF7F2]" />
-        <span>Update Shopping Preferences</span>
+        <span>Adjust Filters for This Session</span>
         {activeFilterCount > 0 && (
           <span className="px-2 py-0.5 rounded-full bg-[#FAF7F2] text-[#8A6B5D] font-mono text-[10px] font-bold">
             {activeFilterCount}

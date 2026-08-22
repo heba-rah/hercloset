@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ShieldCheck, RotateCcw, Filter, Check, EyeOff, Layers, Scissors, HeartHandshake, DollarSign, ArrowUpDown, Tag } from 'lucide-react';
+import { ShieldCheck, RotateCcw, Filter, Check, EyeOff, Layers, Scissors, HeartHandshake, DollarSign, ArrowUpDown, Tag, Info } from 'lucide-react';
 import { ModestyFilterState, Neckline, SleeveLength, Hemline, GarmentFit } from '@/types/product';
 
 interface ModestyFiltersProps {
@@ -81,8 +81,8 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
             <Filter className="w-4 h-4" />
           </div>
           <div>
-            <h3 className="font-serif italic font-bold text-base text-[#4B3F38]">Shopping Preferences</h3>
-            <p className="text-xs text-[#8A6B5D]">Customize your coverage &amp; store filters</p>
+            <h3 className="font-serif italic font-bold text-base text-[#4B3F38]">Session Preferences</h3>
+            <p className="text-xs text-[#8A6B5D]">Temporary filters for current search</p>
           </div>
         </div>
 
@@ -157,7 +157,6 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
               Hard Constraints (Must Pass)
             </label>
 
-            {/* No Slits */}
             <label className="flex items-center justify-between p-2 rounded-lg hover:bg-white cursor-pointer transition-all">
               <div className="flex items-center gap-2.5">
                 <Scissors className="w-4 h-4 text-rose-700 shrink-0" />
@@ -171,7 +170,6 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
               />
             </label>
 
-            {/* No Open Back */}
             <label className="flex items-center justify-between p-2 rounded-lg hover:bg-white cursor-pointer transition-all">
               <div className="flex items-center gap-2.5">
                 <EyeOff className="w-4 h-4 text-[#8A6B5D] shrink-0" />
@@ -185,7 +183,6 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
               />
             </label>
 
-            {/* 100% Opaque */}
             <label className="flex items-center justify-between p-2 rounded-lg hover:bg-white cursor-pointer transition-all">
               <div className="flex items-center gap-2.5">
                 <Layers className="w-4 h-4 text-[#B89A8E] shrink-0" />
@@ -404,6 +401,14 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
         </div>
       )}
 
+      {/* SUBTLE NOTE REGARDING PERMANENT VS SESSION FILTERS */}
+      <div className="p-3 bg-[#F2EDE6]/80 border border-[#B89A8E]/40 rounded-xl text-[11px] text-[#8A6B5D] flex items-start gap-2">
+        <Info className="w-4 h-4 text-[#8A6B5D] shrink-0 mt-0.5" />
+        <p className="leading-snug">
+          Changes here only apply to your current search. To update your permanent default rules, click your Profile icon in the top right.
+        </p>
+      </div>
+
       {/* Reset Filters Button */}
       <div className="pt-2 border-t border-[#D6CFCE]">
         <button
@@ -411,7 +416,7 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
           className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-[#F2EDE6] border border-[#D6CFCE] text-xs font-semibold text-[#4B3F38] transition-all"
         >
           <RotateCcw className="w-3.5 h-3.5 text-[#8A6B5D]" />
-          <span>Reset All Preferences</span>
+          <span>Reset Session Filters</span>
         </button>
       </div>
 

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Sparkles, Search, SlidersHorizontal, ShieldCheck, AlertTriangle, Filter } from 'lucide-react';
+import { Sparkles, Search, SlidersHorizontal, UserCheck } from 'lucide-react';
 import { ModestyFilterState } from '@/types/product';
 
 interface HeaderProps {
@@ -9,8 +9,7 @@ interface HeaderProps {
   onFilterChange: (updates: Partial<ModestyFilterState>) => void;
   onToggleMobileFilters: () => void;
   totalMatchesCount: number;
-  onOpenFiltersDrawer: () => void;
-  activeFilterCount: number;
+  onOpenProfileModal: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -18,11 +17,8 @@ export const Header: React.FC<HeaderProps> = ({
   onFilterChange,
   onToggleMobileFilters,
   totalMatchesCount,
-  onOpenFiltersDrawer,
-  activeFilterCount
+  onOpenProfileModal
 }) => {
-  const isAiMode = filters.demoMode === 'ai_search';
-
   return (
     <header className="sticky top-0 z-40 bg-[#FAF7F2]/95 backdrop-blur-md border-b border-[#D6CFCE] text-[#4B3F38] shadow-sm">
       <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -71,49 +67,22 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
 
-          {/* Filter Modesty Rules Button + Demo Mode Switch */}
+          {/* Top-Right Square User Profile Card Button */}
           <div className="flex items-center gap-2.5">
-            {/* Filter Modesty Rules Trigger Button */}
             <button
-              onClick={onOpenFiltersDrawer}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#8A6B5D] hover:bg-[#4B3F38] text-white font-sans font-bold text-xs shadow-md transition-all hover:scale-105 active:scale-95 border border-[#B89A8E]"
+              onClick={onOpenProfileModal}
+              className="w-10 h-10 rounded-xl bg-[#FAF7F2] border border-[#D6CFCE] shadow-sm hover:border-[#8A6B5D] hover:shadow-md transition-all flex items-center justify-center cursor-pointer relative group"
+              title="My Account &amp; Permanent Modesty Profile"
             >
-              <Filter className="w-4 h-4 text-white" />
-              <span className="hidden sm:inline">Filter Modesty Rules</span>
-              <span className="sm:hidden">Rules</span>
-              {activeFilterCount > 0 && (
-                <span className="px-2 py-0.5 rounded-full bg-white text-[#8A6B5D] font-mono text-[10px] font-extrabold">
-                  {activeFilterCount}
-                </span>
-              )}
+              <UserCheck className="w-5 h-5 text-[#8A6B5D]" />
+              {/* Green Status Dot: Active Profile Synced */}
+              <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-emerald-500 border-2 border-[#FAF7F2] shadow-sm animate-pulse" />
+
+              {/* Tooltip on Hover */}
+              <div className="absolute top-12 right-0 whitespace-nowrap pointer-events-none text-xs font-sans font-semibold bg-[#4B3F38] text-[#FAF7F2] px-3 py-1 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-200 z-50">
+                My Account &amp; Permanent Modesty Profile
+              </div>
             </button>
-
-            {/* Demo Mode Toggle Switch */}
-            <div className="hidden xl:flex items-center gap-2 bg-[#F2EDE6] p-1.5 rounded-xl border border-[#D6CFCE]">
-              <button
-                onClick={() => onFilterChange({ demoMode: 'broken_keyword' })}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-sans font-semibold transition-all ${
-                  !isAiMode
-                    ? 'bg-rose-100 text-rose-800 border border-rose-300 shadow-sm'
-                    : 'text-[#4B3F38]/70 hover:text-[#4B3F38]'
-                }`}
-              >
-                <AlertTriangle className="w-3.5 h-3.5 text-rose-600" />
-                <span>Broken Keyword Search</span>
-              </button>
-
-              <button
-                onClick={() => onFilterChange({ demoMode: 'ai_search' })}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-sans font-semibold transition-all ${
-                  isAiMode
-                    ? 'bg-[#8A6B5D] text-white shadow-sm'
-                    : 'text-[#4B3F38]/70 hover:text-[#4B3F38]'
-                }`}
-              >
-                <ShieldCheck className="w-3.5 h-3.5 text-[#F2EDE6]" />
-                <span>AI Vision Modesty Search</span>
-              </button>
-            </div>
 
             <button
               onClick={onToggleMobileFilters}

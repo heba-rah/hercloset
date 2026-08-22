@@ -12,6 +12,7 @@ import { PinterestGrid } from '@/components/PinterestGrid';
 import { ModestyFilters } from '@/components/ModestyFilters';
 import { AuditModal } from '@/components/AuditModal';
 import { OnboardingWizard } from '@/components/OnboardingWizard';
+import { PermanentProfileModal } from '@/components/PermanentProfileModal';
 import { HamperDrawer } from '@/components/HamperDrawer';
 import { HamperButton } from '@/components/HamperButton';
 import { Sparkles, ShieldCheck, X, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -54,6 +55,7 @@ export default function Home() {
   const [selectedAuditProduct, setSelectedAuditProduct] = useState<Product | null>(null);
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState<boolean>(false);
   const [isFiltersDrawerOpen, setIsFiltersDrawerOpen] = useState<boolean>(false);
+  const [isPermanentProfileModalOpen, setIsPermanentProfileModalOpen] = useState<boolean>(false);
   const [showWizardModal, setShowWizardModal] = useState<boolean>(false);
 
   const [hamper, setHamper] = useState<Product[]>([]);
@@ -61,6 +63,29 @@ export default function Home() {
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState<number>(1);
+
+  // Load permanent profile from localStorage on mount if available
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('hercloset_permanent_profile');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        setProfile(parsed);
+        setFilters(prev => ({
+          ...prev,
+          necklines: parsed.necklines || prev.necklines,
+          sleeveLengths: parsed.sleeveLengths || prev.sleeveLengths,
+          hemlines: parsed.hemlines || prev.hemlines,
+          fits: parsed.fits || prev.fits,
+          noSlits: parsed.noSlits ?? prev.noSlits,
+          noOpenBack: parsed.noOpenBack ?? prev.noOpenBack,
+          isOpaque: parsed.isOpaque ?? prev.isOpaque,
+        }));
+      }
+    } catch {
+      // fallback
+    }
+  }, []);
 
   // Automatically reset to Page 1 whenever filters change
   useEffect(() => {
@@ -81,6 +106,7 @@ export default function Home() {
       selectedRetailer: 'all'
     }));
     setShowWizardModal(false);
+    setIsPermanentProfileModalOpen(false);
   };
 
   const handleFilterChange = (updates: Partial<ModestyFilterState>) => {
@@ -172,14 +198,22 @@ export default function Home() {
         />
       )}
 
+      {/* Permanent Modesty Profile Modal (Triggered by top-right square card) */}
+      {isPermanentProfileModalOpen && (
+        <PermanentProfileModal
+          initialProfile={profile}
+          onSaveProfile={handleSaveProfile}
+          onClose={() => setIsPermanentProfileModalOpen(false)}
+        />
+      )}
+
       {/* Top Header Navigation */}
       <Header
         filters={filters}
         onFilterChange={handleFilterChange}
         onToggleMobileFilters={() => setIsMobileFiltersOpen(true)}
         totalMatchesCount={calculatedMatches.length}
-        onOpenFiltersDrawer={() => setIsFiltersDrawerOpen(true)}
-        activeFilterCount={activeFilterCount}
+        onOpenProfileModal={() => setIsPermanentProfileModalOpen(true)}
       />
 
       {/* FULL-WIDTH HOLLOW WARDROBE TOP SHELF */}
@@ -197,7 +231,7 @@ export default function Home() {
         
         <div className="flex gap-8 items-start">
           
-          {/* LEFT COLUMN: MODESTY STYLIST AVATAR WITH SPEECH BUBBLE CTA */}
+          {/* LEFT COLUMN: MODESTY STYLIST AVATAR WITH SESSION ADJUSTMENT BUTTON */}
           <ModestyStylistAvatar
             onOpenFilters={() => setIsFiltersDrawerOpen(true)}
             activeFilterCount={activeFilterCount}
@@ -264,7 +298,7 @@ export default function Home() {
 
       </main>
 
-      {/* SLIDE-OVER MODESTY FILTERS DRAWER */}
+      {/* SLIDE-OVER MODESTY FILTERS DRAWER (For Current Session Tweaks) */}
       {isFiltersDrawerOpen && (
         <div className="fixed inset-0 z-50 flex justify-end bg-[#4B3F38]/60 backdrop-blur-md animate-in fade-in duration-200">
           <div className="relative w-full max-w-md h-full bg-[#FAF7F2] border-l border-[#D6CFCE] shadow-2xl flex flex-col justify-between text-[#4B3F38]">
@@ -276,8 +310,8 @@ export default function Home() {
                   <ShieldCheck className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-serif italic font-bold text-base text-[#4B3F38]">Modesty Rules &amp; Filters</h3>
-                  <p className="text-xs text-[#8A6B5D]">Customize your coverage requirements</p>
+                  <h3 className="font-serif italic font-bold text-base text-[#4B3F38]">Session Filter Tweaks</h3>
+                  <p className="text-xs text-[#8A6B5D]">Temporary adjustment for this search</p>
                 </div>
               </div>
 
@@ -309,7 +343,7 @@ export default function Home() {
                 onClick={() => setIsFiltersDrawerOpen(false)}
                 className="px-5 py-2.5 rounded-xl bg-[#8A6B5D] hover:bg-[#4B3F38] text-[#FAF7F2] font-bold text-xs shadow-md transition-all"
               >
-                Apply &amp; View Feed
+                Apply to Feed
               </button>
             </div>
 
