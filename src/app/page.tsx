@@ -117,14 +117,13 @@ export default function Home() {
     setCurrentPage(1);
   }, [filters]);
 
-  // VELVET CURTAINS TRANSITION HELPER
-  const triggerCurtainTransitionToApp = (onCompleteAction?: () => void) => {
+  // REUSABLE VELVET CURTAINS TRANSITION CONTROLLER
+  const triggerCurtainTransition = (onMidpointAction: () => void) => {
     setCurtainState('closing');
     
     setTimeout(() => {
       setCurtainState('closed');
-      if (onCompleteAction) onCompleteAction();
-      setShowAuthLandingPage(false);
+      onMidpointAction();
 
       setTimeout(() => {
         setCurtainState('reopening');
@@ -135,8 +134,14 @@ export default function Home() {
     }, 700);
   };
 
+  const handleOpenAuthWithCurtains = () => {
+    triggerCurtainTransition(() => {
+      setShowAuthLandingPage(true);
+    });
+  };
+
   const handleCompleteAuth = (account: UserAccount) => {
-    triggerCurtainTransitionToApp(() => {
+    triggerCurtainTransition(() => {
       setCurrentUser(account);
       setProfile(account.profile);
       setFilters(prev => ({
@@ -149,18 +154,23 @@ export default function Home() {
         noOpenBack: account.profile.noOpenBack,
         isOpaque: account.profile.isOpaque,
       }));
+      setShowAuthLandingPage(false);
     });
   };
 
   const handleSkipGuest = () => {
-    triggerCurtainTransitionToApp();
+    triggerCurtainTransition(() => {
+      setShowAuthLandingPage(false);
+    });
   };
 
   const handleSignOut = () => {
-    localStorage.removeItem('hercloset_user_account');
-    setCurrentUser(null);
-    setShowAuthLandingPage(true);
-    setIsPermanentProfileModalOpen(false);
+    triggerCurtainTransition(() => {
+      localStorage.removeItem('hercloset_user_account');
+      setCurrentUser(null);
+      setShowAuthLandingPage(true);
+      setIsPermanentProfileModalOpen(false);
+    });
   };
 
   const handleSaveProfile = (newProfile: ModestyProfile) => {
@@ -265,7 +275,7 @@ export default function Home() {
   }, [filters]);
 
   return (
-    <div className="min-h-screen bg-[#F2EDE6] text-[#4B3F38] flex flex-col font-sans selection:bg-[#B89A8E] selection:text-white">
+    <div className="min-h-screen bg-[#F2EDE6] text-[#4B3F38] flex flex-col font-sans selection:bg-[#B89A8E] selection:text-white pt-3.5">
       
       {/* INTERACTIVE GOLD ROD & ESPRESSO VELVET CURTAINS TRANSITION OVERLAY */}
       <VelvetCurtainTransition state={curtainState} />
@@ -296,7 +306,7 @@ export default function Home() {
         totalMatchesCount={calculatedMatches.length}
         onOpenProfileModal={() => setIsPermanentProfileModalOpen(true)}
         currentUser={currentUser}
-        onOpenAuth={() => setShowAuthLandingPage(true)}
+        onOpenAuth={handleOpenAuthWithCurtains}
         onSignOut={handleSignOut}
       />
 
