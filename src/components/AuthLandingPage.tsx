@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, ArrowRight, User, Mail, Lock, Check, Store, Scissors, EyeOff, Layers, LogIn, UserPlus, Lightbulb } from 'lucide-react';
+import { ShieldCheck, ArrowRight, User, Mail, Lock, Check, Store, Scissors, EyeOff, Layers, LogIn, UserPlus } from 'lucide-react';
 import { UserAccount, ModestyProfile, Neckline, SleeveLength, Hemline } from '@/types/product';
 
 interface AuthLandingPageProps {
@@ -27,8 +27,8 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
   onCompleteAuth,
   onSkipGuest
 }) => {
-  // Cinematic Intro Stages: 'closed' -> 'opening' -> 'flicker' -> 'ready' -> 'entered'
-  const [introStage, setIntroStage] = useState<'closed' | 'opening' | 'flicker' | 'ready' | 'entered'>('closed');
+  // Intro Panel Stage: 'hero' | 'entered'
+  const [panelState, setPanelState] = useState<'hero' | 'entered'>('hero');
   
   // Auth Mode: 'register' | 'login'
   const [authMode, setAuthMode] = useState<'register' | 'login'>('register');
@@ -63,30 +63,6 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
     { id: 'ankle', label: 'Ankle Length' },
     { id: 'midi', label: 'Midi Length' },
   ];
-
-  // Auto-play the closet doors & flickering light animation sequence on mount
-  useEffect(() => {
-    // 1. Doors start opening after 300ms
-    const timer1 = setTimeout(() => {
-      setIntroStage('opening');
-    }, 300);
-
-    // 2. Lightbulb begins flickering after doors open (1300ms)
-    const timer2 = setTimeout(() => {
-      setIntroStage('flicker');
-    }, 1300);
-
-    // 3. ENTER button appears after flicker stabilizes (2600ms)
-    const timer3 = setTimeout(() => {
-      setIntroStage('ready');
-    }, 2600);
-
-    return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
-      clearTimeout(timer3);
-    };
-  }, []);
 
   const toggleArrayItem = <T extends string>(current: T[], item: T): T[] => {
     return current.includes(item)
@@ -148,92 +124,41 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#0D0B0A] font-sans selection:bg-[#B89A8E] selection:text-white overflow-hidden p-4">
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#F2EDE6] font-sans selection:bg-[#B89A8E] selection:text-white overflow-hidden p-4">
       
-      {/* 3D CLOSET BROAD STAGE CONTAINER */}
-      <div className="relative w-full max-w-5xl h-[660px] overflow-hidden rounded-3xl border border-[#4B3F38]/40 shadow-2xl flex flex-col items-center justify-start bg-[#070605] [perspective:1200px] p-6 md:p-10">
+      {/* SOFT WARM LIGHTING GLOW BACKDROP */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#FAF7F2] via-[#F2EDE6] to-[#E5DCD3] pointer-events-none" />
+
+      {/* WARM LINEN STAGE CONTAINER */}
+      <div className="relative w-full max-w-5xl h-[650px] overflow-hidden rounded-3xl border border-[#D6CFCE] shadow-xl flex flex-col items-center justify-center bg-[#FAF7F2] p-6 md:p-10">
         
-        {/* 1. LEFT CLOSET DOOR PANEL */}
-        <div className={`absolute top-0 left-0 w-1/2 h-full bg-[#1C1613] border-r-2 border-[#8A6B5D]/40 z-30 origin-left transition-transform duration-1000 ease-out shadow-2xl ${
-          introStage !== 'closed' ? '[transform:rotateY(-105deg)]' : '[transform:rotateY(0deg)]'
-        }`}>
-          <div className="w-full h-full p-8 flex flex-col justify-center items-end bg-gradient-to-r from-[#140F0D] to-[#241D18] relative">
-            <div className="w-3 h-20 rounded-full bg-gradient-to-b from-[#B89A8E] via-[#8A6B5D] to-[#4B3F38] border border-[#FAF7F2]/30 shadow-lg absolute right-4 top-1/2 -translate-y-1/2" />
-            <div className="w-full h-full border-r border-[#8A6B5D]/20 opacity-40" />
-          </div>
-        </div>
-
-        {/* 2. RIGHT CLOSET DOOR PANEL */}
-        <div className={`absolute top-0 right-0 w-1/2 h-full bg-[#1C1613] border-l-2 border-[#8A6B5D]/40 z-30 origin-right transition-transform duration-1000 ease-out shadow-2xl ${
-          introStage !== 'closed' ? '[transform:rotateY(105deg)]' : '[transform:rotateY(0deg)]'
-        }`}>
-          <div className="w-full h-full p-8 flex flex-col justify-center items-start bg-gradient-to-l from-[#140F0D] to-[#241D18] relative">
-            <div className="w-3 h-20 rounded-full bg-gradient-to-b from-[#B89A8E] via-[#8A6B5D] to-[#4B3F38] border border-[#FAF7F2]/30 shadow-lg absolute left-4 top-1/2 -translate-y-1/2" />
-            <div className="w-full h-full border-l border-[#8A6B5D]/20 opacity-40" />
-          </div>
-        </div>
-
-        {/* 
-          ========================================================================
-          PINNED TOP CENTER VINTAGE LIGHTBULB FIXTURE & AMBIENT SPOTLIGHT
-          ========================================================================
-        */}
-        <div className="relative z-20 flex flex-col items-center pt-2 shrink-0">
-          {/* Hanging Wire */}
-          <div className="w-0.5 h-10 bg-[#4B3F38]" />
-          
-          {/* Lightbulb Fixture Icon */}
-          <div className={`p-2.5 rounded-full border transition-all duration-300 ${
-            introStage === 'flicker' || introStage === 'ready' || introStage === 'entered'
-              ? 'bg-amber-400/20 border-amber-400 text-amber-300 shadow-[0_0_50px_rgba(251,191,36,0.9)] animate-pulse'
-              : 'bg-[#241D18] border-[#4B3F38] text-amber-700/40'
-          }`}>
-            <Lightbulb className="w-7 h-7" />
-          </div>
-
-          {/* Spotlight Glow Effect Cone */}
-          <div className={`absolute top-16 w-[600px] h-96 bg-gradient-to-b from-amber-200/20 via-amber-400/10 to-transparent blur-3xl rounded-full pointer-events-none transition-opacity duration-700 ${
-            introStage === 'flicker' || introStage === 'ready' || introStage === 'entered' ? 'opacity-100' : 'opacity-0'
-          }`} />
-        </div>
-
-        {/* 
-          ========================================================================
-          SLIDING PANELS CONTAINER (Directly under the pinned lightbulb)
-          ========================================================================
-        */}
+        {/* SLIDING PANELS CONTAINER */}
         <div className="relative z-20 w-full flex-1 flex items-center justify-center px-4 overflow-hidden">
           
           {/* 
-            PANEL A: LANDING HERO CONTENT (LARGE ENLARGED HERCLOSET TYPOGRAPHY & SLEEK ENTER PILL)
+            PANEL A: LANDING HERO CONTENT (WARM LINEN LIGHT THEME)
           */}
           <div className={`w-full max-w-2xl flex flex-col items-center justify-center text-center transition-all duration-700 ease-in-out ${
-            introStage === 'entered'
+            panelState === 'entered'
               ? '-translate-x-full opacity-0 pointer-events-none absolute'
-              : introStage === 'flicker' || introStage === 'ready'
-                ? 'translate-x-0 opacity-100 relative pointer-events-auto'
-                : 'translate-x-0 opacity-0 relative pointer-events-none'
+              : 'translate-x-0 opacity-100 relative pointer-events-auto'
           }`}>
             
-            {/* ENLARGED HERCLOSET HEADING */}
-            <h1 className="text-6xl md:text-8xl font-serif italic font-bold text-[#FAF7F2] tracking-tight drop-shadow-[0_6px_30px_rgba(251,191,36,0.35)] mb-3">
+            {/* ENLARGED HERCLOSET DEEP ESPRESSO HEADING */}
+            <h1 className="text-6xl md:text-8xl font-serif italic font-bold text-[#3D312A] tracking-tight drop-shadow-sm mb-3">
               hercloset
             </h1>
             
             {/* SLOGAN TEXT */}
-            <p className="font-serif italic text-sm md:text-base text-[#D6CFCE]/80 tracking-wide text-center uppercase mt-3">
+            <p className="font-serif italic text-base md:text-lg text-[#6E5D53] tracking-wide text-center uppercase mt-3">
               Fashion curated for your coverage.
             </p>
 
-            {/* REFINED SLEEK ENTER GLOW PILL BUTTON WITH RIGHT ARROW */}
-            <div className={`mt-8 transition-all duration-700 ${
-              introStage === 'ready'
-                ? 'opacity-100 translate-y-0 pointer-events-auto'
-                : 'opacity-0 translate-y-4 pointer-events-none'
-            }`}>
+            {/* REFINED ENTER BUTTON */}
+            <div className="mt-8">
               <button
-                onClick={() => setIntroStage('entered')}
-                className="px-8 py-3.5 rounded-full bg-[#8A6B5D]/80 hover:bg-[#8A6B5D] text-[#FAF7F2] text-sm md:text-base font-semibold tracking-widest uppercase border border-[#FAF7F2]/20 backdrop-blur-md shadow-[0_0_25px_rgba(234,179,8,0.25)] hover:shadow-[0_0_35px_rgba(234,179,8,0.4)] transition-all duration-300 flex items-center gap-3 mx-auto mt-8 cursor-pointer active:scale-95 group"
+                onClick={() => setPanelState('entered')}
+                className="bg-[#3D312A] hover:bg-[#2A211B] text-[#FAF7F2] px-8 py-3.5 rounded-full font-medium tracking-wide shadow-md transition-all duration-300 flex items-center gap-3 mx-auto mt-8 cursor-pointer active:scale-95 group"
               >
                 <span>ENTER</span>
                 <ArrowRight className="w-4 h-4 text-amber-200 group-hover:translate-x-1 transition-transform" />
@@ -243,17 +168,17 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
           </div>
 
           {/* 
-            PANEL B: STREAMLINED EXPANDED AUTH FORM CONTAINER
+            PANEL B: STREAMLINED EXPANDED AUTH FORM CONTAINER (WARM LINEN CREAM LIGHT THEME)
           */}
-          <div className={`w-full max-w-lg md:max-w-xl mx-auto p-8 md:p-10 rounded-3xl bg-[#1A1614]/90 border border-[#8A6B5D]/30 backdrop-blur-md shadow-2xl overflow-hidden text-[#FAF7F2] transition-all duration-700 ease-in-out max-h-[520px] overflow-y-auto ${
-            introStage === 'entered'
+          <div className={`w-full max-w-lg md:max-w-xl mx-auto p-8 md:p-10 rounded-3xl bg-[#FAF7F2]/95 border border-[#D6CFCE] shadow-2xl text-[#3D312A] transition-all duration-700 ease-in-out max-h-[520px] overflow-y-auto ${
+            panelState === 'entered'
               ? 'translate-x-0 opacity-100 relative pointer-events-auto'
               : 'translate-x-full opacity-0 pointer-events-none absolute'
           }`}>
             
             {/* STREAMLINED BORDERLESS TOGGLE TABS */}
             {step === 'credentials' && (
-              <div className="flex justify-center gap-8 mb-6 border-b border-[#8A6B5D]/20 pb-3">
+              <div className="flex justify-center gap-8 mb-6 border-b border-[#D6CFCE] pb-3">
                 <button
                   type="button"
                   onClick={() => {
@@ -262,8 +187,8 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
                   }}
                   className={`transition-colors flex items-center gap-2 text-sm cursor-pointer ${
                     authMode === 'register'
-                      ? 'text-[#FAF7F2] font-serif font-medium border-b-2 border-[#8A6B5D] pb-3 -mb-3.5'
-                      : 'text-[#8A6B5D]/70 hover:text-[#FAF7F2] font-sans'
+                      ? 'text-[#3D312A] font-serif font-bold border-b-2 border-[#3D312A] pb-3 -mb-3.5'
+                      : 'text-[#8A6B5D]/70 hover:text-[#3D312A] font-sans'
                   }`}
                 >
                   <UserPlus className="w-4 h-4 text-[#8A6B5D]" />
@@ -278,8 +203,8 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
                   }}
                   className={`transition-colors flex items-center gap-2 text-sm cursor-pointer ${
                     authMode === 'login'
-                      ? 'text-[#FAF7F2] font-serif font-medium border-b-2 border-[#8A6B5D] pb-3 -mb-3.5'
-                      : 'text-[#8A6B5D]/70 hover:text-[#FAF7F2] font-sans'
+                      ? 'text-[#3D312A] font-serif font-bold border-b-2 border-[#3D312A] pb-3 -mb-3.5'
+                      : 'text-[#8A6B5D]/70 hover:text-[#3D312A] font-sans'
                   }`}
                 >
                   <LogIn className="w-4 h-4 text-[#8A6B5D]" />
@@ -293,7 +218,7 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
               <form onSubmit={handleCredentialSubmit} className="space-y-4">
                 
                 {errorMsg && (
-                  <div className="p-3.5 rounded-xl bg-rose-950/80 border border-rose-800 text-xs font-semibold text-rose-200 text-center">
+                  <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 text-center">
                     {errorMsg}
                   </div>
                 )}
@@ -302,7 +227,7 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
                 <button
                   type="button"
                   onClick={handleGoogleSignIn}
-                  className="w-full py-3.5 px-4 rounded-xl bg-[#FAF7F2] hover:bg-white text-[#4B3F38] text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer"
+                  className="w-full py-3.5 px-4 rounded-xl bg-white hover:bg-[#F2EDE6] text-[#3D312A] border border-[#D6CFCE] text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer"
                 >
                   <svg className="w-4 h-4" viewBox="0 0 24 24">
                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -314,11 +239,11 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
                 </button>
 
                 <div className="relative flex py-1 items-center">
-                  <div className="flex-grow border-t border-[#8A6B5D]/30"></div>
+                  <div className="flex-grow border-t border-[#D6CFCE]"></div>
                   <span className="flex-shrink mx-3 text-[10px] text-[#8A6B5D] uppercase font-bold tracking-wider">
                     Or sign in with email
                   </span>
-                  <div className="flex-grow border-t border-[#8A6B5D]/30"></div>
+                  <div className="flex-grow border-t border-[#D6CFCE]"></div>
                 </div>
 
                 {/* Name Input (Register Mode Only) */}
@@ -335,7 +260,7 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
                         placeholder="Amina Syed"
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
-                        className="py-3.5 px-4 pl-10 rounded-xl bg-[#241F1C] border border-[#8A6B5D]/30 text-[#FAF7F2] placeholder-[#8A6B5D]/60 focus:border-[#8A6B5D] focus:outline-none w-full text-sm font-sans"
+                        className="py-3.5 px-4 pl-10 rounded-xl bg-white border border-[#D6CFCE] text-[#3D312A] placeholder-[#8A6B5D]/60 focus:border-[#8A6B5D] focus:outline-none w-full text-sm font-sans shadow-inner"
                       />
                     </div>
                   </div>
@@ -354,7 +279,7 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
                       placeholder="amina@gmail.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="py-3.5 px-4 pl-10 rounded-xl bg-[#241F1C] border border-[#8A6B5D]/30 text-[#FAF7F2] placeholder-[#8A6B5D]/60 focus:border-[#8A6B5D] focus:outline-none w-full text-sm font-sans"
+                      className="py-3.5 px-4 pl-10 rounded-xl bg-white border border-[#D6CFCE] text-[#3D312A] placeholder-[#8A6B5D]/60 focus:border-[#8A6B5D] focus:outline-none w-full text-sm font-sans shadow-inner"
                     />
                   </div>
                 </div>
@@ -372,7 +297,7 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
                       placeholder="••••••••"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="py-3.5 px-4 pl-10 rounded-xl bg-[#241F1C] border border-[#8A6B5D]/30 text-[#FAF7F2] placeholder-[#8A6B5D]/60 focus:border-[#8A6B5D] focus:outline-none w-full text-sm font-sans"
+                      className="py-3.5 px-4 pl-10 rounded-xl bg-white border border-[#D6CFCE] text-[#3D312A] placeholder-[#8A6B5D]/60 focus:border-[#8A6B5D] focus:outline-none w-full text-sm font-sans shadow-inner"
                     />
                   </div>
                 </div>
@@ -380,7 +305,7 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
                 {/* Primary CTA Submit Button */}
                 <button
                   type="submit"
-                  className="w-full py-3.5 rounded-xl bg-[#8A6B5D] hover:bg-[#6e5346] text-[#FAF7F2] font-semibold text-sm transition-all shadow-md mt-2 flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-3.5 rounded-xl bg-[#3D312A] hover:bg-[#2A211B] text-[#FAF7F2] font-semibold text-sm transition-all shadow-md mt-2 flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <span>{authMode === 'register' ? 'Set Up Modesty Profile' : 'Sign In & Explore Feed'}</span>
                   <ArrowRight className="w-4 h-4" />
@@ -405,10 +330,10 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
             {step === 'profile_setup' && (
               <div className="space-y-4">
                 <div className="text-center">
-                  <span className="text-xs font-bold uppercase tracking-wider text-amber-300 flex items-center justify-center gap-1">
+                  <span className="text-xs font-bold uppercase tracking-wider text-[#8A6B5D] flex items-center justify-center gap-1">
                     <ShieldCheck className="w-4 h-4" /> Modesty Profile Setup
                   </span>
-                  <h3 className="font-serif italic font-bold text-xl text-[#FAF7F2] mt-1">
+                  <h3 className="font-serif italic font-bold text-xl text-[#3D312A] mt-1">
                     Welcome, {fullName || 'Fashion Lover'}!
                   </h3>
                 </div>
@@ -431,8 +356,8 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
                           }))}
                           className={`p-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
                             selected
-                              ? 'bg-[#8A6B5D] border-[#8A6B5D] text-white shadow-sm'
-                              : 'bg-[#241F1C] border-[#8A6B5D]/30 text-[#D6CFCE] hover:bg-[#8A6B5D]/20'
+                              ? 'bg-[#3D312A] border-[#3D312A] text-white shadow-sm'
+                              : 'bg-white border-[#D6CFCE] text-[#3D312A] hover:bg-[#F2EDE6]'
                           }`}
                         >
                           <Store className="w-4 h-4" />
@@ -444,47 +369,47 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
                 </div>
 
                 {/* Hard Constraints */}
-                <div className="space-y-2 bg-[#241F1C] p-4 rounded-2xl border border-[#8A6B5D]/30">
+                <div className="space-y-2 bg-[#F2EDE6] p-4 rounded-2xl border border-[#D6CFCE]">
                   <label className="text-xs font-bold text-[#8A6B5D] uppercase tracking-wider block mb-1">
                     Hard Coverage Rules
                   </label>
 
-                  <label className="flex items-center justify-between p-2 rounded-xl hover:bg-[#8A6B5D]/20 cursor-pointer transition-all">
+                  <label className="flex items-center justify-between p-2 rounded-xl hover:bg-white cursor-pointer transition-all">
                     <div className="flex items-center gap-2.5">
-                      <Scissors className="w-4 h-4 text-rose-400 shrink-0" />
-                      <span className="text-xs font-medium text-[#FAF7F2]">No Thigh or Leg Slits</span>
+                      <Scissors className="w-4 h-4 text-rose-700 shrink-0" />
+                      <span className="text-xs font-medium text-[#3D312A]">No Thigh or Leg Slits</span>
                     </div>
                     <input
                       type="checkbox"
                       checked={profile.noSlits}
                       onChange={(e) => setProfile(prev => ({ ...prev, noSlits: e.target.checked }))}
-                      className="w-4 h-4 rounded border-[#8A6B5D] bg-[#070605] text-[#8A6B5D]"
+                      className="w-4 h-4 rounded border-[#D6CFCE] bg-white text-[#3D312A]"
                     />
                   </label>
 
-                  <label className="flex items-center justify-between p-2 rounded-xl hover:bg-[#8A6B5D]/20 cursor-pointer transition-all">
+                  <label className="flex items-center justify-between p-2 rounded-xl hover:bg-white cursor-pointer transition-all">
                     <div className="flex items-center gap-2.5">
                       <EyeOff className="w-4 h-4 text-[#8A6B5D] shrink-0" />
-                      <span className="text-xs font-medium text-[#FAF7F2]">No Open Back / Cutouts</span>
+                      <span className="text-xs font-medium text-[#3D312A]">No Open Back / Cutouts</span>
                     </div>
                     <input
                       type="checkbox"
                       checked={profile.noOpenBack}
                       onChange={(e) => setProfile(prev => ({ ...prev, noOpenBack: e.target.checked }))}
-                      className="w-4 h-4 rounded border-[#8A6B5D] bg-[#070605] text-[#8A6B5D]"
+                      className="w-4 h-4 rounded border-[#D6CFCE] bg-white text-[#3D312A]"
                     />
                   </label>
 
-                  <label className="flex items-center justify-between p-2 rounded-xl hover:bg-[#8A6B5D]/20 cursor-pointer transition-all">
+                  <label className="flex items-center justify-between p-2 rounded-xl hover:bg-white cursor-pointer transition-all">
                     <div className="flex items-center gap-2.5">
                       <Layers className="w-4 h-4 text-[#8A6B5D] shrink-0" />
-                      <span className="text-xs font-medium text-[#FAF7F2]">100% Opaque (No Sheer Mesh)</span>
+                      <span className="text-xs font-medium text-[#3D312A]">100% Opaque (No Sheer Mesh)</span>
                     </div>
                     <input
                       type="checkbox"
                       checked={profile.isOpaque}
                       onChange={(e) => setProfile(prev => ({ ...prev, isOpaque: e.target.checked }))}
-                      className="w-4 h-4 rounded border-[#8A6B5D] bg-[#070605] text-[#8A6B5D]"
+                      className="w-4 h-4 rounded border-[#D6CFCE] bg-white text-[#3D312A]"
                     />
                   </label>
                 </div>
@@ -504,8 +429,8 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
                           onClick={() => setProfile(prev => ({ ...prev, necklines: toggleArrayItem(prev.necklines, item.id) }))}
                           className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all flex items-center gap-1.5 border cursor-pointer ${
                             selected
-                              ? 'bg-[#8A6B5D] border-[#8A6B5D] text-white font-semibold'
-                              : 'bg-[#241F1C] border-[#8A6B5D]/30 text-[#D6CFCE] hover:bg-[#8A6B5D]/20'
+                              ? 'bg-[#3D312A] border-[#3D312A] text-white font-semibold'
+                              : 'bg-white border-[#D6CFCE] text-[#3D312A] hover:bg-[#F2EDE6]'
                           }`}
                         >
                           {selected && <Check className="w-3.5 h-3.5 text-white" />}
@@ -517,11 +442,11 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
                 </div>
 
                 {/* Finish Registration Button */}
-                <div className="pt-4 border-t border-[#8A6B5D]/30 flex items-center justify-between gap-3">
+                <div className="pt-4 border-t border-[#D6CFCE] flex items-center justify-between gap-3">
                   <button
                     type="button"
                     onClick={() => setStep('credentials')}
-                    className="px-4 py-2 rounded-xl bg-[#241F1C] border border-[#8A6B5D]/30 text-xs font-semibold text-[#D6CFCE] cursor-pointer"
+                    className="px-4 py-2 rounded-xl bg-white border border-[#D6CFCE] text-xs font-semibold text-[#3D312A] cursor-pointer"
                   >
                     Back
                   </button>
@@ -529,7 +454,7 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
                   <button
                     type="button"
                     onClick={handleFinishProfileSetup}
-                    className="flex-1 py-3 px-4 rounded-xl bg-[#8A6B5D] hover:bg-[#6e5346] text-white font-semibold text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    className="flex-1 py-3 px-4 rounded-xl bg-[#3D312A] hover:bg-[#2A211B] text-white font-semibold text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <span>Save Profile &amp; Start Shopping</span>
                     <ArrowRight className="w-4 h-4" />

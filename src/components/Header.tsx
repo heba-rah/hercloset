@@ -28,10 +28,10 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="sticky top-0 z-40 bg-[#FAF7F2]/95 backdrop-blur-md border-b border-[#D6CFCE] text-[#4B3F38] shadow-sm">
       <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Top Header Bar */}
         <div className="flex items-center justify-between h-20 gap-4">
-          
+
           {/* Logo */}
           <div className="flex items-center gap-3">
             <div className="h-11 w-11 rounded-2xl bg-gradient-to-tr from-[#8A6B5D] via-[#B89A8E] to-[#4B3F38] p-0.5 shadow-md">
@@ -116,12 +116,11 @@ export const Header: React.FC<HeaderProps> = ({
                 )}
               </div>
             ) : (
-              /* RESTYLED SIGN IN / REGISTER BUTTON MATCHING DARK ESPRESSO BANNER TONE */
               <button
                 onClick={onOpenAuth}
-                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#181311] hover:bg-[#241D1A] text-[#FAF7F2] border border-[#4B3F38]/60 shadow-sm transition-all duration-200 font-sans text-xs font-semibold cursor-pointer"
+                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#8A6B5D] hover:bg-[#4B3F38] text-white font-sans text-xs font-bold shadow-md transition-all"
               >
-                <LogIn className="w-4 h-4 text-[#B89A8E]" />
+                <LogIn className="w-4 h-4" />
                 <span>Sign In / Register</span>
               </button>
             )}

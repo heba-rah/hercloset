@@ -14,10 +14,9 @@ import { AuthLandingPage } from '@/components/AuthLandingPage';
 import { PermanentProfileModal } from '@/components/PermanentProfileModal';
 import { HamperDrawer } from '@/components/HamperDrawer';
 import { HamperButton } from '@/components/HamperButton';
-import { ClosetDoorTransition, DoorTransitionState } from '@/components/ClosetDoorTransition';
+import { VelvetCurtainTransition, CurtainState } from '@/components/VelvetCurtainTransition';
 import { Sparkles, ShieldCheck, X, ChevronLeft, ChevronRight } from 'lucide-react';
 
-// 35 items + 1 avatar tile = 36 total grid items (perfect multiple of 6, 4, 3, 2 columns)
 const ITEMS_PER_PAGE = 35;
 
 const INITIAL_PROFILE: ModestyProfile = {
@@ -53,7 +52,9 @@ const INITIAL_FILTERS: ModestyFilterState = {
 export default function Home() {
   const [currentUser, setCurrentUser] = useState<UserAccount | null>(null);
   const [showAuthLandingPage, setShowAuthLandingPage] = useState<boolean>(true);
-  const [doorTransitionState, setDoorTransitionState] = useState<DoorTransitionState>('idle');
+  
+  // Velvet Curtains Animation State: 'initial_closed' -> 'opening' -> 'opened' -> 'closing' -> 'closed' -> 'reopening' -> 'done'
+  const [curtainState, setCurtainState] = useState<CurtainState>('initial_closed');
 
   const [profile, setProfile] = useState<ModestyProfile>(INITIAL_PROFILE);
   const [filters, setFilters] = useState<ModestyFilterState>(INITIAL_FILTERS);
@@ -68,7 +69,23 @@ export default function Home() {
   // Pagination State
   const [currentPage, setCurrentPage] = useState<number>(1);
 
-  // Load permanent user account & profile from localStorage on mount if available
+  // Initial Reveal: Curtains open smoothly on mount over 1.2s to reveal #F2EDE6 landing page
+  useEffect(() => {
+    const timer1 = setTimeout(() => {
+      setCurtainState('opening');
+    }, 200);
+
+    const timer2 = setTimeout(() => {
+      setCurtainState('opened');
+    }, 1200);
+
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+    };
+  }, []);
+
+  // Load permanent user account from localStorage on mount
   useEffect(() => {
     try {
       const storedUser = localStorage.getItem('hercloset_user_account');
@@ -100,26 +117,26 @@ export default function Home() {
     setCurrentPage(1);
   }, [filters]);
 
-  // CINEMATIC CLOSET DOORS TRANSITION HELPER
-  const triggerDoorTransitionToApp = (onCompleteAction?: () => void) => {
-    setDoorTransitionState('closing');
+  // VELVET CURTAINS TRANSITION HELPER
+  const triggerCurtainTransitionToApp = (onCompleteAction?: () => void) => {
+    setCurtainState('closing');
     
     setTimeout(() => {
-      setDoorTransitionState('closed');
+      setCurtainState('closed');
       if (onCompleteAction) onCompleteAction();
       setShowAuthLandingPage(false);
 
       setTimeout(() => {
-        setDoorTransitionState('opening');
+        setCurtainState('reopening');
         setTimeout(() => {
-          setDoorTransitionState('done');
-        }, 700);
+          setCurtainState('done');
+        }, 800);
       }, 250);
-    }, 600);
+    }, 700);
   };
 
   const handleCompleteAuth = (account: UserAccount) => {
-    triggerDoorTransitionToApp(() => {
+    triggerCurtainTransitionToApp(() => {
       setCurrentUser(account);
       setProfile(account.profile);
       setFilters(prev => ({
@@ -136,7 +153,7 @@ export default function Home() {
   };
 
   const handleSkipGuest = () => {
-    triggerDoorTransitionToApp();
+    triggerCurtainTransitionToApp();
   };
 
   const handleSignOut = () => {
@@ -250,8 +267,8 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#F2EDE6] text-[#4B3F38] flex flex-col font-sans selection:bg-[#B89A8E] selection:text-white">
       
-      {/* CINEMATIC CLOSET DOORS TRANSITION OVERLAY */}
-      <ClosetDoorTransition state={doorTransitionState} />
+      {/* INTERACTIVE GOLD ROD & ESPRESSO VELVET CURTAINS TRANSITION OVERLAY */}
+      <VelvetCurtainTransition state={curtainState} />
 
       {/* Landing & Authentication Modal (Name & Gmail Login/Register + Modesty Profile Setup) */}
       {showAuthLandingPage && (
