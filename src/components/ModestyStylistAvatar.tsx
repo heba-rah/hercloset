@@ -34,9 +34,15 @@ export const ModestyStylistAvatar: React.FC<ModestyStylistAvatarProps> = ({
         <div className="w-full flex items-center justify-center my-2">
           {!imgError ? (
             <img
-              src="/avatar.png"
+              src="/avatar/avatar.png"
               alt="Stylist Avatar"
-              onError={() => setImgError(true)}
+              onError={(e) => {
+                if (e.currentTarget.src.endsWith('/avatar/avatar.png')) {
+                  e.currentTarget.src = '/avatar.png';
+                } else {
+                  setImgError(true);
+                }
+              }}
               className="w-full h-auto max-h-[320px] object-contain drop-shadow-sm transition-transform duration-300 hover:scale-105"
             />
           ) : (
