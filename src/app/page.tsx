@@ -13,7 +13,8 @@ import { ModestyFilters } from '@/components/ModestyFilters';
 import { AuditModal } from '@/components/AuditModal';
 import { OnboardingWizard } from '@/components/OnboardingWizard';
 import { HamperDrawer } from '@/components/HamperDrawer';
-import { Sparkles, ShieldCheck, ShoppingBag, X } from 'lucide-react';
+import { HamperButton } from '@/components/HamperButton';
+import { Sparkles, ShieldCheck, X } from 'lucide-react';
 
 const INITIAL_PROFILE: ModestyProfile = {
   name: 'My Custom Modesty Rules',
@@ -253,17 +254,11 @@ export default function Home() {
         </div>
       )}
 
-      {/* Floating Hamper Button */}
-      <button
+      {/* Floating Aesthetic Woven Laundry Hamper Button */}
+      <HamperButton
+        itemCount={hamper.length}
         onClick={() => setIsHamperOpen(true)}
-        className="fixed bottom-6 right-6 z-40 px-4 py-3 rounded-full bg-[#8A6B5D] hover:bg-[#4B3F38] text-[#FAF7F2] font-extrabold text-xs shadow-xl flex items-center gap-2.5 transition-all hover:scale-105 active:scale-95 border border-[#B89A8E]"
-      >
-        <ShoppingBag className="w-4 h-4 text-[#FAF7F2]" />
-        <span>My Hamper</span>
-        <span className="px-2 py-0.5 rounded-full bg-[#FAF7F2] text-[#8A6B5D] font-mono text-[11px] font-bold">
-          {hamper.length}
-        </span>
-      </button>
+      />
 
       {/* Hamper Drawer */}
       <HamperDrawer
