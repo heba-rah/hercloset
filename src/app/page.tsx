@@ -14,7 +14,6 @@ import { AuthLandingPage } from '@/components/AuthLandingPage';
 import { PermanentProfileModal } from '@/components/PermanentProfileModal';
 import { HamperDrawer } from '@/components/HamperDrawer';
 import { HamperButton } from '@/components/HamperButton';
-import { GlassmorphismLoadingScreen } from '@/components/GlassmorphismLoadingScreen';
 import { Sparkles, ShieldCheck, X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const ITEMS_PER_PAGE = 35;
@@ -53,8 +52,8 @@ export default function Home() {
   const [currentUser, setCurrentUser] = useState<UserAccount | null>(null);
   const [showAuthLandingPage, setShowAuthLandingPage] = useState<boolean>(true);
   
-  // Step 3 & 4 Glassmorphism Loading Screen State ("Preparing your modest closet...")
-  const [isGlassLoading, setIsGlassLoading] = useState<boolean>(false);
+  // Clean Blur-to-Reveal Transition State for Main Feed
+  const [isFeedRevealed, setIsFeedRevealed] = useState<boolean>(false);
 
   const [profile, setProfile] = useState<ModestyProfile>(INITIAL_PROFILE);
   const [filters, setFilters] = useState<ModestyFilterState>(INITIAL_FILTERS);
@@ -92,7 +91,11 @@ export default function Home() {
       if (storedUser) {
         const parsedUser: UserAccount = JSON.parse(storedUser);
         setCurrentUser(parsedUser);
-        setShowAuthLandingPage(!parsedUser.isLoggedIn);
+        const shouldShowLanding = !parsedUser.isLoggedIn;
+        setShowAuthLandingPage(shouldShowLanding);
+        if (!shouldShowLanding) {
+          setTimeout(() => setIsFeedRevealed(true), 50);
+        }
         if (parsedUser.profile) {
           setProfile(parsedUser.profile);
           setFilters(prev => ({
@@ -117,41 +120,33 @@ export default function Home() {
     setCurrentPage(1);
   }, [filters]);
 
-  // STEP 3 & 4: LOADING OVERLAY SCREEN TRANSITION (Centered Logo & Rotating Ring -> Fade into Feed)
-  const triggerGlassmorphismTransition = (onApplyState: () => void) => {
-    setIsGlassLoading(true);
-    onApplyState();
-    setShowAuthLandingPage(false);
-
-    // Hold for 1.4s while assets initialize, then smoothly fade out overlay
-    setTimeout(() => {
-      setIsGlassLoading(false);
-    }, 1400);
-  };
-
   const handleOpenAuth = () => {
     setShowAuthLandingPage(true);
+    setIsFeedRevealed(false);
   };
 
   const handleCompleteAuth = (account: UserAccount) => {
-    triggerGlassmorphismTransition(() => {
-      setCurrentUser(account);
-      setProfile(account.profile);
-      setFilters(prev => ({
-        ...prev,
-        necklines: account.profile.necklines,
-        sleeveLengths: account.profile.sleeveLengths,
-        hemlines: account.profile.hemlines,
-        fits: account.profile.fits,
-        noSlits: account.profile.noSlits,
-        noOpenBack: account.profile.noOpenBack,
-        isOpaque: account.profile.isOpaque,
-      }));
-    });
+    setCurrentUser(account);
+    setProfile(account.profile);
+    setFilters(prev => ({
+      ...prev,
+      necklines: account.profile.necklines,
+      sleeveLengths: account.profile.sleeveLengths,
+      hemlines: account.profile.hemlines,
+      fits: account.profile.fits,
+      noSlits: account.profile.noSlits,
+      noOpenBack: account.profile.noOpenBack,
+      isOpaque: account.profile.isOpaque,
+    }));
+    setShowAuthLandingPage(false);
+    setIsFeedRevealed(false);
+    setTimeout(() => setIsFeedRevealed(true), 50);
   };
 
   const handleSkipGuest = () => {
-    triggerGlassmorphismTransition(() => {});
+    setShowAuthLandingPage(false);
+    setIsFeedRevealed(false);
+    setTimeout(() => setIsFeedRevealed(true), 50);
   };
 
   const handleSignOut = () => {
@@ -263,11 +258,8 @@ export default function Home() {
   }, [filters]);
 
   return (
-    <div className="min-h-screen bg-[#F2EDE6] text-[#4B3F38] flex flex-col font-sans selection:bg-[#B89A8E] selection:text-white">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#F2EDE6] text-[#4B3F38] flex flex-col font-sans selection:bg-[#B89A8E] selection:text-white">
       
-      {/* STEP 3 & 4: GLASSMORPHISM LOADING SCREEN ("Preparing your modest closet...") */}
-      <GlassmorphismLoadingScreen isLoading={isGlassLoading} />
-
       {/* STEP 1 & 2: LANDING HERO & AUTHENTICATION FLOW OR MAIN STORE FEED */}
       {showAuthLandingPage ? (
         <AuthLandingPage
@@ -275,8 +267,11 @@ export default function Home() {
           onSkipGuest={handleSkipGuest}
         />
       ) : (
-        <div className={`flex-1 flex flex-col transition-opacity duration-700 ${
-          isGlassLoading ? 'opacity-0 pointer-events-none invisible' : 'opacity-100 visible'
+        /* CLEAN BLUR-TO-REVEAL TRANSITION CONTAINER */
+        <div className={`flex-1 flex flex-col w-full max-w-full overflow-x-hidden transition-all duration-500 ease-out ${
+          isFeedRevealed
+            ? 'blur-0 opacity-100'
+            : 'blur-md opacity-90'
         }`}>
           {/* Permanent Modesty Profile Modal (Triggered by top-right square card) */}
           {isPermanentProfileModalOpen && (
