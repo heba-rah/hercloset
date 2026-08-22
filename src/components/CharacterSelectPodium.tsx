@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, Check, Sparkles, Shirt, Scissors, EyeOff, Layers, ArrowLeft, ArrowRight, Edit2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Check, Sparkles, Shirt, Scissors, EyeOff, Layers, ArrowLeft, ArrowRight } from 'lucide-react';
 import { ModestyProfile, Neckline, SleeveLength, Hemline } from '@/types/product';
 
 interface CharacterSkin {
@@ -213,6 +213,13 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
       ? 'Step 4 — Overall Filtering'
       : 'Your Modesty Filtering Overview';
 
+  const stepButtonLabel =
+    step === 1
+      ? 'Select for Sleeve →'
+      : step === 2
+      ? 'Select for Neckline →'
+      : 'Select for Bottom →';
+
   return (
     <div className="min-h-screen w-full bg-[#F2EDE6] p-6 sm:p-10 md:p-12 flex flex-col justify-between font-sans selection:bg-[#B89A8E] selection:text-white">
       
@@ -247,89 +254,90 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
       </div>
 
       {/* 2. DEDICATED STEP CONTENT SCREENS */}
-      <div className="flex-1 max-w-4xl w-full mx-auto flex flex-col items-center justify-center my-4">
+      <div className="flex-1 max-w-5xl w-full mx-auto flex flex-col items-center justify-center my-4">
         
-        {/* ================= STEP 1, STEP 2 & STEP 3: CHARACTER PODIUM STAGE ================= */}
+        {/* ================= STEP 1, STEP 2 & STEP 3: CHARACTER PODIUM STAGE (NO OUTER CARD) ================= */}
         {(step === 1 || step === 2 || step === 3) && activeSkin && (
-          <div className="w-full flex flex-col items-center justify-center bg-[#FAF7F2] p-8 sm:p-12 rounded-3xl border border-[#D6CFCE] shadow-sm relative min-h-[460px]">
+          <div className="w-full flex flex-col items-center justify-center relative my-2">
             
-            {/* STAGE & CAROUSEL */}
-            <div className="relative w-full max-w-md h-80 flex items-center justify-center my-2">
+            {/* STAGE & CAROUSEL (INNER PORTRAIT FRAME w-80 h-96) */}
+            <div className="relative w-full max-w-lg h-[400px] flex items-center justify-center my-2">
               
-              {/* OVERHEAD RADIAL SPOTLIGHT GLOW */}
+              {/* SCALED OVERHEAD RADIAL SPOTLIGHT GLOW */}
               <div
-                className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-72 pointer-events-none rounded-full"
+                className="absolute top-0 left-1/2 -translate-x-1/2 w-[440px] h-[340px] pointer-events-none rounded-full"
                 style={{
-                  background: 'radial-gradient(circle, rgba(230,194,128,0.4) 0%, transparent 70%)'
+                  background: 'radial-gradient(circle, rgba(230,194,128,0.45) 0%, transparent 70%)'
                 }}
               />
 
-              {/* SINGLE HIGHLIGHTED ACTIVE AVATAR */}
+              {/* SINGLE HIGHLIGHTED ACTIVE AVATAR (ENLARGED TO w-[272px] h-[272px]) */}
               <div
                 onClick={handleSelectCurrentSkin}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
-                className={`relative z-10 flex flex-col items-center group cursor-pointer transition-all duration-300 p-3 rounded-3xl ${
+                className={`relative z-10 flex flex-col items-center group cursor-pointer transition-all duration-300 p-4 rounded-3xl ${
                   isSkinActiveSelected
-                    ? 'ring-4 ring-[#8A6B5D] bg-[#8A6B5D]/10 shadow-[0_0_30px_rgba(138,107,93,0.4)] scale-105'
+                    ? 'ring-4 ring-[#8A6B5D] bg-[#8A6B5D]/10 shadow-[0_0_35px_rgba(138,107,93,0.45)] scale-105'
                     : 'hover:scale-102'
                 }`}
               >
                 {/* Active Selection Badge */}
                 {isSkinActiveSelected && (
-                  <div className="absolute -top-3 z-20 px-3 py-1 rounded-full bg-[#3D312A] text-[#FAF7F2] text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-md animate-in fade-in">
+                  <div className="absolute -top-3 z-20 px-3.5 py-1 rounded-full bg-[#3D312A] text-[#FAF7F2] text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-md animate-in fade-in">
                     <Check className="w-3 h-3 text-amber-200" />
                     <span>Selected</span>
                   </div>
                 )}
 
-                {/* Avatar Image */}
+                {/* ENLARGED AVATAR IMAGE (w-[272px] h-[272px]) */}
                 <img
                   src={isHovered ? activeSkin.gifImg : activeSkin.staticImg}
                   alt={activeSkin.name}
-                  className="w-[204px] h-[204px] object-contain drop-shadow-2xl [image-rendering:pixelated]"
+                  className="w-[272px] h-[272px] object-contain drop-shadow-2xl [image-rendering:pixelated]"
                 />
 
-                {/* 3D OVAL PODIUM BASE */}
-                <div className="w-56 h-10 mx-auto -mt-4 rounded-[100%] bg-gradient-to-b from-[#D6CFCE] via-[#B89A8E] to-[#8A6B5D] shadow-lg border-t border-white/70 flex items-center justify-center">
-                  <span className="text-[11px] font-mono font-bold text-[#FAF7F2] uppercase tracking-widest drop-shadow-xs">
+                {/* SCALED 3D OVAL PODIUM BASE (w-72 h-12) */}
+                <div className="w-72 h-12 mx-auto -mt-5 rounded-[100%] bg-gradient-to-b from-[#D6CFCE] via-[#B89A8E] to-[#8A6B5D] shadow-xl border-t border-white/80 flex items-center justify-center">
+                  <span className="text-xs font-mono font-bold text-[#FAF7F2] uppercase tracking-widest drop-shadow-xs">
                     {activeSkin.name}
                   </span>
                 </div>
               </div>
 
-              {/* CAROUSEL CHEVRON ARROWS (< and >) TO TOGGLE */}
+              {/* CAROUSEL CHEVRON ARROWS (< and >) PLACED COMFORTABLY OUTSIDE FRAME */}
               {currentSkins.length > 1 && (
                 <>
                   <button
                     type="button"
                     onClick={handlePrevSkin}
-                    className="absolute left-2 z-20 p-3.5 rounded-full bg-white/95 hover:bg-white text-[#3D312A] border border-[#D6CFCE] shadow-md transition-all cursor-pointer hover:scale-110 active:scale-95"
+                    className="absolute left-[-1rem] sm:left-[-3rem] z-20 p-4 rounded-full bg-white/95 hover:bg-white text-[#3D312A] border border-[#D6CFCE] shadow-lg transition-all cursor-pointer hover:scale-110 active:scale-95"
+                    aria-label="Previous Skin"
                   >
-                    <ChevronLeft className="w-6 h-6 text-[#8A6B5D]" />
+                    <ChevronLeft className="w-7 h-7 text-[#8A6B5D]" />
                   </button>
 
                   <button
                     type="button"
                     onClick={handleNextSkin}
-                    className="absolute right-2 z-20 p-3.5 rounded-full bg-white/95 hover:bg-white text-[#3D312A] border border-[#D6CFCE] shadow-md transition-all cursor-pointer hover:scale-110 active:scale-95"
+                    className="absolute right-[-1rem] sm:right-[-3rem] z-20 p-4 rounded-full bg-white/95 hover:bg-white text-[#3D312A] border border-[#D6CFCE] shadow-lg transition-all cursor-pointer hover:scale-110 active:scale-95"
+                    aria-label="Next Skin"
                   >
-                    <ChevronRight className="w-6 h-6 text-[#8A6B5D]" />
+                    <ChevronRight className="w-7 h-7 text-[#8A6B5D]" />
                   </button>
                 </>
               )}
 
             </div>
 
-            {/* STEP SELECT ACTION BUTTON */}
-            <div className="mt-6 flex flex-col items-center gap-2">
+            {/* DYNAMIC STEP-SPECIFIC ACTION BUTTON */}
+            <div className="mt-8 flex flex-col items-center gap-2">
               <button
                 type="button"
                 onClick={handleSelectCurrentSkin}
-                className="bg-[#3D312A] hover:bg-[#2A211B] text-[#FAF7F2] px-10 py-3.5 rounded-full font-bold shadow-lg transition-all cursor-pointer active:scale-95 text-sm md:text-base flex items-center gap-2"
+                className="bg-[#3D312A] hover:bg-[#2A211B] text-[#FAF7F2] px-10 py-4 rounded-full font-bold shadow-xl transition-all duration-300 cursor-pointer active:scale-95 text-base md:text-lg flex items-center gap-3 hover:scale-105"
               >
-                <span>Select for {step === 3 ? 'Bottom' : 'Top'}</span>
-                <ArrowRight className="w-4 h-4 text-amber-200" />
+                <span>{stepButtonLabel}</span>
               </button>
 
               {selectedNotice && (
@@ -426,88 +434,97 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
           </div>
         )}
 
-        {/* ================= STEP 5: EDITABLE SUMMARY REVIEW ================= */}
+        {/* ================= STEP 5: REDESIGNED EDITABLE SUMMARY REVIEW ================= */}
         {step === 5 && (
-          <div className="w-full max-w-4xl space-y-8">
+          <div className="w-full max-w-5xl mx-auto space-y-10">
             
-            {/* THREE SIDE-BY-SIDE SUMMARY CARDS */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* THREE EXPANDED SIDE-BY-SIDE SUMMARY CARDS */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 p-4">
               
               {/* 1. TOPS CARD */}
-              <div className="bg-[#FAF7F2] p-6 rounded-3xl border border-[#D6CFCE] shadow-sm flex flex-col justify-between space-y-4 relative">
+              <div className="bg-[#FAF7F2] p-8 rounded-3xl border border-[#D6CFCE] shadow-md flex flex-col justify-between space-y-6 relative hover:shadow-lg transition-shadow">
                 <div>
-                  <div className="flex items-center gap-2 mb-3">
-                    <Shirt className="w-5 h-5 text-[#8A6B5D]" />
-                    <h3 className="font-serif italic font-bold text-lg text-[#3D312A]">Tops Criteria</h3>
+                  <div className="flex items-center gap-3 mb-4">
+                    <Shirt className="w-6 h-6 text-[#8A6B5D]" />
+                    <h3 className="text-xl md:text-2xl font-serif italic text-[#3D312A] font-bold">
+                      Tops Criteria
+                    </h3>
                   </div>
-                  <div className="space-y-1.5 text-xs text-[#3D312A] font-medium">
-                    <p><span className="text-[#8A6B5D] font-bold">Sleeves:</span> {getSelectedSleevesText()}</p>
-                    <p><span className="text-[#8A6B5D] font-bold">Neckline:</span> {getSelectedNecklinesText()}</p>
+                  <div className="space-y-3 text-sm md:text-base leading-relaxed text-[#6E5D53] font-medium">
+                    <p><strong className="text-[#3D312A]">Sleeves:</strong> {getSelectedSleevesText()}</p>
+                    <p><strong className="text-[#3D312A]">Neckline:</strong> {getSelectedNecklinesText()}</p>
                   </div>
                 </div>
+                
+                {/* Clean Pencil Action Button */}
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="flex items-center gap-1.5 text-xs font-bold text-[#8A6B5D] hover:text-[#3D312A] cursor-pointer pt-2 border-t border-[#D6CFCE]"
+                  className="flex items-center gap-2 text-sm font-bold text-[#8A6B5D] hover:text-[#3D312A] cursor-pointer pt-4 border-t border-[#D6CFCE] transition-colors"
                 >
-                  <Edit2 className="w-3.5 h-3.5" />
                   <span>✎ Edit Tops</span>
                 </button>
               </div>
 
               {/* 2. BOTTOMS CARD */}
-              <div className="bg-[#FAF7F2] p-6 rounded-3xl border border-[#D6CFCE] shadow-sm flex flex-col justify-between space-y-4 relative">
+              <div className="bg-[#FAF7F2] p-8 rounded-3xl border border-[#D6CFCE] shadow-md flex flex-col justify-between space-y-6 relative hover:shadow-lg transition-shadow">
                 <div>
-                  <div className="flex items-center gap-2 mb-3">
-                    <Sparkles className="w-5 h-5 text-[#8A6B5D]" />
-                    <h3 className="font-serif italic font-bold text-lg text-[#3D312A]">Bottoms Criteria</h3>
+                  <div className="flex items-center gap-3 mb-4">
+                    <Sparkles className="w-6 h-6 text-[#8A6B5D]" />
+                    <h3 className="text-xl md:text-2xl font-serif italic text-[#3D312A] font-bold">
+                      Bottoms Criteria
+                    </h3>
                   </div>
-                  <div className="space-y-1.5 text-xs text-[#3D312A] font-medium">
-                    <p><span className="text-[#8A6B5D] font-bold">Styles:</span> {getSelectedBottomsText()}</p>
-                    <p><span className="text-[#8A6B5D] font-bold">Coverage:</span> Ankle &amp; Floor Length</p>
+                  <div className="space-y-3 text-sm md:text-base leading-relaxed text-[#6E5D53] font-medium">
+                    <p><strong className="text-[#3D312A]">Styles:</strong> {getSelectedBottomsText()}</p>
+                    <p><strong className="text-[#3D312A]">Coverage:</strong> Ankle &amp; Floor Length</p>
                   </div>
                 </div>
+
+                {/* Clean Pencil Action Button */}
                 <button
                   type="button"
                   onClick={() => setStep(3)}
-                  className="flex items-center gap-1.5 text-xs font-bold text-[#8A6B5D] hover:text-[#3D312A] cursor-pointer pt-2 border-t border-[#D6CFCE]"
+                  className="flex items-center gap-2 text-sm font-bold text-[#8A6B5D] hover:text-[#3D312A] cursor-pointer pt-4 border-t border-[#D6CFCE] transition-colors"
                 >
-                  <Edit2 className="w-3.5 h-3.5" />
                   <span>✎ Edit Bottoms</span>
                 </button>
               </div>
 
               {/* 3. RULES CARD */}
-              <div className="bg-[#FAF7F2] p-6 rounded-3xl border border-[#D6CFCE] shadow-sm flex flex-col justify-between space-y-4 relative">
+              <div className="bg-[#FAF7F2] p-8 rounded-3xl border border-[#D6CFCE] shadow-md flex flex-col justify-between space-y-6 relative hover:shadow-lg transition-shadow">
                 <div>
-                  <div className="flex items-center gap-2 mb-3">
-                    <Scissors className="w-5 h-5 text-[#8A6B5D]" />
-                    <h3 className="font-serif italic font-bold text-lg text-[#3D312A]">Rules Criteria</h3>
+                  <div className="flex items-center gap-3 mb-4">
+                    <Scissors className="w-6 h-6 text-[#8A6B5D]" />
+                    <h3 className="text-xl md:text-2xl font-serif italic text-[#3D312A] font-bold">
+                      Rules Criteria
+                    </h3>
                   </div>
-                  <div className="space-y-1 text-xs text-[#3D312A] font-medium">
+                  <div className="space-y-2 text-sm md:text-base leading-relaxed text-[#6E5D53] font-medium">
                     <p>{profile.noSlits ? '✓ No Slits' : '• Slits Allowed'}</p>
                     <p>{profile.noOpenBack ? '✓ No Cutouts' : '• Cutouts Allowed'}</p>
                     <p>{profile.isOpaque ? '✓ 100% Opaque' : '• Sheer Fine'}</p>
                   </div>
                 </div>
+
+                {/* Clean Pencil Action Button */}
                 <button
                   type="button"
                   onClick={() => setStep(4)}
-                  className="flex items-center gap-1.5 text-xs font-bold text-[#8A6B5D] hover:text-[#3D312A] cursor-pointer pt-2 border-t border-[#D6CFCE]"
+                  className="flex items-center gap-2 text-sm font-bold text-[#8A6B5D] hover:text-[#3D312A] cursor-pointer pt-4 border-t border-[#D6CFCE] transition-colors"
                 >
-                  <Edit2 className="w-3.5 h-3.5" />
                   <span>✎ Edit Rules</span>
                 </button>
               </div>
 
             </div>
 
-            {/* PRIMARY CONFIRM AND ENTER CTA */}
-            <div className="flex justify-center pt-4">
+            {/* CENTERED CONFIRM AND ENTER CTA */}
+            <div className="flex justify-center pt-2">
               <button
                 type="button"
                 onClick={handleFinalConfirm}
-                className="bg-[#3D312A] hover:bg-[#2A211B] text-[#FAF7F2] py-4 px-12 rounded-2xl font-semibold shadow-xl text-lg transition-all duration-300 flex items-center gap-3 cursor-pointer active:scale-95 ring-4 ring-amber-300/40"
+                className="bg-[#3D312A] hover:bg-[#2A211B] text-[#FAF7F2] py-4 px-12 text-lg font-semibold rounded-2xl shadow-xl hover:scale-105 transition-all duration-300 flex items-center gap-3 cursor-pointer active:scale-95 ring-4 ring-amber-300/40"
               >
                 <span>Confirm and Enter</span>
                 <Sparkles className="w-5 h-5 text-amber-200" />
