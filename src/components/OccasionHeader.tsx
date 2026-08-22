@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { Occasion } from '@/types/product';
 import { Sparkles } from 'lucide-react';
 
 interface OccasionHeaderProps {
@@ -27,8 +26,8 @@ export const OccasionHeader: React.FC<OccasionHeaderProps> = ({
   return (
     <div className="text-center my-6 space-y-3">
       {/* Title matching hand sketch font styling */}
-      <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-100 font-serif italic flex items-center justify-center gap-2">
-        <Sparkles className="w-5 h-5 text-emerald-400 animate-pulse not-italic" />
+      <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#4B3F38] font-serif italic flex items-center justify-center gap-2">
+        <Sparkles className="w-5 h-5 text-[#8A6B5D] not-italic" />
         <span>what&apos;s the occasion?</span>
       </h2>
 
@@ -40,11 +39,10 @@ export const OccasionHeader: React.FC<OccasionHeaderProps> = ({
             <button
               key={occ.id}
               onClick={() => onSelectOccasion(occ.id)}
-              className={`px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition-all shadow-md flex items-center gap-1.5 border ${
-                isSelected
-                  ? 'bg-gradient-to-r from-purple-900 via-purple-800 to-indigo-900 text-purple-200 border-purple-500/80 ring-2 ring-purple-500/40 shadow-purple-950/60 scale-105'
-                  : 'bg-slate-900/90 text-slate-300 border-slate-800 hover:border-slate-700 hover:text-white hover:bg-slate-800'
-              }`}
+              className={`px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition-all shadow-sm flex items-center gap-1.5 border ${isSelected
+                  ? 'bg-[#8A6B5D] text-white border-[#8A6B5D] shadow-md scale-105'
+                  : 'bg-[#FAF7F2] text-[#4B3F38] border-[#D6CFCE] hover:bg-[#F2EDE6]'
+                }`}
             >
               <span>{occ.icon}</span>
               <span>{occ.label}</span>

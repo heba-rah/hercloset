@@ -1,21 +1,23 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { ModestyFilterState, ModestyProfile, Product } from '@/types/product';
 import { mockProducts } from '@/data/mockProducts';
 import { filterAndScoreProducts } from '@/utils/filterEngine';
 
 import { Header } from '@/components/Header';
-import { OccasionHeader } from '@/components/OccasionHeader';
+import { ClosetTopShelf } from '@/components/ClosetTopShelf';
 import { PinterestGrid } from '@/components/PinterestGrid';
-import { DemoBanner } from '@/components/DemoBanner';
-import { StatsBar } from '@/components/StatsBar';
 import { ModestyFilters } from '@/components/ModestyFilters';
 import { AuditModal } from '@/components/AuditModal';
 import { OnboardingWizard } from '@/components/OnboardingWizard';
-import { ProfileBadgeBar } from '@/components/ProfileBadgeBar';
+import { PermanentProfileModal } from '@/components/PermanentProfileModal';
 import { HamperDrawer } from '@/components/HamperDrawer';
-import { Sparkles, ShieldCheck, ShoppingBag } from 'lucide-react';
+import { HamperButton } from '@/components/HamperButton';
+import { Sparkles, ShieldCheck, X, ChevronLeft, ChevronRight } from 'lucide-react';
+
+// 35 items + 1 avatar tile = 36 total grid items (perfect multiple of 6, 4, 3, 2 columns)
+const ITEMS_PER_PAGE = 35;
 
 const INITIAL_PROFILE: ModestyProfile = {
   name: 'My Custom Modesty Rules',
@@ -52,10 +54,43 @@ export default function Home() {
   const [filters, setFilters] = useState<ModestyFilterState>(INITIAL_FILTERS);
   const [selectedAuditProduct, setSelectedAuditProduct] = useState<Product | null>(null);
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState<boolean>(false);
+  const [isFiltersDrawerOpen, setIsFiltersDrawerOpen] = useState<boolean>(false);
+  const [isPermanentProfileModalOpen, setIsPermanentProfileModalOpen] = useState<boolean>(false);
   const [showWizardModal, setShowWizardModal] = useState<boolean>(false);
 
   const [hamper, setHamper] = useState<Product[]>([]);
   const [isHamperOpen, setIsHamperOpen] = useState<boolean>(false);
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState<number>(1);
+
+  // Load permanent profile from localStorage on mount if available
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('hercloset_permanent_profile');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        setProfile(parsed);
+        setFilters(prev => ({
+          ...prev,
+          necklines: parsed.necklines || prev.necklines,
+          sleeveLengths: parsed.sleeveLengths || prev.sleeveLengths,
+          hemlines: parsed.hemlines || prev.hemlines,
+          fits: parsed.fits || prev.fits,
+          noSlits: parsed.noSlits ?? prev.noSlits,
+          noOpenBack: parsed.noOpenBack ?? prev.noOpenBack,
+          isOpaque: parsed.isOpaque ?? prev.isOpaque,
+        }));
+      }
+    } catch {
+      // fallback
+    }
+  }, []);
+
+  // Automatically reset to Page 1 whenever filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filters]);
 
   const handleSaveProfile = (newProfile: ModestyProfile) => {
     setProfile(newProfile);
@@ -68,9 +103,10 @@ export default function Home() {
       noSlits: newProfile.noSlits,
       noOpenBack: newProfile.noOpenBack,
       isOpaque: newProfile.isOpaque,
-      selectedRetailer: 'all' // Always default to "All Stores" on load & profile setup
+      selectedRetailer: 'all'
     }));
     setShowWizardModal(false);
+    setIsPermanentProfileModalOpen(false);
   };
 
   const handleFilterChange = (updates: Partial<ModestyFilterState>) => {
@@ -124,8 +160,33 @@ export default function Home() {
     return filterAndScoreProducts(mockProducts, filters);
   }, [filters]);
 
+  const averageMatchScore = useMemo(() => {
+    if (calculatedMatches.length === 0) return 0;
+    const sum = calculatedMatches.reduce((acc, m) => acc + m.matchPercentage, 0);
+    return Math.round(sum / calculatedMatches.length);
+  }, [calculatedMatches]);
+
+  const totalPages = Math.ceil(calculatedMatches.length / ITEMS_PER_PAGE) || 1;
+
+  const paginatedMatches = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return calculatedMatches.slice(start, start + ITEMS_PER_PAGE);
+  }, [calculatedMatches, currentPage]);
+
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    if (filters.noSlits) count++;
+    if (filters.noOpenBack) count++;
+    if (filters.isOpaque) count++;
+    if (filters.necklines.length > 0) count += filters.necklines.length;
+    if (filters.sleeveLengths.length > 0) count += filters.sleeveLengths.length;
+    if (filters.hemlines.length > 0) count += filters.hemlines.length;
+    if (filters.fits.length > 0) count += filters.fits.length;
+    return count;
+  }, [filters]);
+
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-purple-500 selection:text-slate-950">
+    <div className="min-h-screen bg-[#F2EDE6] text-[#4B3F38] flex flex-col font-sans selection:bg-[#B89A8E] selection:text-white">
       
       {/* Onboarding Profile Wizard Modal */}
       {(!profile.isProfileComplete || showWizardModal) && (
@@ -137,49 +198,121 @@ export default function Home() {
         />
       )}
 
+      {/* Permanent Modesty Profile Modal (Triggered by top-right square card) */}
+      {isPermanentProfileModalOpen && (
+        <PermanentProfileModal
+          initialProfile={profile}
+          onSaveProfile={handleSaveProfile}
+          onClose={() => setIsPermanentProfileModalOpen(false)}
+        />
+      )}
+
       {/* Top Header Navigation */}
       <Header
         filters={filters}
         onFilterChange={handleFilterChange}
         onToggleMobileFilters={() => setIsMobileFiltersOpen(true)}
         totalMatchesCount={calculatedMatches.length}
+        onOpenProfileModal={() => setIsPermanentProfileModalOpen(true)}
       />
 
-      {/* Main Pinterest Feed Content */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+      {/* FULL-WIDTH HOLLOW WARDROBE TOP SHELF */}
+      <ClosetTopShelf
+        selectedOccasion={filters.selectedOccasion}
+        onSelectOccasion={(occ) => handleFilterChange({ selectedOccasion: occ })}
+        selectedStore={filters.selectedRetailer}
+        onSelectStore={(store) => handleFilterChange({ selectedRetailer: store })}
+        averageMatchScore={averageMatchScore}
+        totalItemsCount={calculatedMatches.length}
+      />
+
+      {/* Main Full-Width Content Area with Persistent Stylist Tile in Position #1 */}
+      <main className="flex-1 max-w-[1800px] w-full mx-auto px-4 sm:px-6 lg:px-8 pb-20">
         
-        {/* Active Profile Summary */}
-        {profile.isProfileComplete && (
-          <ProfileBadgeBar
-            profile={profile}
-            onEditProfile={() => setShowWizardModal(true)}
-          />
+        {/* FULL-WIDTH EDGE-TO-EDGE PINTEREST MASONRY GRID (PERSISTENT STYLIST TILE AT POSITION #1 ON EVERY PAGE) */}
+        <PinterestGrid
+          matches={paginatedMatches}
+          isAiMode={filters.demoMode === 'ai_search'}
+          onOpenAuditModal={(prod) => setSelectedAuditProduct(prod)}
+          onAddToHamper={handleToggleHamper}
+          hamperProductIds={hamper.map(p => p.id)}
+          onOpenFilters={() => setIsFiltersDrawerOpen(true)}
+          activeFilterCount={activeFilterCount}
+        />
+
+        {/* CLEAN PAGINATION CONTROLS */}
+        {calculatedMatches.length > 0 && (
+          <div className="mt-8 pt-6 border-t border-[#D6CFCE] flex flex-col sm:flex-row items-center justify-between gap-4 font-sans">
+            <span className="text-xs text-[#4B3F38] font-semibold">
+              Page <span className="font-bold text-[#8A6B5D]">{currentPage}</span> of{' '}
+              <span className="font-bold text-[#8A6B5D]">{totalPages}</span> — Showing{' '}
+              <span className="font-mono text-[#8A6B5D]">
+                {paginatedMatches.length} of {calculatedMatches.length}
+              </span>{' '}
+              Canadian garments
+            </span>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  setCurrentPage(prev => Math.max(1, prev - 1));
+                  window.scrollTo({ top: 300, behavior: 'smooth' });
+                }}
+                disabled={currentPage === 1}
+                className="bg-[#8A6B5D] hover:bg-[#6e5346] text-[#FAF7F2] font-sans text-xs font-semibold px-4 py-2 rounded-xl shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
+              >
+                <ChevronLeft className="w-4 h-4 text-white" />
+                <span>Previous</span>
+              </button>
+
+              <span className="px-3 py-1.5 rounded-lg bg-[#FAF7F2] border border-[#D6CFCE] text-xs font-mono font-bold text-[#4B3F38]">
+                {currentPage} / {totalPages}
+              </span>
+
+              <button
+                onClick={() => {
+                  setCurrentPage(prev => Math.min(totalPages, prev + 1));
+                  window.scrollTo({ top: 300, behavior: 'smooth' });
+                }}
+                disabled={currentPage === totalPages}
+                className="bg-[#8A6B5D] hover:bg-[#6e5346] text-[#FAF7F2] font-sans text-xs font-semibold px-4 py-2 rounded-xl shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
+              >
+                <span>Next</span>
+                <ChevronRight className="w-4 h-4 text-white" />
+              </button>
+            </div>
+          </div>
         )}
 
-        {/* Compact Demo Mode Explanation Banner */}
-        <DemoBanner
-          filters={filters}
-          onFilterChange={handleFilterChange}
-        />
+      </main>
 
-        {/* "what's the occasion?" Header & Pills */}
-        <OccasionHeader
-          selectedOccasion={filters.selectedOccasion}
-          onSelectOccasion={(occ) => handleFilterChange({ selectedOccasion: occ })}
-        />
+      {/* SLIDE-OVER MODESTY FILTERS DRAWER (For Current Session Tweaks) */}
+      {isFiltersDrawerOpen && (
+        <div className="fixed inset-0 z-50 flex justify-end bg-[#4B3F38]/60 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="relative w-full max-w-md h-full bg-[#FAF7F2] border-l border-[#D6CFCE] shadow-2xl flex flex-col justify-between text-[#4B3F38]">
+            
+            {/* Drawer Header */}
+            <div className="p-5 border-b border-[#D6CFCE] flex items-center justify-between bg-[#F2EDE6]">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-white border border-[#B89A8E] text-[#8A6B5D]">
+                  <ShieldCheck className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-serif italic font-bold text-base text-[#4B3F38]">Session Filter Tweaks</h3>
+                  <p className="text-xs text-[#8A6B5D]">Temporary adjustment for this search</p>
+                </div>
+              </div>
 
-        {/* Live Match Statistics Bar */}
-        <StatsBar
-          matches={calculatedMatches}
-          isAiMode={filters.demoMode === 'ai_search'}
-        />
+              <button
+                onClick={() => setIsFiltersDrawerOpen(false)}
+                className="p-2 rounded-full bg-white text-[#4B3F38] hover:bg-[#FAF7F2] border border-[#D6CFCE]"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
 
-        {/* PINTEREST-STYLE MASONRY GRID FEED */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          
-          {/* Desktop Sidebar Filters */}
-          <div className="hidden lg:block lg:col-span-1">
-            <div className="sticky top-28">
+            {/* Scrollable Filters Body */}
+            <div className="flex-1 overflow-y-auto p-5">
               <ModestyFilters
                 filters={filters}
                 onFilterChange={handleFilterChange}
@@ -188,34 +321,29 @@ export default function Home() {
                 onApplySmartPreset={handleApplySmartPreset}
               />
             </div>
-          </div>
 
-          {/* Pinterest Feed Columns */}
-          <div className="lg:col-span-3">
-            <PinterestGrid
-              matches={calculatedMatches}
-              isAiMode={filters.demoMode === 'ai_search'}
-              onOpenAuditModal={(prod) => setSelectedAuditProduct(prod)}
-              onAddToHamper={handleToggleHamper}
-              hamperProductIds={hamper.map(p => p.id)}
-            />
-          </div>
+            {/* Footer */}
+            <div className="p-4 bg-[#F2EDE6] border-t border-[#D6CFCE] flex items-center justify-between">
+              <span className="text-xs text-[#8A6B5D] font-semibold">
+                {calculatedMatches.length} items match
+              </span>
+              <button
+                onClick={() => setIsFiltersDrawerOpen(false)}
+                className="px-5 py-2.5 rounded-xl bg-[#8A6B5D] hover:bg-[#4B3F38] text-[#FAF7F2] font-bold text-xs shadow-md transition-all"
+              >
+                Apply to Feed
+              </button>
+            </div>
 
+          </div>
         </div>
+      )}
 
-      </main>
-
-      {/* Floating Hamper Button */}
-      <button
+      {/* Floating Aesthetic Woven Laundry Hamper Button */}
+      <HamperButton
+        itemCount={hamper.length}
         onClick={() => setIsHamperOpen(true)}
-        className="fixed bottom-6 right-6 z-40 px-4 py-3 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-extrabold text-xs shadow-2xl shadow-purple-950 flex items-center gap-2.5 transition-all hover:scale-105 active:scale-95 border border-purple-400/40"
-      >
-        <ShoppingBag className="w-4 h-4" />
-        <span>My Hamper</span>
-        <span className="px-2 py-0.5 rounded-full bg-slate-950 text-purple-300 border border-purple-500/60 font-mono text-[11px]">
-          {hamper.length}
-        </span>
-      </button>
+      />
 
       {/* Hamper Drawer */}
       <HamperDrawer
@@ -228,8 +356,8 @@ export default function Home() {
 
       {/* Mobile Filters Drawer */}
       {isMobileFiltersOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden flex flex-col justify-end bg-slate-950/80 backdrop-blur-md">
-          <div className="max-h-[85vh] overflow-y-auto p-4 bg-slate-900 rounded-t-3xl border-t border-slate-800">
+        <div className="fixed inset-0 z-50 lg:hidden flex flex-col justify-end bg-[#4B3F38]/60 backdrop-blur-md">
+          <div className="max-h-[85vh] overflow-y-auto p-4 bg-[#FAF7F2] rounded-t-3xl border-t border-[#D6CFCE]">
             <ModestyFilters
               filters={filters}
               onFilterChange={handleFilterChange}
@@ -250,19 +378,19 @@ export default function Home() {
       />
 
       {/* Footer */}
-      <footer className="mt-auto border-t border-slate-900 bg-slate-950 py-8 text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <footer className="mt-auto border-t border-[#D6CFCE] bg-[#FAF7F2] py-8 text-xs text-[#8A6B5D]">
+        <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="h-6 w-6 rounded-lg bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-purple-400">
+            <div className="h-6 w-6 rounded-lg bg-[#F2EDE6] border border-[#B89A8E] flex items-center justify-center text-[#8A6B5D]">
               <Sparkles className="w-3.5 h-3.5" />
             </div>
-            <span className="font-semibold text-slate-300">hercloset</span>
+            <span className="font-serif italic font-semibold text-[#4B3F38]">hercloset</span>
             <span>— AI-powered visual fashion search engine</span>
           </div>
 
-          <div className="flex items-center gap-4 text-slate-400">
+          <div className="flex items-center gap-4 text-[#4B3F38]">
             <span className="flex items-center gap-1">
-              <ShieldCheck className="w-3.5 h-3.5 text-purple-400" /> Urban Planet &amp; Ardene Live Catalog
+              <ShieldCheck className="w-3.5 h-3.5 text-[#8A6B5D]" /> Urban Planet &amp; Ardene Live Catalog
             </span>
           </div>
         </div>

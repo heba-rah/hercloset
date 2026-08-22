@@ -27,51 +27,51 @@ export const AuditModal: React.FC<AuditModalProps> = ({ product, onClose }) => {
   const getStatusBadge = (condition: boolean, label: string, failNote: string, passNote: string) => {
     if (condition) {
       return (
-        <div className="flex items-start gap-2 p-2.5 rounded-xl bg-rose-950/40 border border-rose-900/60 text-xs">
-          <XCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+        <div className="flex items-start gap-2 p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs">
+          <XCircle className="w-4 h-4 text-rose-700 shrink-0 mt-0.5" />
           <div>
-            <span className="font-semibold text-rose-300 block">{label}: FAILED</span>
-            <span className="text-rose-200/80 text-[11px]">{failNote}</span>
+            <span className="font-semibold text-rose-900 block">{label}: FAILED</span>
+            <span className="text-rose-800/80 text-[11px]">{failNote}</span>
           </div>
         </div>
       );
     }
     return (
-      <div className="flex items-start gap-2 p-2.5 rounded-xl bg-emerald-950/40 border border-emerald-900/60 text-xs">
-        <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+      <div className="flex items-start gap-2 p-2.5 rounded-xl bg-[#F2EDE6] border border-[#B89A8E] text-xs">
+        <CheckCircle2 className="w-4 h-4 text-[#8A6B5D] shrink-0 mt-0.5" />
         <div>
-          <span className="font-semibold text-emerald-300 block">{label}: PASSED</span>
-          <span className="text-emerald-200/80 text-[11px]">{passNote}</span>
+          <span className="font-semibold text-[#4B3F38] block">{label}: PASSED</span>
+          <span className="text-[#8A6B5D] text-[11px]">{passNote}</span>
         </div>
       </div>
     );
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
-      
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#4B3F38]/60 backdrop-blur-md animate-in fade-in duration-200">
+
       {/* Modal Container */}
-      <div className="relative w-full max-w-4xl max-h-[90vh] bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row">
-        
+      <div className="relative w-full max-w-4xl max-h-[90vh] bg-[#FAF7F2] border border-[#D6CFCE] rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row text-[#4B3F38]">
+
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-20 p-2 rounded-full bg-slate-950/80 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-700 transition-all"
+          className="absolute top-4 right-4 z-20 p-2 rounded-full bg-white hover:bg-[#F2EDE6] text-[#4B3F38] border border-[#D6CFCE] transition-all shadow-sm"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* LEFT PANEL: Image + Vision Scanner Overlays */}
-        <div className="lg:w-1/2 relative bg-slate-950 p-6 flex flex-col items-center justify-center border-b lg:border-b-0 lg:border-r border-slate-800 overflow-hidden">
-          
+        <div className="lg:w-1/2 relative bg-[#F2EDE6] p-6 flex flex-col items-center justify-center border-b lg:border-b-0 lg:border-r border-[#D6CFCE] overflow-hidden">
+
           {/* Scanner Header */}
-          <div className="absolute top-4 left-4 z-10 flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/90 border border-slate-800 text-xs font-mono text-emerald-400">
-            <Scan className="w-3.5 h-3.5 animate-spin text-emerald-400" />
+          <div className="absolute top-4 left-4 z-10 flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-[#D6CFCE] text-xs font-mono text-[#8A6B5D] shadow-sm">
+            <Scan className="w-3.5 h-3.5 animate-spin text-[#8A6B5D]" />
             <span>AI Vision Bounding Scan</span>
           </div>
 
           {/* Garment Image Container */}
-          <div className="relative aspect-[3/4] w-full max-w-sm rounded-2xl overflow-hidden border border-slate-800 shadow-2xl">
+          <div className="relative aspect-[3/4] w-full max-w-sm rounded-2xl overflow-hidden border border-[#D6CFCE] shadow-md bg-white">
             <img
               src={imgSrc || product.imageUrl}
               alt={product.name}
@@ -87,13 +87,13 @@ export const AuditModal: React.FC<AuditModalProps> = ({ product, onClose }) => {
                 ? 'border-rose-500 bg-rose-500/10'
                 : isWarning
                   ? 'border-amber-500 bg-amber-500/10'
-                  : 'border-emerald-500 bg-emerald-500/10';
+                  : 'border-[#8A6B5D] bg-[#8A6B5D]/10';
 
               const badgeColor = isFail
-                ? 'bg-rose-500 text-slate-950 font-bold'
+                ? 'bg-rose-600 text-white font-bold'
                 : isWarning
-                  ? 'bg-amber-500 text-slate-950 font-bold'
-                  : 'bg-emerald-500 text-slate-950 font-bold';
+                  ? 'bg-amber-600 text-white font-bold'
+                  : 'bg-[#8A6B5D] text-white font-bold';
 
               return (
                 <div
@@ -120,7 +120,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({ product, onClose }) => {
               href={product.originalUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-extrabold text-sm transition-all shadow-lg shadow-purple-950/60 hover:scale-105 active:scale-95"
+              className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-[#8A6B5D] hover:bg-[#4B3F38] text-white font-extrabold text-sm transition-all shadow-md hover:scale-105 active:scale-95"
             >
               <ShoppingBag className="w-4 h-4" />
               <span>Buy Item at {product.brand} Store</span>
@@ -132,63 +132,62 @@ export const AuditModal: React.FC<AuditModalProps> = ({ product, onClose }) => {
 
         {/* RIGHT PANEL: Audit Findings & Checklist */}
         <div className="lg:w-1/2 p-6 overflow-y-auto space-y-6 max-h-[85vh] lg:max-h-[90vh]">
-          
+
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-purple-400">
+              <span className="text-xs font-semibold uppercase tracking-wider text-[#8A6B5D]">
                 {product.brand}
               </span>
-              <span className="text-slate-600">•</span>
-              <span className="text-xs text-slate-400 capitalize">{product.category}</span>
+              <span className="text-[#D6CFCE]">•</span>
+              <span className="text-xs text-[#4B3F38]/70 capitalize">{product.category}</span>
             </div>
 
-            <h2 className="text-xl font-bold text-slate-100 mt-1">{product.name}</h2>
-            <p className="text-sm font-semibold text-purple-400 mt-1">{displayPrice}</p>
+            <h2 className="text-xl font-bold text-[#4B3F38] mt-1">{product.name}</h2>
+            <p className="text-sm font-semibold text-[#8A6B5D] mt-1">{displayPrice}</p>
           </div>
 
-          <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+          <div className="p-4 rounded-2xl bg-[#F2EDE6] border border-[#D6CFCE] space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-                <Sparkles className="w-4 h-4 text-purple-400" />
+              <span className="text-xs font-bold text-[#4B3F38] uppercase tracking-wider flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-[#8A6B5D]" />
                 Base AI Modesty Score
               </span>
-              <span className="font-mono font-bold text-lg text-purple-400">
+              <span className="font-mono font-bold text-lg text-[#8A6B5D]">
                 {modestyAudit.modestyScore}/100
               </span>
             </div>
 
-            <div className="w-full h-2.5 rounded-full bg-slate-900 overflow-hidden border border-slate-800">
+            <div className="w-full h-2.5 rounded-full bg-white overflow-hidden border border-[#D6CFCE]">
               <div
                 style={{ width: `${modestyAudit.modestyScore}%` }}
-                className={`h-full rounded-full transition-all duration-1000 ${
-                  modestyAudit.modestyScore >= 90
-                    ? 'bg-emerald-500'
+                className={`h-full rounded-full transition-all duration-1000 ${modestyAudit.modestyScore >= 90
+                    ? 'bg-[#8A6B5D]'
                     : modestyAudit.modestyScore >= 75
-                      ? 'bg-amber-500'
+                      ? 'bg-[#B89A8E]'
                       : 'bg-rose-500'
-                }`}
+                  }`}
               />
             </div>
           </div>
 
           <div className="space-y-3">
             {modestyAudit.retailerDescriptionText && (
-              <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800/80">
-                <h4 className="text-xs font-semibold text-slate-400 flex items-center gap-1.5 mb-1">
-                  <FileText className="w-3.5 h-3.5 text-slate-400" /> Retailer Catalog Claim
+              <div className="p-3.5 rounded-xl bg-white border border-[#D6CFCE]">
+                <h4 className="text-xs font-semibold text-[#8A6B5D] flex items-center gap-1.5 mb-1">
+                  <FileText className="w-3.5 h-3.5 text-[#8A6B5D]" /> Retailer Catalog Claim
                 </h4>
-                <p className="text-xs text-slate-300 italic">
+                <p className="text-xs text-[#4B3F38] italic">
                   &quot;{modestyAudit.retailerDescriptionText}&quot;
                 </p>
               </div>
             )}
 
             {modestyAudit.auditSummary && (
-              <div className="p-3.5 rounded-xl bg-purple-950/30 border border-purple-800/50">
-                <h4 className="text-xs font-semibold text-purple-400 flex items-center gap-1.5 mb-1">
-                  <ShieldCheck className="w-3.5 h-3.5 text-purple-400" /> AI Computer Vision Finding
+              <div className="p-3.5 rounded-xl bg-[#F2EDE6] border border-[#B89A8E]">
+                <h4 className="text-xs font-semibold text-[#8A6B5D] flex items-center gap-1.5 mb-1">
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#8A6B5D]" /> AI Computer Vision Finding
                 </h4>
-                <p className="text-xs text-slate-200 leading-relaxed">
+                <p className="text-xs text-[#4B3F38] leading-relaxed">
                   {modestyAudit.auditSummary}
                 </p>
               </div>
@@ -196,7 +195,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({ product, onClose }) => {
           </div>
 
           <div className="space-y-3">
-            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+            <h4 className="text-xs font-bold text-[#8A6B5D] uppercase tracking-wider">
               7-Point Verified Modesty Audit
             </h4>
 
@@ -222,24 +221,24 @@ export const AuditModal: React.FC<AuditModalProps> = ({ product, onClose }) => {
             )}
 
             <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
-                <span className="text-slate-500 block text-[10px] uppercase font-semibold">4. Neckline</span>
-                <span className="font-bold text-slate-200 uppercase">{modestyAudit.neckline}</span>
-              </div>
-              
-              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
-                <span className="text-slate-500 block text-[10px] uppercase font-semibold">5. Sleeve Length</span>
-                <span className="font-bold text-slate-200 capitalize">{modestyAudit.sleeveLength}</span>
+              <div className="p-3 rounded-xl bg-white border border-[#D6CFCE]">
+                <span className="text-[#8A6B5D] block text-[10px] uppercase font-semibold">4. Neckline</span>
+                <span className="font-bold text-[#4B3F38] uppercase">{modestyAudit.neckline}</span>
               </div>
 
-              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
-                <span className="text-slate-500 block text-[10px] uppercase font-semibold">6. Hemline</span>
-                <span className="font-bold text-slate-200 capitalize">{modestyAudit.hemline}</span>
+              <div className="p-3 rounded-xl bg-white border border-[#D6CFCE]">
+                <span className="text-[#8A6B5D] block text-[10px] uppercase font-semibold">5. Sleeve Length</span>
+                <span className="font-bold text-[#4B3F38] capitalize">{modestyAudit.sleeveLength}</span>
               </div>
 
-              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
-                <span className="text-slate-500 block text-[10px] uppercase font-semibold">7. Silhouette Fit</span>
-                <span className="font-bold text-slate-200 capitalize">{modestyAudit.fit}</span>
+              <div className="p-3 rounded-xl bg-white border border-[#D6CFCE]">
+                <span className="text-[#8A6B5D] block text-[10px] uppercase font-semibold">6. Hemline</span>
+                <span className="font-bold text-[#4B3F38] capitalize">{modestyAudit.hemline}</span>
+              </div>
+
+              <div className="p-3 rounded-xl bg-white border border-[#D6CFCE]">
+                <span className="text-[#8A6B5D] block text-[10px] uppercase font-semibold">7. Silhouette Fit</span>
+                <span className="font-bold text-[#4B3F38] capitalize">{modestyAudit.fit}</span>
               </div>
             </div>
 
