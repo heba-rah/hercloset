@@ -24,6 +24,9 @@ const NECKLINE_RANK: Record<Neckline, number> = {
   'plunge': 1
 };
 
+const NON_APPAREL_REGEX = /\b(sock|socks|ring|rings|earring|earrings|necklace|bracelet|jewelry|scrunchie|scrunchies|hair|headband|bag|bags|tote|purse|backpack|wallet|perfume|fragrance|candle|shoe|shoes|slide|slides|sandal|sandals|boot|boots|sneaker|sneakers|gloss|lip|nail|polish)\b/i;
+const APPAREL_KEYWORD_REGEX = /\b(dress|dresses|top|tops|shirt|shirts|pant|pants|trouser|trousers|skirt|skirts|sweater|sweaters|hoodie|hoodies|blazer|blazers|cardigan|cardigans|jacket|jackets|coat|coats|vest|vests|suit|suits|bodysuit|bodysuits|romper|rompers|jumpsuit|jumpsuits|jogger|joggers|sweatpant|sweatpants|jeans)\b/i;
+
 export function filterAndScoreProducts(
   products: Product[],
   filters: ModestyFilterState
@@ -34,6 +37,12 @@ export function filterAndScoreProducts(
     const audit = product.modestyAudit;
     const matchReasons: string[] = [];
     const warnings: string[] = [];
+
+    // Filter out non-apparel items (socks, jewelry, bags, footwear, accessories)
+    const nameAndCat = `${product.name} ${product.category} ${product.tags.join(' ')}`;
+    if (NON_APPAREL_REGEX.test(nameAndCat) && !APPAREL_KEYWORD_REGEX.test(product.name)) {
+      continue;
+    }
 
     // Category filter
     if (filters.selectedCategory !== 'all' && product.category !== filters.selectedCategory) {

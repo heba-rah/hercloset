@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ShieldCheck, AlertTriangle, Sparkles, Check, ShoppingBag, Eye } from 'lucide-react';
+import { ShieldCheck, AlertTriangle, ExternalLink, Eye, BookmarkCheck, Bookmark } from 'lucide-react';
 import { CalculatedMatch, Product } from '@/types/product';
 
 interface PinterestCardProps {
@@ -19,24 +19,9 @@ export const PinterestCard: React.FC<PinterestCardProps> = ({
   onAddToHamper,
   isInHamper
 }) => {
-  const { product, matchPercentage, passedFilters, warnings } = match;
+  const { product, matchPercentage, passedFilters } = match;
   const { modestyAudit } = product;
   const [imgSrc, setImgSrc] = useState<string>(product.imageUrl);
-
-  const aspectClass = product.aspectRatio === 'tall'
-    ? 'aspect-[2/3]'
-    : product.aspectRatio === 'square'
-      ? 'aspect-square'
-      : product.aspectRatio === 'wide'
-        ? 'aspect-[4/3]'
-        : 'aspect-[3/4]';
-
-  const isHighMatch = matchPercentage >= 90 && passedFilters;
-  const badgeBg = !passedFilters || matchPercentage < 70
-    ? 'bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300 border-rose-300 dark:border-rose-800'
-    : isHighMatch
-      ? 'bg-[#8A6B5D] text-white border-[#8A6B5D]'
-      : 'bg-[#B89A8E] text-white border-[#B89A8E]';
 
   const handleImageError = () => {
     setImgSrc('https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=800&q=80');
@@ -46,114 +31,109 @@ export const PinterestCard: React.FC<PinterestCardProps> = ({
     ? product.price
     : `$${product.price}`;
 
+  const isHighMatch = matchPercentage >= 90 && passedFilters;
+
   return (
-    <div className="break-inside-avoid mb-6 group relative bg-[#FAF7F2] dark:bg-[#2D2522] border border-[#D6CFCE] dark:border-[#443732] hover:border-[#B89A8E] dark:hover:border-[#8A6B5D] rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col">
+    <div className="break-inside-avoid mb-4 group relative rounded-2xl overflow-hidden transition-all duration-300 flex flex-col bg-transparent">
       
-      {/* Garment Image */}
-      <div className={`relative w-full bg-[#F2EDE6] dark:bg-[#181412] overflow-hidden ${aspectClass}`}>
+      {/* GARMENT IMAGE & HOVER OVERLAY CONTAINER */}
+      <div className="relative w-full rounded-2xl overflow-hidden bg-[#FAF7F2] dark:bg-[#2D2522] border border-[#D6CFCE]/60 dark:border-[#443732]/60 shadow-sm group-hover:shadow-xl transition-all duration-300">
         <img
           src={imgSrc}
           alt={product.name}
           onError={handleImageError}
-          className="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+          className="w-full h-auto object-cover object-center group-hover:scale-105 transition-transform duration-500 block"
         />
 
-        {/* Top Badges */}
-        <div className="absolute top-3 left-3 right-3 flex items-start justify-between gap-2">
-          <span className="px-2.5 py-1 rounded-full bg-[#FAF7F2]/90 dark:bg-[#181412]/90 backdrop-blur-md text-[11px] font-extrabold text-[#4B3F38] dark:text-[#F2EDE6] border border-[#D6CFCE] dark:border-[#443732] shadow-sm uppercase tracking-wider flex items-center gap-1">
-            <ShoppingBag className="w-3 h-3 text-[#8A6B5D] dark:text-[#C4A497]" />
-            {product.brand}
-          </span>
+        {/* PINTEREST-STYLE HOVER OVERLAY (Translucent dark backdrop on hover) */}
+        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-between p-3 pointer-events-none group-hover:pointer-events-auto">
+          
+          {/* TOP HOVER BAR: Modesty Badge (Left) + Pinterest Save Pill (Right) */}
+          <div className="flex items-center justify-between gap-2">
+            {/* Top-Left: Modesty Match Badge */}
+            <div className={`px-2.5 py-1 rounded-full text-[11px] font-bold backdrop-blur-md border shadow-md flex items-center gap-1 ${
+              !passedFilters || matchPercentage < 70
+                ? 'bg-rose-900/90 text-rose-100 border-rose-700'
+                : isHighMatch
+                  ? 'bg-emerald-900/90 text-emerald-100 border-emerald-700'
+                  : 'bg-amber-900/90 text-amber-100 border-amber-700'
+            }`}>
+              {passedFilters ? <ShieldCheck className="w-3 h-3 text-emerald-300" /> : <AlertTriangle className="w-3 h-3 text-rose-300" />}
+              <span>{matchPercentage}% Match</span>
+            </div>
 
-          <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full backdrop-blur-md text-xs font-bold border shadow-sm ${badgeBg}`}>
-            {passedFilters ? (
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-300 shrink-0" />
-            ) : (
-              <AlertTriangle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
-            )}
-            <span>{matchPercentage}% Match</span>
+            {/* Top-Right: Pinterest Red "Save to Hamper" Pill Button */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onAddToHamper(product);
+              }}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all shadow-lg flex items-center gap-1 ${
+                isInHamper
+                  ? 'bg-slate-900 text-white border border-slate-700'
+                  : 'bg-[#E60023] hover:bg-[#AD001B] text-white'
+              }`}
+            >
+              {isInHamper ? <BookmarkCheck className="w-3.5 h-3.5" /> : <Bookmark className="w-3.5 h-3.5" />}
+              <span>{isInHamper ? 'Saved' : 'Save'}</span>
+            </button>
           </div>
-        </div>
 
-        {/* Bottom Feature Overlay (Soft Warm-Earth Aesthetic) */}
-        <div className="absolute bottom-3 left-3 right-3 flex flex-wrap gap-1">
-          {modestyAudit.hasSlit && (
-            <span className="px-2 py-0.5 rounded-full bg-rose-100/90 dark:bg-rose-950/90 text-rose-800 dark:text-rose-300 border border-rose-300 dark:border-rose-800 text-[10px] font-bold shadow-sm">
-              🚨 Leg Slit
-            </span>
-          )}
-          {modestyAudit.isOpenBack && (
-            <span className="px-2 py-0.5 rounded-full bg-rose-100/90 dark:bg-rose-950/90 text-rose-800 dark:text-rose-300 border border-rose-300 dark:border-rose-800 text-[10px] font-bold shadow-sm">
-              🚨 Open Back
-            </span>
-          )}
-          {modestyAudit.isSheer && (
-            <span className="px-2 py-0.5 rounded-full bg-amber-100/90 dark:bg-amber-950/90 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-800 text-[10px] font-bold shadow-sm">
-              👁️ Sheer Layer
-            </span>
-          )}
-          {!modestyAudit.hasSlit && !modestyAudit.isOpenBack && !modestyAudit.isSheer && (
-            <span className="px-2 py-0.5 rounded-full bg-[#F2EDE6]/90 dark:bg-[#181412]/90 text-[#8A6B5D] dark:text-[#C4A497] border border-[#B89A8E] dark:border-[#8A6B5D] text-[10px] font-bold shadow-sm flex items-center gap-1">
-              <Check className="w-3 h-3 text-[#8A6B5D] dark:text-[#C4A497]" /> Modest Verified
-            </span>
-          )}
+          {/* BOTTOM HOVER BAR: Action Buttons Overlay */}
+          <div className="space-y-2">
+            {/* Warning callout on hover if failed rules */}
+            {!passedFilters && modestyAudit.hasSlit && (
+              <span className="px-2.5 py-1 rounded-md bg-rose-950/90 text-rose-200 border border-rose-800 text-[10px] font-bold block backdrop-blur-md">
+                🚨 Leg Slit Detected
+              </span>
+            )}
+            {!passedFilters && modestyAudit.isOpenBack && (
+              <span className="px-2.5 py-1 rounded-md bg-rose-950/90 text-rose-200 border border-rose-800 text-[10px] font-bold block backdrop-blur-md">
+                🚨 Open Back Cutout
+              </span>
+            )}
+
+            <div className="flex items-center gap-1.5">
+              {/* View AI Audit CTA */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onOpenAuditModal(product);
+                }}
+                className="flex-1 px-3 py-1.5 rounded-full bg-white/95 hover:bg-white text-slate-900 font-bold text-[11px] shadow-md transition-all flex items-center justify-center gap-1"
+              >
+                <Eye className="w-3 h-3 text-[#8A6B5D]" />
+                <span>AI Audit</span>
+              </button>
+
+              {/* Direct Store Buy Link CTA */}
+              <a
+                href={product.originalUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="flex-1 px-3 py-1.5 rounded-full bg-[#8A6B5D] hover:bg-[#4B3F38] text-white font-bold text-[11px] shadow-md transition-all flex items-center justify-center gap-1"
+              >
+                <span>Buy</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
+          </div>
+
         </div>
       </div>
 
-      {/* Card Content & Action Buttons */}
-      <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
-        <div>
-          <div className="flex items-start justify-between gap-2">
-            <h3 className="font-semibold text-sm text-[#4B3F38] dark:text-[#F2EDE6] line-clamp-2 leading-snug group-hover:text-[#8A6B5D] dark:group-hover:text-[#C4A497] transition-colors">
-              {product.name}
-            </h3>
-            <span className="font-bold text-sm text-[#8A6B5D] dark:text-[#C4A497] shrink-0">{displayPrice}</span>
-          </div>
-
-          <div className="flex flex-wrap gap-1.5 mt-2">
-            {product.occasion && (
-              <span className="px-2 py-0.5 rounded-full bg-[#F2EDE6] dark:bg-[#181412] text-[#8A6B5D] dark:text-[#C4A497] border border-[#D6CFCE] dark:border-[#443732] text-[10px] font-semibold uppercase">
-                {product.occasion}
-              </span>
-            )}
-            <span className="px-2 py-0.5 rounded-full bg-[#F2EDE6] dark:bg-[#181412] text-[#4B3F38]/70 dark:text-[#F2EDE6]/70 border border-[#D6CFCE] dark:border-[#443732] text-[10px]">
-              {modestyAudit.neckline} neck
-            </span>
-            <span className="px-2 py-0.5 rounded-full bg-[#F2EDE6] dark:bg-[#181412] text-[#4B3F38]/70 dark:text-[#F2EDE6]/70 border border-[#D6CFCE] dark:border-[#443732] text-[10px]">
-              {modestyAudit.sleeveLength}
-            </span>
-          </div>
-
-          {isAiMode && warnings.length > 0 && (
-            <div className="mt-2 p-2 rounded-xl bg-rose-50 dark:bg-rose-950/80 border border-rose-200 dark:border-rose-800 text-[11px] text-rose-800 dark:text-rose-300">
-              <span className="line-clamp-1">{warnings[0]}</span>
-            </div>
-          )}
+      {/* DISCREET BOTTOM METADATA UNDERNEATH IMAGE */}
+      <div className="mt-2 px-1 flex items-start justify-between gap-2 text-[#4B3F38] dark:text-[#F2EDE6]">
+        <div className="min-w-0">
+          <span className="text-[10px] font-bold text-[#8A6B5D] dark:text-[#C4A497] uppercase tracking-wider block">
+            {product.brand}
+          </span>
+          <h4 className="text-xs font-semibold text-[#4B3F38] dark:text-[#F2EDE6] truncate leading-tight mt-0.5">
+            {product.name}
+          </h4>
         </div>
-
-        {/* Action Buttons */}
-        <div className="pt-2 border-t border-[#D6CFCE]/80 dark:border-[#443732] flex items-center justify-between gap-2">
-          <button
-            onClick={() => onOpenAuditModal(product)}
-            className="flex-1 px-3 py-2 rounded-full bg-[#FAF7F2] dark:bg-[#181412] hover:bg-[#F2EDE6] dark:hover:bg-[#241E1B] border border-[#D6CFCE] dark:border-[#443732] text-[#4B3F38] dark:text-[#F2EDE6] text-xs font-semibold tracking-wide transition-all text-center flex items-center justify-center gap-1"
-          >
-            <Eye className="w-3.5 h-3.5 text-[#8A6B5D] dark:text-[#C4A497]" />
-            <span>view item</span>
-          </button>
-
-          <button
-            onClick={() => onAddToHamper(product)}
-            className={`flex-1 px-3 py-2 rounded-full text-xs font-bold tracking-wide transition-all text-center flex items-center justify-center gap-1 shadow-sm ${
-              isInHamper
-                ? 'bg-[#B89A8E] text-white border border-[#B89A8E]'
-                : 'bg-[#8A6B5D] hover:bg-[#4B3F38] dark:hover:bg-[#A38071] text-white hover:scale-105 active:scale-95'
-            }`}
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>{isInHamper ? 'in hamper ✓' : 'add to hamper'}</span>
-          </button>
-        </div>
-
+        <span className="text-xs font-bold text-[#8A6B5D] dark:text-[#C4A497] shrink-0 mt-0.5">{displayPrice}</span>
       </div>
 
     </div>

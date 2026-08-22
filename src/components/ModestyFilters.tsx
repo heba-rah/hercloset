@@ -61,23 +61,23 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
   };
 
   return (
-    <div className="bg-[#FAF7F2] dark:bg-[#241E1B] border border-[#D6CFCE] dark:border-[#443732] rounded-2xl p-5 text-[#4B3F38] dark:text-[#F2EDE6] shadow-sm space-y-6">
+    <div className="bg-[#FAF7F2] border border-[#D6CFCE] rounded-2xl p-5 text-[#4B3F38] shadow-sm space-y-6">
       {/* Header & Title */}
-      <div className="flex items-center justify-between border-b border-[#D6CFCE] dark:border-[#443732] pb-4">
+      <div className="flex items-center justify-between border-b border-[#D6CFCE] pb-4">
         <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-xl bg-[#F2EDE6] dark:bg-[#181412] border border-[#B89A8E] dark:border-[#8A6B5D] text-[#8A6B5D] dark:text-[#C4A497]">
+          <div className="p-2 rounded-xl bg-[#F2EDE6] border border-[#B89A8E] text-[#8A6B5D]">
             <Filter className="w-4 h-4" />
           </div>
           <div>
-            <h3 className="font-bold text-base tracking-tight text-[#4B3F38] dark:text-[#F2EDE6]">Modesty Criteria</h3>
-            <p className="text-xs text-[#8A6B5D] dark:text-[#C4A497]">Personalized visual rules</p>
+            <h3 className="font-bold text-base tracking-tight text-[#4B3F38]">Modesty Criteria</h3>
+            <p className="text-xs text-[#8A6B5D]">Personalized visual rules</p>
           </div>
         </div>
 
         {isMobileDrawer && onCloseMobileDrawer && (
           <button
             onClick={onCloseMobileDrawer}
-            className="text-xs text-[#4B3F38] dark:text-[#F2EDE6] bg-[#D6CFCE]/40 dark:bg-[#443732] px-2.5 py-1 rounded-lg hover:bg-[#D6CFCE]"
+            className="text-xs text-[#4B3F38] bg-[#D6CFCE]/40 px-2.5 py-1 rounded-lg hover:bg-[#D6CFCE]"
           >
             Done
           </button>
@@ -86,18 +86,18 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
 
       {/* Quick Presets */}
       <div>
-        <label className="text-xs font-semibold text-[#8A6B5D] dark:text-[#C4A497] uppercase tracking-wider block mb-2.5">
+        <label className="text-xs font-semibold text-[#8A6B5D] uppercase tracking-wider block mb-2.5">
           Quick Modesty Presets
         </label>
         <div className="grid grid-cols-2 gap-2">
           <button
             onClick={onApplyStrictPreset}
-            className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-[#8A6B5D] hover:bg-[#4B3F38] dark:hover:bg-[#A38071] text-white text-xs font-semibold transition-all shadow-sm"
+            className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-[#8A6B5D] hover:bg-[#4B3F38] text-white text-xs font-semibold transition-all shadow-sm"
           >
             <ShieldCheck className="w-3.5 h-3.5" />
             <span>Strict Coverage</span>
           </button>
-          
+
           <button
             onClick={onApplySmartPreset}
             className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-[#B89A8E] hover:bg-[#8A6B5D] text-white text-xs font-semibold transition-all shadow-sm"
@@ -109,16 +109,16 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
       </div>
 
       {/* Hard Constraints Checkboxes */}
-      <div className="space-y-2.5 bg-[#F2EDE6] dark:bg-[#181412] p-3.5 rounded-xl border border-[#D6CFCE] dark:border-[#443732]">
-        <label className="text-xs font-semibold text-[#8A6B5D] dark:text-[#C4A497] uppercase tracking-wider block mb-1">
+      <div className="space-y-2.5 bg-[#F2EDE6] p-3.5 rounded-xl border border-[#D6CFCE]">
+        <label className="text-xs font-semibold text-[#8A6B5D] uppercase tracking-wider block mb-1">
           Hard Constraints (Must Pass)
         </label>
-        
+
         {/* No Slits */}
-        <label className="flex items-center justify-between p-2 rounded-lg hover:bg-white dark:hover:bg-[#2D2522] cursor-pointer transition-all">
+        <label className="flex items-center justify-between p-2 rounded-lg hover:bg-white cursor-pointer transition-all">
           <div className="flex items-center gap-2.5">
-            <Scissors className="w-4 h-4 text-rose-700 dark:text-rose-400 shrink-0" />
-            <span className="text-xs font-medium text-[#4B3F38] dark:text-[#F2EDE6]">No Slits (Thigh or Back)</span>
+            <Scissors className="w-4 h-4 text-rose-700 shrink-0" />
+            <span className="text-xs font-medium text-[#4B3F38]">No Slits (Thigh or Back)</span>
           </div>
           <input
             type="checkbox"
@@ -129,10 +129,10 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
         </label>
 
         {/* No Open Back */}
-        <label className="flex items-center justify-between p-2 rounded-lg hover:bg-white dark:hover:bg-[#2D2522] cursor-pointer transition-all">
+        <label className="flex items-center justify-between p-2 rounded-lg hover:bg-white cursor-pointer transition-all">
           <div className="flex items-center gap-2.5">
-            <EyeOff className="w-4 h-4 text-[#8A6B5D] dark:text-[#C4A497] shrink-0" />
-            <span className="text-xs font-medium text-[#4B3F38] dark:text-[#F2EDE6]">No Open Back / Cutouts</span>
+            <EyeOff className="w-4 h-4 text-[#8A6B5D] shrink-0" />
+            <span className="text-xs font-medium text-[#4B3F38]">No Open Back / Cutouts</span>
           </div>
           <input
             type="checkbox"
@@ -143,10 +143,10 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
         </label>
 
         {/* 100% Opaque */}
-        <label className="flex items-center justify-between p-2 rounded-lg hover:bg-white dark:hover:bg-[#2D2522] cursor-pointer transition-all">
+        <label className="flex items-center justify-between p-2 rounded-lg hover:bg-white cursor-pointer transition-all">
           <div className="flex items-center gap-2.5">
-            <Layers className="w-4 h-4 text-[#B89A8E] dark:text-[#C4A497] shrink-0" />
-            <span className="text-xs font-medium text-[#4B3F38] dark:text-[#F2EDE6]">100% Opaque (No Sheer)</span>
+            <Layers className="w-4 h-4 text-[#B89A8E] shrink-0" />
+            <span className="text-xs font-medium text-[#4B3F38]">100% Opaque (No Sheer)</span>
           </div>
           <input
             type="checkbox"
@@ -159,7 +159,7 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
 
       {/* Neckline Selector */}
       <div>
-        <label className="text-xs font-semibold text-[#8A6B5D] dark:text-[#C4A497] uppercase tracking-wider block mb-2">
+        <label className="text-xs font-semibold text-[#8A6B5D] uppercase tracking-wider block mb-2">
           Neckline Preferred
         </label>
         <div className="flex flex-wrap gap-1.5">
@@ -169,11 +169,10 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
               <button
                 key={item.id}
                 onClick={() => onFilterChange({ necklines: toggleArrayItem(filters.necklines, item.id) })}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1 border ${
-                  selected
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1 border ${selected
                     ? 'bg-[#8A6B5D] border-[#8A6B5D] text-white font-semibold'
-                    : 'bg-white dark:bg-[#181412] border-[#D6CFCE] dark:border-[#443732] text-[#4B3F38] dark:text-[#F2EDE6] hover:bg-[#F2EDE6] dark:hover:bg-[#2D2522]'
-                }`}
+                    : 'bg-white border-[#D6CFCE] text-[#4B3F38] hover:bg-[#F2EDE6]'
+                  }`}
               >
                 {selected && <Check className="w-3 h-3 text-white" />}
                 <span>{item.label}</span>
@@ -185,7 +184,7 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
 
       {/* Sleeve Length Selector */}
       <div>
-        <label className="text-xs font-semibold text-[#8A6B5D] dark:text-[#C4A497] uppercase tracking-wider block mb-2">
+        <label className="text-xs font-semibold text-[#8A6B5D] uppercase tracking-wider block mb-2">
           Sleeve Length
         </label>
         <div className="flex flex-wrap gap-1.5">
@@ -195,11 +194,10 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
               <button
                 key={item.id}
                 onClick={() => onFilterChange({ sleeveLengths: toggleArrayItem(filters.sleeveLengths, item.id) })}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1 border ${
-                  selected
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1 border ${selected
                     ? 'bg-[#8A6B5D] border-[#8A6B5D] text-white font-semibold'
-                    : 'bg-white dark:bg-[#181412] border-[#D6CFCE] dark:border-[#443732] text-[#4B3F38] dark:text-[#F2EDE6] hover:bg-[#F2EDE6] dark:hover:bg-[#2D2522]'
-                }`}
+                    : 'bg-white border-[#D6CFCE] text-[#4B3F38] hover:bg-[#F2EDE6]'
+                  }`}
               >
                 {selected && <Check className="w-3 h-3 text-white" />}
                 <span>{item.label}</span>
@@ -211,7 +209,7 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
 
       {/* Hemline Selector */}
       <div>
-        <label className="text-xs font-semibold text-[#8A6B5D] dark:text-[#C4A497] uppercase tracking-wider block mb-2">
+        <label className="text-xs font-semibold text-[#8A6B5D] uppercase tracking-wider block mb-2">
           Hemline Length
         </label>
         <div className="flex flex-wrap gap-1.5">
@@ -221,11 +219,10 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
               <button
                 key={item.id}
                 onClick={() => onFilterChange({ hemlines: toggleArrayItem(filters.hemlines, item.id) })}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1 border ${
-                  selected
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1 border ${selected
                     ? 'bg-[#8A6B5D] border-[#8A6B5D] text-white font-semibold'
-                    : 'bg-white dark:bg-[#181412] border-[#D6CFCE] dark:border-[#443732] text-[#4B3F38] dark:text-[#F2EDE6] hover:bg-[#F2EDE6] dark:hover:bg-[#2D2522]'
-                }`}
+                    : 'bg-white border-[#D6CFCE] text-[#4B3F38] hover:bg-[#F2EDE6]'
+                  }`}
               >
                 {selected && <Check className="w-3 h-3 text-white" />}
                 <span>{item.label}</span>
@@ -237,7 +234,7 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
 
       {/* Fit Selector */}
       <div>
-        <label className="text-xs font-semibold text-[#8A6B5D] dark:text-[#C4A497] uppercase tracking-wider block mb-2">
+        <label className="text-xs font-semibold text-[#8A6B5D] uppercase tracking-wider block mb-2">
           Silhouette Fit
         </label>
         <div className="flex flex-wrap gap-1.5">
@@ -247,11 +244,10 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
               <button
                 key={item.id}
                 onClick={() => onFilterChange({ fits: toggleArrayItem(filters.fits, item.id) })}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1 border ${
-                  selected
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1 border ${selected
                     ? 'bg-[#8A6B5D] border-[#8A6B5D] text-white font-semibold'
-                    : 'bg-white dark:bg-[#181412] border-[#D6CFCE] dark:border-[#443732] text-[#4B3F38] dark:text-[#F2EDE6] hover:bg-[#F2EDE6] dark:hover:bg-[#2D2522]'
-                }`}
+                    : 'bg-white border-[#D6CFCE] text-[#4B3F38] hover:bg-[#F2EDE6]'
+                  }`}
               >
                 {selected && <Check className="w-3 h-3 text-white" />}
                 <span>{item.label}</span>
@@ -262,12 +258,12 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
       </div>
 
       {/* Reset Filters Button */}
-      <div className="pt-2 border-t border-[#D6CFCE] dark:border-[#443732]">
+      <div className="pt-2 border-t border-[#D6CFCE]">
         <button
           onClick={onReset}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-[#181412] hover:bg-[#F2EDE6] dark:hover:bg-[#2D2522] border border-[#D6CFCE] dark:border-[#443732] text-xs font-semibold text-[#4B3F38] dark:text-[#F2EDE6] transition-all"
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-[#F2EDE6] border border-[#D6CFCE] text-xs font-semibold text-[#4B3F38] transition-all"
         >
-          <RotateCcw className="w-3.5 h-3.5 text-[#8A6B5D] dark:text-[#C4A497]" />
+          <RotateCcw className="w-3.5 h-3.5 text-[#8A6B5D]" />
           <span>Reset All Filters</span>
         </button>
       </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { ModestyFilterState, ModestyProfile, Product } from '@/types/product';
 import { mockProducts } from '@/data/mockProducts';
 import { filterAndScoreProducts } from '@/utils/filterEngine';
@@ -53,23 +53,9 @@ export default function Home() {
   const [selectedAuditProduct, setSelectedAuditProduct] = useState<Product | null>(null);
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState<boolean>(false);
   const [showWizardModal, setShowWizardModal] = useState<boolean>(false);
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
 
   const [hamper, setHamper] = useState<Product[]>([]);
   const [isHamperOpen, setIsHamperOpen] = useState<boolean>(false);
-
-  // Sync dark class on document element
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDarkMode]);
-
-  const handleToggleTheme = () => {
-    setIsDarkMode(prev => !prev);
-  };
 
   const handleSaveProfile = (newProfile: ModestyProfile) => {
     setProfile(newProfile);
@@ -139,8 +125,8 @@ export default function Home() {
   }, [filters]);
 
   return (
-    <div className="min-h-screen bg-[#F2EDE6] dark:bg-[#181412] text-[#4B3F38] dark:text-[#F2EDE6] flex flex-col font-sans selection:bg-[#B89A8E] selection:text-white transition-colors">
-      
+    <div className="min-h-screen bg-[#F2EDE6] text-[#4B3F38] flex flex-col font-sans selection:bg-[#B89A8E] selection:text-white">
+
       {/* Onboarding Profile Wizard Modal */}
       {(!profile.isProfileComplete || showWizardModal) && (
         <OnboardingWizard
@@ -157,13 +143,11 @@ export default function Home() {
         onFilterChange={handleFilterChange}
         onToggleMobileFilters={() => setIsMobileFiltersOpen(true)}
         totalMatchesCount={calculatedMatches.length}
-        isDarkMode={isDarkMode}
-        onToggleTheme={handleToggleTheme}
       />
 
       {/* Main Pinterest Feed Content */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pb-20">
-        
+
         {/* Active Profile Summary */}
         {profile.isProfileComplete && (
           <ProfileBadgeBar
@@ -192,7 +176,7 @@ export default function Home() {
 
         {/* PINTEREST-STYLE MASONRY GRID FEED */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          
+
           {/* Desktop Sidebar Filters */}
           <div className="hidden lg:block lg:col-span-1">
             <div className="sticky top-28">
@@ -224,11 +208,11 @@ export default function Home() {
       {/* Floating Hamper Button */}
       <button
         onClick={() => setIsHamperOpen(true)}
-        className="fixed bottom-6 right-6 z-40 px-4 py-3 rounded-full bg-[#8A6B5D] hover:bg-[#4B3F38] text-white font-extrabold text-xs shadow-xl flex items-center gap-2.5 transition-all hover:scale-105 active:scale-95 border border-[#B89A8E] dark:border-[#8A6B5D]"
+        className="fixed bottom-6 right-6 z-40 px-4 py-3 rounded-full bg-[#8A6B5D] hover:bg-[#4B3F38] text-white font-extrabold text-xs shadow-xl flex items-center gap-2.5 transition-all hover:scale-105 active:scale-95 border border-[#B89A8E]"
       >
         <ShoppingBag className="w-4 h-4" />
         <span>My Hamper</span>
-        <span className="px-2 py-0.5 rounded-full bg-white dark:bg-[#181412] text-[#8A6B5D] dark:text-[#C4A497] font-mono text-[11px] font-bold">
+        <span className="px-2 py-0.5 rounded-full bg-white text-[#8A6B5D] font-mono text-[11px] font-bold">
           {hamper.length}
         </span>
       </button>
@@ -245,7 +229,7 @@ export default function Home() {
       {/* Mobile Filters Drawer */}
       {isMobileFiltersOpen && (
         <div className="fixed inset-0 z-50 lg:hidden flex flex-col justify-end bg-[#4B3F38]/60 backdrop-blur-md">
-          <div className="max-h-[85vh] overflow-y-auto p-4 bg-[#FAF7F2] dark:bg-[#241E1B] rounded-t-3xl border-t border-[#D6CFCE] dark:border-[#443732]">
+          <div className="max-h-[85vh] overflow-y-auto p-4 bg-[#FAF7F2] rounded-t-3xl border-t border-[#D6CFCE]">
             <ModestyFilters
               filters={filters}
               onFilterChange={handleFilterChange}
@@ -266,19 +250,19 @@ export default function Home() {
       />
 
       {/* Footer */}
-      <footer className="mt-auto border-t border-[#D6CFCE] dark:border-[#443732] bg-[#FAF7F2] dark:bg-[#241E1B] py-8 text-xs text-[#8A6B5D] dark:text-[#C4A497]">
+      <footer className="mt-auto border-t border-[#D6CFCE] bg-[#FAF7F2] py-8 text-xs text-[#8A6B5D]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="h-6 w-6 rounded-lg bg-[#F2EDE6] dark:bg-[#181412] border border-[#B89A8E] flex items-center justify-center text-[#8A6B5D] dark:text-[#C4A497]">
+            <div className="h-6 w-6 rounded-lg bg-[#F2EDE6] border border-[#B89A8E] flex items-center justify-center text-[#8A6B5D]">
               <Sparkles className="w-3.5 h-3.5" />
             </div>
-            <span className="font-semibold text-[#4B3F38] dark:text-[#F2EDE6]">hercloset</span>
+            <span className="font-semibold text-[#4B3F38]">hercloset</span>
             <span>— AI-powered visual fashion search engine</span>
           </div>
 
-          <div className="flex items-center gap-4 text-[#4B3F38] dark:text-[#F2EDE6]">
+          <div className="flex items-center gap-4 text-[#4B3F38]">
             <span className="flex items-center gap-1">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#8A6B5D] dark:text-[#C4A497]" /> Urban Planet &amp; Ardene Live Catalog
+              <ShieldCheck className="w-3.5 h-3.5 text-[#8A6B5D]" /> Urban Planet &amp; Ardene Live Catalog
             </span>
           </div>
         </div>
