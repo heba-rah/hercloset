@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, Check, Sparkles, Shirt, Scissors, EyeOff, Layers } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Check, Sparkles, Shirt, Scissors, EyeOff, Layers, ArrowLeft, ArrowRight } from 'lucide-react';
 import { ModestyProfile } from '@/types/product';
 
 interface CharacterSkin {
@@ -83,7 +83,8 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
   onChangeProfile,
   onConfirm
 }) => {
-  // Navigation State
+  // Stepper State (1: Tops/Sleeve, 2: Tops/Neckline, 3: Bottoms/Skirt, 4: Bottoms/Pants)
+  const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
   const [mainTab, setMainTab] = useState<'tops' | 'bottoms'>('tops');
   const [subTab, setSubTab] = useState<'sleeve' | 'neckline' | 'skirt' | 'pants'>('sleeve');
   const [skinIndex, setSkinIndex] = useState<number>(0);
@@ -95,16 +96,22 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
   const prevSkin = currentSkins[(skinIndex - 1 + currentSkins.length) % currentSkins.length];
   const nextSkin = currentSkins[(skinIndex + 1) % currentSkins.length];
 
-  const handleMainTabChange = (tab: 'tops' | 'bottoms') => {
-    setMainTab(tab);
-    const newSub = tab === 'tops' ? 'sleeve' : 'skirt';
-    setSubTab(newSub);
+  const goToStep = (stepNum: 1 | 2 | 3 | 4) => {
+    setCurrentStep(stepNum);
     setSkinIndex(0);
-  };
-
-  const handleSubTabChange = (sub: 'sleeve' | 'neckline' | 'skirt' | 'pants') => {
-    setSubTab(sub);
-    setSkinIndex(0);
+    if (stepNum === 1) {
+      setMainTab('tops');
+      setSubTab('sleeve');
+    } else if (stepNum === 2) {
+      setMainTab('tops');
+      setSubTab('neckline');
+    } else if (stepNum === 3) {
+      setMainTab('bottoms');
+      setSubTab('skirt');
+    } else if (stepNum === 4) {
+      setMainTab('bottoms');
+      setSubTab('pants');
+    }
   };
 
   const handlePrevSkin = () => {
@@ -115,135 +122,262 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
     setSkinIndex((prev) => (prev + 1) % currentSkins.length);
   };
 
-  const handleSelectSkin = () => {
+  const handleBackStep = () => {
+    if (currentStep > 1) {
+      goToStep((currentStep - 1) as 1 | 2 | 3 | 4);
+    }
+  };
+
+  const handleSelectCurrentSkin = () => {
     const updated = activeSkin.applyRule(profile);
     onChangeProfile(updated);
     setSelectedNotice(`Selected ${activeSkin.name}!`);
-    setTimeout(() => setSelectedNotice(''), 2000);
+    setTimeout(() => setSelectedNotice(''), 1500);
+
+    // STEP-BY-STEP AUTOMATIC PROGRESSION FLOW
+    if (currentStep === 1) {
+      // Step 1 (Tops -> Sleeve) -> Auto-advance to Step 2 (Tops -> Neckline)
+      setTimeout(() => goToStep(2), 300);
+    } else if (currentStep === 2) {
+      // Step 2 (Tops -> Neckline) -> Auto-switch to Bottoms and advance to Step 3 (Bottoms -> Skirt)
+      setTimeout(() => goToStep(3), 300);
+    } else if (currentStep === 3) {
+      // Step 3 (Bottoms -> Skirt) -> Auto-advance to Step 4 (Bottoms -> Pants)
+      setTimeout(() => goToStep(4), 300);
+    }
   };
 
-  const categoryName =
-    subTab === 'sleeve'
+  const categoryStepLabel =
+    currentStep === 1
       ? 'Sleeve'
-      : subTab === 'neckline'
+      : currentStep === 2
       ? 'Neckline'
-      : subTab === 'skirt'
-      ? 'Skirts'
+      : currentStep === 3
+      ? 'Skirt'
       : 'Pants';
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-4 sm:p-6 font-sans">
+    <div className="min-h-screen w-full bg-[#F2EDE6] p-6 sm:p-10 md:p-12 flex flex-col justify-between font-sans selection:bg-[#B89A8E] selection:text-white">
       
-      {/* 1. SCREEN TITLE */}
-      <h2 className="text-2xl md:text-3xl font-serif italic text-[#3D312A] text-center mb-8 font-bold">
-        Let&apos;s set up your modesty profile
-      </h2>
+      {/* 1. TOP CENTERED TITLE */}
+      <div className="w-full text-center mb-6">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif italic text-[#3D312A] font-bold tracking-tight mb-2">
+          Let&apos;s set up your modesty profile
+        </h1>
+        <p className="text-xs sm:text-sm font-medium text-[#8A6B5D] uppercase tracking-wider">
+          Step {currentStep} of 4 — {categoryStepLabel} Selection
+        </p>
+      </div>
 
-      {/* 2-COLUMN PODIUM SETUP */}
-      <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-6 items-start">
+      {/* 2. FULL-SCREEN 2-COLUMN MAIN CONTENT STAGE */}
+      <div className="flex-1 max-w-6xl w-full mx-auto grid grid-cols-1 md:grid-cols-[300px_1fr] gap-8 items-start my-4">
         
-        {/* LEFT COLUMN: PRIMARY GROUP TOGGLE (TOPS / BOTTOMS STACKED PILLS) */}
-        <div className="flex md:flex-col gap-2.5 bg-[#FAF7F2] p-3 rounded-2xl border border-[#D6CFCE] shadow-sm">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-[#8A6B5D] px-2 block mb-1 hidden md:block">
-            Category
-          </span>
-          <button
-            type="button"
-            onClick={() => handleMainTabChange('tops')}
-            className={`flex-1 md:w-full px-5 py-2.5 rounded-xl text-sm font-semibold border transition-all cursor-pointer flex items-center justify-center gap-2 ${
-              mainTab === 'tops'
-                ? 'bg-[#3D312A] border-[#3D312A] text-[#FAF7F2] shadow-md'
-                : 'bg-white border-[#D6CFCE] text-[#3D312A] hover:bg-[#F2EDE6]'
-            }`}
-          >
-            <Shirt className="w-4 h-4" />
-            <span>Tops</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handleMainTabChange('bottoms')}
-            className={`flex-1 md:w-full px-5 py-2.5 rounded-xl text-sm font-semibold border transition-all cursor-pointer flex items-center justify-center gap-2 ${
-              mainTab === 'bottoms'
-                ? 'bg-[#3D312A] border-[#3D312A] text-[#FAF7F2] shadow-md'
-                : 'bg-white border-[#D6CFCE] text-[#3D312A] hover:bg-[#F2EDE6]'
-            }`}
-          >
-            <Sparkles className="w-4 h-4" />
-            <span>Bottoms</span>
-          </button>
-        </div>
-
-        {/* CENTER COLUMN: CHARACTER-SELECT SPOTLIGHT STAGE */}
-        <div className="flex flex-col items-center">
+        {/* LEFT COLUMN: NAVIGATION & RULE CHECKLISTS */}
+        <div className="space-y-6">
           
-          {/* SUBCATEGORY FILTER PILLS ABOVE STAGE */}
-          <div className="flex items-center gap-2 mb-6 bg-[#FAF7F2] p-1.5 rounded-full border border-[#D6CFCE] shadow-inner">
-            {mainTab === 'tops' ? (
-              <>
-                <button
-                  type="button"
-                  onClick={() => handleSubTabChange('sleeve')}
-                  className={`px-5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                    subTab === 'sleeve'
-                      ? 'bg-[#8A6B5D] text-white shadow-xs'
-                      : 'text-[#8A6B5D] hover:bg-[#F2EDE6]'
-                  }`}
-                >
-                  Sleeve
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleSubTabChange('neckline')}
-                  className={`px-5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                    subTab === 'neckline'
-                      ? 'bg-[#8A6B5D] text-white shadow-xs'
-                      : 'text-[#8A6B5D] hover:bg-[#F2EDE6]'
-                  }`}
-                >
-                  Neckline
-                </button>
-              </>
-            ) : (
-              <>
-                <button
-                  type="button"
-                  onClick={() => handleSubTabChange('skirt')}
-                  className={`px-5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                    subTab === 'skirt'
-                      ? 'bg-[#8A6B5D] text-white shadow-xs'
-                      : 'text-[#8A6B5D] hover:bg-[#F2EDE6]'
-                  }`}
-                >
-                  Skirts
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleSubTabChange('pants')}
-                  className={`px-5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                    subTab === 'pants'
-                      ? 'bg-[#8A6B5D] text-white shadow-xs'
-                      : 'text-[#8A6B5D] hover:bg-[#F2EDE6]'
-                  }`}
-                >
-                  Pants
-                </button>
-              </>
-            )}
+          {/* PRIMARY CATEGORY BOX ("CATEGORY") */}
+          <div className="bg-[#FAF7F2] p-4 rounded-3xl border border-[#D6CFCE] shadow-sm space-y-2">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-[#8A6B5D] block mb-2 px-1">
+              CATEGORY
+            </span>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => goToStep(1)}
+                className={`py-3 px-4 rounded-2xl text-xs font-bold border transition-all cursor-pointer flex items-center justify-center gap-2 ${
+                  mainTab === 'tops'
+                    ? 'bg-[#3D312A] border-[#3D312A] text-white shadow-md'
+                    : 'bg-white border-[#D6CFCE] text-[#3D312A] hover:bg-[#F2EDE6]'
+                }`}
+              >
+                <Shirt className="w-4 h-4" />
+                <span>Tops</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => goToStep(3)}
+                className={`py-3 px-4 rounded-2xl text-xs font-bold border transition-all cursor-pointer flex items-center justify-center gap-2 ${
+                  mainTab === 'bottoms'
+                    ? 'bg-[#3D312A] border-[#3D312A] text-white shadow-md'
+                    : 'bg-white border-[#D6CFCE] text-[#3D312A] hover:bg-[#F2EDE6]'
+                }`}
+              >
+                <Sparkles className="w-4 h-4" />
+                <span>Bottoms</span>
+              </button>
+            </div>
           </div>
 
-          {/* 3D CHARACTER SELECT PODIUM STAGE */}
-          <div className="relative w-full max-w-lg h-72 flex items-center justify-center my-2">
+          {/* RULE CHECKLISTS (INTERACTIVE CHECKBOX TOGGLES) */}
+          <div className="bg-[#FAF7F2] p-5 rounded-3xl border border-[#D6CFCE] shadow-sm space-y-3">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-[#8A6B5D] block mb-1">
+              HARD MODESTY RULES
+            </span>
+
+            {/* Checkbox 1: No Slits */}
+            <button
+              type="button"
+              onClick={() => onChangeProfile({ ...profile, noSlits: !profile.noSlits })}
+              className={`w-full p-3.5 rounded-2xl border text-xs font-bold flex items-center justify-between transition-all cursor-pointer ${
+                profile.noSlits
+                  ? 'bg-white border-[#3D312A] text-[#3D312A] shadow-xs'
+                  : 'bg-[#F2EDE6]/60 border-[#D6CFCE] text-[#8A6B5D]'
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <Scissors className="w-4 h-4 text-rose-600 shrink-0" />
+                <span>No Slits</span>
+              </div>
+              <div className={`w-5 h-5 rounded-md flex items-center justify-center border ${
+                profile.noSlits ? 'bg-[#3D312A] border-[#3D312A] text-white' : 'border-[#D6CFCE] bg-white'
+              }`}>
+                {profile.noSlits && <Check className="w-3.5 h-3.5 text-white" />}
+              </div>
+            </button>
+
+            {/* Checkbox 2: No Cutouts */}
+            <button
+              type="button"
+              onClick={() => onChangeProfile({ ...profile, noOpenBack: !profile.noOpenBack })}
+              className={`w-full p-3.5 rounded-2xl border text-xs font-bold flex items-center justify-between transition-all cursor-pointer ${
+                profile.noOpenBack
+                  ? 'bg-white border-[#3D312A] text-[#3D312A] shadow-xs'
+                  : 'bg-[#F2EDE6]/60 border-[#D6CFCE] text-[#8A6B5D]'
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <EyeOff className="w-4 h-4 text-[#8A6B5D] shrink-0" />
+                <span>No Cutouts</span>
+              </div>
+              <div className={`w-5 h-5 rounded-md flex items-center justify-center border ${
+                profile.noOpenBack ? 'bg-[#3D312A] border-[#3D312A] text-white' : 'border-[#D6CFCE] bg-white'
+              }`}>
+                {profile.noOpenBack && <Check className="w-3.5 h-3.5 text-white" />}
+              </div>
+            </button>
+
+            {/* Checkbox 3: 100% Opaque */}
+            <button
+              type="button"
+              onClick={() => onChangeProfile({ ...profile, isOpaque: !profile.isOpaque })}
+              className={`w-full p-3.5 rounded-2xl border text-xs font-bold flex items-center justify-between transition-all cursor-pointer ${
+                profile.isOpaque
+                  ? 'bg-white border-[#3D312A] text-[#3D312A] shadow-xs'
+                  : 'bg-[#F2EDE6]/60 border-[#D6CFCE] text-[#8A6B5D]'
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <Layers className="w-4 h-4 text-[#8A6B5D] shrink-0" />
+                <span>100% Opaque</span>
+              </div>
+              <div className={`w-5 h-5 rounded-md flex items-center justify-center border ${
+                profile.isOpaque ? 'bg-[#3D312A] border-[#3D312A] text-white' : 'border-[#D6CFCE] bg-white'
+              }`}>
+                {profile.isOpaque && <Check className="w-3.5 h-3.5 text-white" />}
+              </div>
+            </button>
+          </div>
+
+          {/* BOTTOM MAIN CTA: CONFIRM AND ENTER CLOSET */}
+          <button
+            type="button"
+            onClick={onConfirm}
+            className={`w-full py-4 px-6 rounded-2xl font-bold text-sm shadow-xl transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer active:scale-95 ${
+              currentStep === 4
+                ? 'bg-[#3D312A] hover:bg-[#2A211B] text-[#FAF7F2] ring-4 ring-amber-300/50 scale-102'
+                : 'bg-[#3D312A] hover:bg-[#2A211B] text-[#FAF7F2]'
+            }`}
+          >
+            <span>Confirm and Enter Closet</span>
+            <ArrowRight className="w-4 h-4 text-amber-200" />
+          </button>
+
+        </div>
+
+        {/* RIGHT COLUMN: CENTER/RIGHT CHARACTER PODIUM & STEPPER */}
+        <div className="flex flex-col items-center justify-center bg-[#FAF7F2] p-6 sm:p-8 rounded-3xl border border-[#D6CFCE] shadow-sm relative min-h-[480px]">
+          
+          {/* TOP STEPPER PILLS & BACK BUTTON */}
+          <div className="w-full flex items-center justify-between mb-6 px-2">
             
-            {/* OVERHEAD SOFT WARM RADIAL SPOTLIGHT GLOW */}
+            {/* BACK BUTTON */}
+            <button
+              type="button"
+              onClick={handleBackStep}
+              disabled={currentStep === 1}
+              className="flex items-center gap-1.5 text-xs font-bold text-[#8A6B5D] hover:text-[#3D312A] disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Back</span>
+            </button>
+
+            {/* STEPPER SUB-PILLS */}
+            <div className="flex items-center gap-2 bg-[#F2EDE6] p-1.5 rounded-full border border-[#D6CFCE]">
+              <button
+                type="button"
+                onClick={() => goToStep(1)}
+                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                  currentStep === 1
+                    ? 'bg-[#3D312A] text-white shadow-xs'
+                    : 'text-[#8A6B5D] hover:bg-white'
+                }`}
+              >
+                Sleeve
+              </button>
+
+              <button
+                type="button"
+                onClick={() => goToStep(2)}
+                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                  currentStep === 2
+                    ? 'bg-[#3D312A] text-white shadow-xs'
+                    : 'text-[#8A6B5D] hover:bg-white'
+                }`}
+              >
+                Neckline
+              </button>
+
+              <button
+                type="button"
+                onClick={() => goToStep(3)}
+                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                  currentStep === 3
+                    ? 'bg-[#3D312A] text-white shadow-xs'
+                    : 'text-[#8A6B5D] hover:bg-white'
+                }`}
+              >
+                Skirt
+              </button>
+
+              <button
+                type="button"
+                onClick={() => goToStep(4)}
+                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                  currentStep === 4
+                    ? 'bg-[#3D312A] text-white shadow-xs'
+                    : 'text-[#8A6B5D] hover:bg-white'
+                }`}
+              >
+                Pants
+              </button>
+            </div>
+
+            <div className="w-12" /> {/* Spacer */}
+          </div>
+
+          {/* 3D CHARACTER PODIUM STAGE */}
+          <div className="relative w-full max-w-lg h-72 flex items-center justify-center my-4">
+            
+            {/* OVERHEAD RADIAL SPOTLIGHT GLOW */}
             <div
-              className="absolute top-0 left-1/2 -translate-x-1/2 w-72 h-60 pointer-events-none rounded-full"
+              className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-64 pointer-events-none rounded-full"
               style={{
-                background: 'radial-gradient(circle, rgba(230,194,128,0.3) 0%, transparent 70%)'
+                background: 'radial-gradient(circle, rgba(230,194,128,0.35) 0%, transparent 70%)'
               }}
             />
 
-            {/* ADJACENT PREVIEW SKIN (LEFT) */}
+            {/* ADJACENT PREVIEW (LEFT) */}
             <div className="absolute left-4 top-6 z-0 scale-75 opacity-40 blur-[0.5px] pointer-events-none transition-all duration-300 hidden sm:block">
               <img
                 src={prevSkin.staticImg}
@@ -258,22 +392,22 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
               onMouseLeave={() => setIsHovered(false)}
               className="relative z-10 flex flex-col items-center group cursor-pointer transition-transform duration-300 hover:scale-105"
             >
-              {/* Active Character Sprite */}
+              {/* Sprite Image */}
               <img
                 src={isHovered ? activeSkin.gifImg : activeSkin.staticImg}
                 alt={activeSkin.name}
                 className="w-[136px] h-[136px] object-contain drop-shadow-xl [image-rendering:pixelated]"
               />
 
-              {/* 3D ELLIPTICAL STAGE BASE UNDERNEATH AVATAR */}
-              <div className="w-44 h-8 mx-auto -mt-3 rounded-[100%] bg-gradient-to-b from-[#D6CFCE] to-[#A89F91] shadow-md border-t border-white/60 flex items-center justify-center">
+              {/* 3D OVAL PODIUM BASE */}
+              <div className="w-44 h-8 mx-auto -mt-3 rounded-[100%] bg-gradient-to-b from-[#D6CFCE] via-[#B89A8E] to-[#8A6B5D] shadow-md border-t border-white/60 flex items-center justify-center">
                 <span className="text-[10px] font-mono font-bold text-[#FAF7F2] uppercase tracking-widest drop-shadow-xs">
                   {activeSkin.name}
                 </span>
               </div>
             </div>
 
-            {/* ADJACENT PREVIEW SKIN (RIGHT) */}
+            {/* ADJACENT PREVIEW (RIGHT) */}
             <div className="absolute right-4 top-6 z-0 scale-75 opacity-40 blur-[0.5px] pointer-events-none transition-all duration-300 hidden sm:block">
               <img
                 src={nextSkin.staticImg}
@@ -282,34 +416,38 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
               />
             </div>
 
-            {/* CAROUSEL ARROWS */}
-            <button
-              type="button"
-              onClick={handlePrevSkin}
-              className="absolute left-2 z-20 p-2.5 rounded-full bg-white/90 hover:bg-white text-[#3D312A] border border-[#D6CFCE] shadow-md transition-all cursor-pointer hover:scale-110 active:scale-95"
-            >
-              <ChevronLeft className="w-5 h-5 text-[#8A6B5D]" />
-            </button>
+            {/* ARROWS */}
+            {currentSkins.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={handlePrevSkin}
+                  className="absolute left-2 z-20 p-2.5 rounded-full bg-white/90 hover:bg-white text-[#3D312A] border border-[#D6CFCE] shadow-md transition-all cursor-pointer hover:scale-110 active:scale-95"
+                >
+                  <ChevronLeft className="w-5 h-5 text-[#8A6B5D]" />
+                </button>
 
-            <button
-              type="button"
-              onClick={handleNextSkin}
-              className="absolute right-2 z-20 p-2.5 rounded-full bg-white/90 hover:bg-white text-[#3D312A] border border-[#D6CFCE] shadow-md transition-all cursor-pointer hover:scale-110 active:scale-95"
-            >
-              <ChevronRight className="w-5 h-5 text-[#8A6B5D]" />
-            </button>
+                <button
+                  type="button"
+                  onClick={handleNextSkin}
+                  className="absolute right-2 z-20 p-2.5 rounded-full bg-white/90 hover:bg-white text-[#3D312A] border border-[#D6CFCE] shadow-md transition-all cursor-pointer hover:scale-110 active:scale-95"
+                >
+                  <ChevronRight className="w-5 h-5 text-[#8A6B5D]" />
+                </button>
+              </>
+            )}
 
           </div>
 
-          {/* SELECT ACTION BUTTON */}
+          {/* PRIMARY STEP SELECT BUTTON WITH AUTO PROGRESSION */}
           <div className="mt-4 flex flex-col items-center gap-2">
             <button
               type="button"
-              onClick={handleSelectSkin}
-              className="bg-[#3D312A] hover:bg-[#2A211B] text-[#FAF7F2] px-8 py-2.5 rounded-full font-medium shadow-md transition-all cursor-pointer active:scale-95 flex items-center gap-2 text-xs"
+              onClick={handleSelectCurrentSkin}
+              className="bg-[#3D312A] hover:bg-[#2A211B] text-[#FAF7F2] px-8 py-3 rounded-full font-bold shadow-md transition-all cursor-pointer active:scale-95 flex items-center gap-2 text-xs md:text-sm"
             >
               <Check className="w-4 h-4 text-amber-200" />
-              <span>Select for {categoryName}</span>
+              <span>✓ Select for {categoryStepLabel}</span>
             </button>
 
             {selectedNotice && (
@@ -317,59 +455,6 @@ export const CharacterSelectPodium: React.FC<CharacterSelectPodiumProps> = ({
                 ✓ {selectedNotice}
               </span>
             )}
-          </div>
-
-          {/* HARD CONSTRAINT TOGGLES */}
-          <div className="w-full grid grid-cols-3 gap-2 mt-6 bg-[#FAF7F2] p-3 rounded-2xl border border-[#D6CFCE]">
-            <button
-              type="button"
-              onClick={() => onChangeProfile({ ...profile, noSlits: !profile.noSlits })}
-              className={`p-2 rounded-xl text-[11px] font-bold border transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
-                profile.noSlits
-                  ? 'bg-[#3D312A] border-[#3D312A] text-white'
-                  : 'bg-white border-[#D6CFCE] text-[#3D312A]'
-              }`}
-            >
-              <Scissors className="w-3.5 h-3.5 text-rose-500" />
-              <span>{profile.noSlits ? 'No Slits' : 'Slits Fine'}</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => onChangeProfile({ ...profile, noOpenBack: !profile.noOpenBack })}
-              className={`p-2 rounded-xl text-[11px] font-bold border transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
-                profile.noOpenBack
-                  ? 'bg-[#3D312A] border-[#3D312A] text-white'
-                  : 'bg-white border-[#D6CFCE] text-[#3D312A]'
-              }`}
-            >
-              <EyeOff className="w-3.5 h-3.5 text-[#8A6B5D]" />
-              <span>{profile.noOpenBack ? 'No Cutouts' : 'Cutouts Fine'}</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => onChangeProfile({ ...profile, isOpaque: !profile.isOpaque })}
-              className={`p-2 rounded-xl text-[11px] font-bold border transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
-                profile.isOpaque
-                  ? 'bg-[#3D312A] border-[#3D312A] text-white'
-                  : 'bg-white border-[#D6CFCE] text-[#3D312A]'
-              }`}
-            >
-              <Layers className="w-3.5 h-3.5 text-[#8A6B5D]" />
-              <span>{profile.isOpaque ? '100% Opaque' : 'Sheer Fine'}</span>
-            </button>
-          </div>
-
-          {/* CONFIRM & ENTER MY CLOSET MAIN CTA */}
-          <div className="mt-6 pt-4 border-t border-[#D6CFCE] w-full flex justify-center">
-            <button
-              type="button"
-              onClick={onConfirm}
-              className="bg-[#3D312A] hover:bg-[#2A211B] text-[#FAF7F2] px-10 py-3.5 rounded-full font-bold text-xs md:text-sm shadow-xl transition-all duration-300 flex items-center gap-2 cursor-pointer active:scale-95 group"
-            >
-              <span>Confirm &amp; Enter My Closet &rarr;</span>
-            </button>
           </div>
 
         </div>
