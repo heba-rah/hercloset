@@ -103,33 +103,37 @@ export function passesStrictModestyFilter(
     }
   }
 
-  // Sleeve Enforcement
-  const sleeves: string[] = Array.isArray((profile as any).sleeves)
-    ? (profile as any).sleeves
-    : (Array.isArray(profile.sleeveLengths) ? profile.sleeveLengths : []);
+  // Sleeve Enforcement (Applies ONLY to upper-body garments, not legwear/pants/jeans)
+  const isUpperBodyGarment = /\b(top|blouse|shirt|tee|t-shirt|polo|button-up|tunic|camisole|tank|cami|hoodie|sweater|cardigan|sweatshirt|crewneck|fleece|pullover|turtleneck|jacket|coat|parka|trench|blazer|puffer|windbreaker|shacket|vest|dress|dresses|gown|bodysuit|romper|onesie|jumpsuit)\b/i.test(text);
 
-  const wantsLong = sleeves.includes("Long Sleeve") || sleeves.includes("wrist") || sleeves.includes("3/4");
-  const wantsShort = sleeves.includes("Short Sleeve") || sleeves.includes("short") || sleeves.includes("elbow");
+  if (isUpperBodyGarment) {
+    const sleeves: string[] = Array.isArray((profile as any).sleeves)
+      ? (profile as any).sleeves
+      : (Array.isArray(profile.sleeveLengths) ? profile.sleeveLengths : []);
 
-  const isExplicitSleeveless = isBareShoulderOrSleeveless || /\b(vest|vests|tank|tanks|camisole|cami|sleeveless|spaghetti|tube|halter|strapless|romper|playsuit)\b/i.test(text);
-  const isExplicitLong = /\b(long sleeve|long-sleeve|longsleeve|sweatshirt|hoodie|sweater|cardigan|jacket|coat|turtleneck|parka|trench|windbreaker|blazer|pullover)\b/i.test(text);
-  const isExplicitShort = /\b(short sleeve|short-sleeve|shortsleeve|t-shirt|tee|tees|polo)\b/i.test(text);
+    const wantsLong = sleeves.includes("Long Sleeve") || sleeves.includes("wrist") || sleeves.includes("3/4");
+    const wantsShort = sleeves.includes("Short Sleeve") || sleeves.includes("short") || sleeves.includes("elbow");
 
-  if ((wantsLong || wantsShort) && isExplicitSleeveless && !isExplicitLong) return false;
+    const isExplicitSleeveless = isBareShoulderOrSleeveless || /\b(vest|vests|tank|tanks|camisole|cami|sleeveless|spaghetti|tube|halter|strapless|romper|playsuit)\b/i.test(text);
+    const isExplicitLong = /\b(long sleeve|long-sleeve|longsleeve|sweatshirt|hoodie|sweater|cardigan|jacket|coat|turtleneck|parka|trench|windbreaker|blazer|pullover)\b/i.test(text);
+    const isExplicitShort = /\b(short sleeve|short-sleeve|shortsleeve|t-shirt|tee|tees|polo)\b/i.test(text);
 
-  // Strict Long Sleeve check: item MUST positively contain a verified long-sleeve term
-  if (wantsLong && !wantsShort) {
-    if (!isExplicitLong || isBareShoulderOrSleeveless) {
-      return false;
+    if ((wantsLong || wantsShort) && isExplicitSleeveless && !isExplicitLong) return false;
+    
+    // Strict Long Sleeve check: item MUST positively contain a verified long-sleeve term
+    if (wantsLong && !wantsShort) {
+      if (!isExplicitLong || isBareShoulderOrSleeveless) {
+        return false;
+      }
     }
+
+    if (wantsShort && !wantsLong && (!isExplicitShort || isExplicitLong)) return false;
+
+    // Neckline Enforcement
+    const wantsHigh = (profile.necklines || []).includes("High Neck" as any) || (profile.necklines || []).includes("high" as any);
+    const wantsCrew = (profile.necklines || []).includes("Crewneck" as any) || (profile.necklines || []).includes("crew" as any);
+    if ((wantsHigh || wantsCrew) && /\b(v-neck|v neck|deep v|scoop|scoop neck|square neck|sweetheart|plunge|open collar)\b/i.test(text)) return false;
   }
-
-  if (wantsShort && !wantsLong && (!isExplicitShort || isExplicitLong)) return false;
-
-  // Neckline Enforcement
-  const wantsHigh = (profile.necklines || []).includes("High Neck" as any) || (profile.necklines || []).includes("high" as any);
-  const wantsCrew = (profile.necklines || []).includes("Crewneck" as any) || (profile.necklines || []).includes("crew" as any);
-  if ((wantsHigh || wantsCrew) && /\b(v-neck|v neck|deep v|scoop|scoop neck|square neck|sweetheart|plunge|open collar)\b/i.test(text)) return false;
 
   return true;
 }
