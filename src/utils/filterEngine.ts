@@ -3,14 +3,6 @@ import { Product, ModestyFilterState, CalculatedMatch } from '@/types/product';
 const NON_APPAREL_REGEX = /\b(sock|socks|ring|rings|earring|earrings|necklace|bracelet|jewelry|scrunchie|scrunchies|hair|headband|bag|bags|tote|purse|backpack|wallet|perfume|fragrance|candle|shoe|shoes|slide|slides|sandal|sandals|boot|boots|sneaker|sneakers|gloss|lip|nail|polish)\b/i;
 const APPAREL_KEYWORD_REGEX = /\b(dress|dresses|top|tops|shirt|shirts|pant|pants|trouser|trousers|skirt|skirts|sweater|sweaters|hoodie|hoodies|blazer|blazers|cardigan|cardigans|jacket|jackets|coat|coats|vest|vests|suit|suits|bodysuit|bodysuits|romper|rompers|jumpsuit|jumpsuits|jogger|joggers|sweatpant|sweatpants|jeans|onesie|onesies)\b/i;
 
-const OCCASION_REGEXES: Record<string, RegExp> = {
-  'everyday': /tee|t-shirt|jeans|hoodie|sweater|crewneck|sweatshirt|cardigan|cargo|casual|denim/i,
-  'gymwear': /active|legging|sports bra|runner|jogger|sweatpants|tank|biker|track|fleece|athletic/i,
-  'sleepwear': /pajama|pj|robe|nightgown|sleep|lounge|slippers/i,
-  'undergarments': /bra|underwear|panties|thong|bralette|shapewear|socks|tights|bikini bottom|bikini top/i,
-  'going_out': /dress|blazer|corset|satin|silk|heels|bodysuit|party|halter|skirt|formal|blouse/i,
-};
-
 export function parsePrice(price: string | number): number {
   if (typeof price === 'number') return price;
   const cleaned = price.replace(/[^0-9.]/g, '');
@@ -42,18 +34,35 @@ function matchesCategory(product: Product, selectedCategory: string): boolean {
   return pCat.includes(cat) || pName.includes(cat);
 }
 
-function matchesOccasion(product: Product, selectedOccasion: string): boolean {
-  if (!selectedOccasion || selectedOccasion === 'all') return true;
-  const occ = selectedOccasion.toLowerCase();
+export function filterByOccasion(item: Product, occasion: string): boolean {
+  if (!occasion || occasion === 'all' || occasion === 'All Occasions') return true;
+  const text = `${item.name || ""} ${item.category || ""} ${(item.tags || []).join(" ")}`.toLowerCase();
 
-  const regex = OCCASION_REGEXES[occ];
-  const text = `${product.name} ${product.category} ${(product.tags || []).join(' ')} ${product.occasion || ''}`;
-  
-  if (regex) {
-    return regex.test(text);
+  switch (occasion) {
+    case "Everyday Wear":
+    case "everyday":
+      return /tee|t-shirt|crewneck|sweatshirt|jeans|denim|hoodie|sweater|cardigan|cargo|casual|basic|oversized/i.test(text);
+
+    case "Gymwear":
+    case "gymwear":
+      return /active|gym|athletic|workout|legging|sports bra|runner|jogger|sweatpant|biker|track|fleece|dry-fit|seamless/i.test(text);
+
+    case "Sleepwear":
+    case "sleepwear":
+      return /pajama|pj|robe|nightgown|sleep|lounge|boxer|slippers|thermal/i.test(text);
+
+    case "Undergarments":
+    case "undergarments":
+      return /bra|underwear|panties|thong|bralette|shapewear|undies|tights|stockings|socks|underwire/i.test(text);
+
+    case "Going Out":
+    case "going_out":
+      return /dress|blazer|corset|satin|silk|bodysuit|party|halter|skirt|evening|blouse|cocktail|heels|mesh top/i.test(text);
+
+    case "All Occasions":
+    default:
+      return true;
   }
-
-  return true;
 }
 
 export function filterAndScoreProducts(
@@ -69,7 +78,8 @@ export function filterAndScoreProducts(
 
     // Filter out non-apparel items (socks, jewelry, bags, footwear, accessories) EXCEPT when Undergarments occasion is selected
     const nameAndCat = `${product.name} ${product.category} ${(product.tags || []).join(' ')}`;
-    if (filters.selectedOccasion !== 'undergarments') {
+    const isUndergarments = filters.selectedOccasion === 'undergarments' || filters.selectedOccasion === 'Undergarments';
+    if (!isUndergarments) {
       if (NON_APPAREL_REGEX.test(nameAndCat) && !APPAREL_KEYWORD_REGEX.test(product.name)) {
         continue;
       }
@@ -85,8 +95,8 @@ export function filterAndScoreProducts(
       continue;
     }
 
-    // Occasion filter (inclusive regex matching)
-    if (!matchesOccasion(product, filters.selectedOccasion)) {
+    // Occasion filter (strict multi-keyword regex matching)
+    if (!filterByOccasion(product, filters.selectedOccasion)) {
       continue;
     }
 
@@ -168,7 +178,8 @@ export function filterAndScoreProducts(
   if (matches.length === 0 && products.length > 0) {
     for (const product of products) {
       const nameAndCat = `${product.name} ${product.category} ${(product.tags || []).join(' ')}`;
-      if (filters.selectedOccasion !== 'undergarments' && NON_APPAREL_REGEX.test(nameAndCat) && !APPAREL_KEYWORD_REGEX.test(product.name)) {
+      const isUndergarments = filters.selectedOccasion === 'undergarments' || filters.selectedOccasion === 'Undergarments';
+      if (!isUndergarments && NON_APPAREL_REGEX.test(nameAndCat) && !APPAREL_KEYWORD_REGEX.test(product.name)) {
         continue;
       }
 

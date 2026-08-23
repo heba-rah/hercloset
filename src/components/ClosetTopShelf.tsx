@@ -24,13 +24,11 @@ export const ClosetTopShelf: React.FC<ClosetTopShelfProps> = ({
 }) => {
   const occasions = [
     { id: 'all', label: 'All Occasions' },
+    { id: 'everyday', label: 'Everyday Wear' },
     { id: 'gymwear', label: 'Gymwear' },
-    { id: 'graduation', label: 'Graduation' },
-    { id: 'wedding', label: 'Wedding' },
-    { id: 'workwear', label: 'Work / Professional' },
-    { id: 'school', label: 'School & Campus' },
-    { id: 'casual', label: 'Everyday Casual' },
-    { id: 'eid', label: 'Eid & Holidays' },
+    { id: 'sleepwear', label: 'Sleepwear' },
+    { id: 'undergarments', label: 'Undergarments' },
+    { id: 'going_out', label: 'Going Out' },
   ];
 
   const stores = [
