@@ -21,13 +21,13 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<'modesty' | 'shopping'>('modesty');
 
-  const demographicOptions: { id: TargetDemographic; label: string; icon: string }[] = [
-    { id: 'all', label: 'All', icon: '✨' },
-    { id: 'women', label: 'Women', icon: '👩' },
-    { id: 'men', label: 'Men', icon: '👨' },
-    { id: 'girls', label: 'Girls', icon: '👧' },
-    { id: 'boys', label: 'Boys', icon: '👦' },
-    { id: 'kids', label: 'All Kids', icon: '🧒' },
+  const demographicOptions: { id: TargetDemographic; label: string }[] = [
+    { id: 'all', label: 'All' },
+    { id: 'women', label: 'Women' },
+    { id: 'men', label: 'Men' },
+    { id: 'girls', label: 'Girls' },
+    { id: 'boys', label: 'Boys' },
+    { id: 'kids', label: 'All Kids' },
   ];
 
   // Exact 4 Setup Categories
@@ -142,7 +142,6 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
                     : 'bg-white border-[#D6CFCE] text-[#6E5D53] hover:bg-[#EAE4DC]'
                 }`}
               >
-                <span>{opt.icon}</span>
                 <span>{opt.label}</span>
               </button>
             );

@@ -21,13 +21,13 @@ export const PermanentProfileModal: React.FC<PermanentProfileModalProps> = ({
   const [profile, setProfile] = useState<ModestyProfile>(initialProfile);
   const [savedSuccess, setSavedSuccess] = useState<boolean>(false);
 
-  const demographicOptions: { id: TargetDemographic; label: string; icon: string }[] = [
-    { id: 'all', label: 'All', icon: '✨' },
-    { id: 'women', label: 'Women', icon: '👩' },
-    { id: 'men', label: 'Men', icon: '👨' },
-    { id: 'girls', label: 'Girls', icon: '👧' },
-    { id: 'boys', label: 'Boys', icon: '👦' },
-    { id: 'kids', label: 'All Kids', icon: '🧒' },
+  const demographicOptions: { id: TargetDemographic; label: string }[] = [
+    { id: 'all', label: 'All' },
+    { id: 'women', label: 'Women' },
+    { id: 'men', label: 'Men' },
+    { id: 'girls', label: 'Girls' },
+    { id: 'boys', label: 'Boys' },
+    { id: 'kids', label: 'All Kids' },
   ];
 
   // Exact 4 Setup Categories
@@ -162,7 +162,6 @@ export const PermanentProfileModal: React.FC<PermanentProfileModalProps> = ({
                         : 'bg-white border-[#D6CFCE] text-[#6E5D53] hover:bg-[#F2EDE6]'
                     }`}
                   >
-                    <span>{opt.icon}</span>
                     <span>{opt.label}</span>
                   </button>
                 );
