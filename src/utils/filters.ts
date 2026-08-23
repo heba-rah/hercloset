@@ -76,8 +76,22 @@ export function matchCategory(item: Product, cat?: string): boolean {
       return /\b(hoodie|sweater|cardigan|sweatshirt|crewneck|fleece|pullover|turtleneck)\b/i.test(text) ||
              (/\b(crochet|knit)\b/i.test(text) && /\b(long sleeve|sweater|cardigan|pullover)\b/i.test(text));
     }
-    case "Pants & Jeans":
-      return /\b(pant|pants|jean|jeans|denim|trouser|trousers|legging|leggings|jogger|cargo|sweatpant)\b/i.test(text);
+    case 'Pants & Jeans': {
+      // 1. Hard reject all tops, outerwear, and upper-body denim
+      const isTopOrOuterwear = /\b(top|shirt|blouse|jacket|coat|vest|shacket|corset|camisole|cami|tube|tank|tee|t-shirt|sweater|hoodie|cardigan|pullover|bra\b|bralette)\b/i.test(text);
+      if (isTopOrOuterwear) return false;
+
+      // 2. Reject skirts and dresses made of denim
+      if (/\b(skirt|dress|jumper dress|pinafore)\b/i.test(text)) return false;
+
+      // 3. Positive match only for true legwear / pants / jeans
+      const isLegwear = /\b(jean|jeans|pant|pants|trouser|trousers|legging|leggings|jogger|joggers|cargo|cargos|sweatpant|sweatpants|flare|wide leg|straight leg|skinny leg|bootcut|slack|slacks|bottoms)\b/i.test(text);
+      
+      // 4. If tagged generally as 'denim', ensure it specifies bottom wear
+      const isDenimBottom = /\bdenim\b/i.test(text) && /\b(jean|jeans|pant|pants|bottom|bottoms|trouser|trousers|wide leg|straight leg|flare)\b/i.test(text);
+
+      return isLegwear || isDenimBottom;
+    }
     case "Skirts & Dresses":
       return /\b(skirt|skirts|dress|dresses|maxi|midi|gown|wrap dress)\b/i.test(text) && 
              !/\b(hoodie|sweater|sweatshirt|pant|jogger|jean|jacket)\b/i.test(text);
@@ -121,6 +135,11 @@ export function isGarmentCropped(item: Product): boolean {
   return Boolean(item.is_cropped) || /\b(crop|cropped|crop top|short waist|midriff|bra top|bandeau|baby tee)\b/i.test(text);
 }
 
+export function hasCutoutsOrBareShoulders(item: Product): boolean {
+  const text = getItemCorpus(item);
+  return /\b(off-the-shoulder|off the shoulder|off-shoulder|off shoulder|cold-shoulder|cold shoulder|one-shoulder|one shoulder|drop shoulder cutout|cutout|cut-out|cut out|slit back|open back|backless|strapless|tube|halter|bandeau|asymmetrical neck)\b/i.test(text);
+}
+
 // D. Strict Modesty Whitelist Filter
 export function passesStrictModestyFilter(
   item: Product, 
@@ -136,7 +155,7 @@ export function passesStrictModestyFilter(
 
   // Exclude cuts / exposures / cropped
   if ((noCropped || noCutouts) && isGarmentCropped(item)) return false;
-  if (noCutouts && /\b(crop|cropped|cutout|cut-out|cut out|backless|open back|strapless|tube|halter|bandeau|corset|bustier|off-shoulder|cold-shoulder|split front|slit front)\b/i.test(text)) return false;
+  if (noCutouts && (hasCutoutsOrBareShoulders(item) || /\b(crop|cropped|cutout|cut-out|cut out|backless|open back|strapless|tube|halter|bandeau|corset|bustier|off-shoulder|cold-shoulder|split front|slit front)\b/i.test(text))) return false;
   if (noSlits && /\b(slit|slits|split|split hem|side slit)\b/i.test(text)) return false;
   if (opaqueOnly && /\b(sheer|mesh|chiffon|lace|transparent|see-through|unlined)\b/i.test(text)) return false;
 
