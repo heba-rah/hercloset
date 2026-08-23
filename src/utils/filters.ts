@@ -69,6 +69,11 @@ export function matchOccasion(item: Product, occ?: string): boolean {
   }
 }
 
+export function isGarmentCropped(item: Product): boolean {
+  const text = getItemCorpus(item);
+  return Boolean(item.is_cropped) || /\b(crop|cropped|crop top|short waist|midriff|bra top|bandeau|baby tee)\b/i.test(text);
+}
+
 // D. Strict Modesty Whitelist Filter
 export function passesStrictModestyFilter(
   item: Product, 
@@ -79,9 +84,11 @@ export function passesStrictModestyFilter(
 
   const noSlits = Boolean(profile.noSlits);
   const noCutouts = Boolean('noCutouts' in profile ? profile.noCutouts : profile.noOpenBack);
+  const noCropped = Boolean('noCropped' in profile && typeof (profile as any).noCropped !== 'undefined' ? (profile as any).noCropped : true);
   const opaqueOnly = Boolean('opaqueOnly' in profile ? profile.opaqueOnly : profile.isOpaque);
 
-  // Exclude cuts / exposures
+  // Exclude cuts / exposures / cropped
+  if ((noCropped || noCutouts) && isGarmentCropped(item)) return false;
   if (noCutouts && /\b(crop|cropped|cutout|cut-out|cut out|backless|open back|strapless|tube|halter|bandeau|corset|bustier|off-shoulder|cold-shoulder|split front|slit front)\b/i.test(text)) return false;
   if (noSlits && /\b(slit|slits|split|split hem|side slit)\b/i.test(text)) return false;
   if (opaqueOnly && /\b(sheer|mesh|chiffon|lace|transparent|see-through|unlined)\b/i.test(text)) return false;

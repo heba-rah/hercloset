@@ -187,6 +187,26 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
 
             <button
               type="button"
+              onClick={() => onFilterChange({ noCropped: !filters.noCropped })}
+              className={`w-full p-2.5 rounded-xl border text-xs font-bold flex items-center justify-between transition-all cursor-pointer ${
+                filters.noCropped
+                  ? 'bg-white border-[#3D312A] text-[#3D312A] shadow-xs'
+                  : 'bg-[#F2EDE6] border-transparent text-[#6E5D53]'
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <ShieldCheck className="w-4 h-4 text-[#8A6B5D] shrink-0" />
+                <span>No Cropped Tops / Midriff Exposure</span>
+              </div>
+              <div className={`w-4 h-4 rounded flex items-center justify-center border ${
+                filters.noCropped ? 'bg-[#3D312A] border-[#3D312A] text-white' : 'border-[#D6CFCE] bg-white'
+              }`}>
+                {filters.noCropped && <Check className="w-3 h-3 text-white" />}
+              </div>
+            </button>
+
+            <button
+              type="button"
               onClick={() => onFilterChange({ isOpaque: !filters.isOpaque })}
               className={`w-full p-2.5 rounded-xl border text-xs font-bold flex items-center justify-between transition-all cursor-pointer ${
                 filters.isOpaque

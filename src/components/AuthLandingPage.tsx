@@ -19,6 +19,7 @@ const DEFAULT_PROFILE: ModestyProfile = {
   fits: [],
   noSlits: true,
   noOpenBack: true,
+  noCropped: true,
   isOpaque: true,
   selectedRetailers: ['Urban Planet', 'Ardene'],
   selectedOccasions: ['gymwear', 'graduation', 'wedding', 'workwear', 'school', 'casual', 'eid'],

@@ -43,6 +43,7 @@ const INITIAL_PROFILE: ModestyProfile = {
   fits: [],
   noSlits: true,
   noOpenBack: true,
+  noCropped: true,
   isOpaque: true,
   selectedRetailers: ['Urban Planet', 'Ardene'],
   selectedOccasions: ['gymwear', 'graduation', 'wedding', 'workwear', 'school', 'casual', 'eid'],
@@ -56,6 +57,7 @@ const INITIAL_FILTERS: ModestyFilterState = {
   fits: [],
   noSlits: false,
   noOpenBack: false,
+  noCropped: false,
   isOpaque: false,
   minModestyScore: 0,
   searchQuery: '',
@@ -282,11 +284,11 @@ export default function Home() {
   }, [filters.selectedOccasion, filters.selectedRetailer, filters.selectedSubcategory]);
 
   const hasModestyRules = useMemo(() => {
-    if (filters.noSlits || filters.noOpenBack || filters.isOpaque) return true;
+    if (filters.noSlits || filters.noOpenBack || filters.noCropped || filters.isOpaque) return true;
     if (filters.necklines.length > 0 || filters.sleeveLengths.length > 0 || filters.hemlines.length > 0 || filters.fits.length > 0) return true;
     if (currentUser && currentUser.profile) {
       const p = currentUser.profile;
-      if (p.noSlits || p.noOpenBack || p.isOpaque) return true;
+      if (p.noSlits || p.noOpenBack || p.noCropped || p.isOpaque) return true;
       if (p.necklines.length > 0 || p.sleeveLengths.length > 0 || p.hemlines.length > 0 || p.fits.length > 0) return true;
     }
     return false;

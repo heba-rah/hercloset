@@ -84,6 +84,7 @@ export interface ModestyProfile {
   fits: GarmentFit[];
   noSlits: boolean;
   noOpenBack: boolean;
+  noCropped: boolean;
   isOpaque: boolean;
   selectedRetailers: string[];
   selectedOccasions: string[];
@@ -97,6 +98,7 @@ export interface ModestyFilterState {
   fits: GarmentFit[];
   noSlits: boolean;
   noOpenBack: boolean;
+  noCropped?: boolean;
   isOpaque: boolean;
   minModestyScore?: number;
   maxPrice?: number;
