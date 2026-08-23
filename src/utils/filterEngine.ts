@@ -9,34 +9,52 @@ export function parsePrice(price: string | number): number {
   return parseFloat(cleaned) || 0;
 }
 
+export function extractItemCorpus(item: Product): string {
+  const audit = item.modestyAudit || {};
+  const parts = [
+    item.name || "",
+    item.category || "",
+    item.brand || "",
+    item.color || "",
+    item.occasion || "",
+    Array.isArray(item.tags) ? item.tags.join(" ") : (item.tags || ""),
+    audit.retailerDescriptionText || "",
+    audit.auditSummary || "",
+    audit.neckline || "",
+    audit.sleeveLength || "",
+    audit.hemline || "",
+    audit.fit || ""
+  ];
+  return parts.join(" ").toLowerCase();
+}
+
 function matchesCategory(product: Product, selectedCategory: string): boolean {
   if (!selectedCategory || selectedCategory === 'all') return true;
   const cat = selectedCategory.toLowerCase();
-  const pName = product.name.toLowerCase();
-  const pCat = product.category.toLowerCase();
+  const text = extractItemCorpus(product);
 
   if (cat === 'tops') {
-    return pCat.includes('top') || pCat.includes('shirt') || pName.includes('top') || pName.includes('shirt') || pName.includes('tee') || pName.includes('sweater') || pName.includes('hoodie');
+    return text.includes('top') || text.includes('shirt') || text.includes('tee') || text.includes('sweater') || text.includes('hoodie');
   }
   if (cat === 'dresses') {
-    return pCat.includes('dress') || pName.includes('dress') || pName.includes('gown') || pName.includes('jumpsuit') || pName.includes('romper') || pName.includes('onesie');
+    return text.includes('dress') || text.includes('gown') || text.includes('jumpsuit') || text.includes('romper') || text.includes('onesie');
   }
   if (cat === 'skirts') {
-    return pCat.includes('skirt') || pName.includes('skirt');
+    return text.includes('skirt');
   }
   if (cat === 'pants') {
-    return pCat.includes('pant') || pCat.includes('trouser') || pName.includes('pant') || pName.includes('trouser') || pName.includes('jeans') || pName.includes('jogger') || pName.includes('sweatpant');
+    return text.includes('pant') || text.includes('trouser') || text.includes('jeans') || text.includes('jogger') || text.includes('sweatpant');
   }
   if (cat === 'outerwear') {
-    return pCat.includes('jacket') || pCat.includes('coat') || pName.includes('jacket') || pName.includes('coat') || pName.includes('blazer') || pName.includes('cardigan') || pName.includes('vest');
+    return text.includes('jacket') || text.includes('coat') || text.includes('blazer') || text.includes('cardigan') || text.includes('vest');
   }
 
-  return pCat.includes(cat) || pName.includes(cat);
+  return text.includes(cat);
 }
 
 export function filterByOccasion(item: Product, occasion: string): boolean {
   if (!occasion || occasion === "All Occasions" || occasion === "all") return true;
-  const text = `${item.name || ""} ${item.category || ""} ${(item.tags || []).join(" ")}`.toLowerCase();
+  const text = extractItemCorpus(item);
 
   switch (occasion) {
     case "Gymwear":
@@ -78,12 +96,12 @@ export function filterAndScoreProducts(
     const audit = product.modestyAudit;
     const matchReasons: string[] = [];
     const warnings: string[] = [];
+    const corpus = extractItemCorpus(product);
 
     // Filter out non-apparel items (socks, jewelry, bags, footwear, accessories) EXCEPT when Undergarments occasion is selected
-    const nameAndCat = `${product.name} ${product.category} ${(product.tags || []).join(' ')}`;
     const isUndergarments = filters.selectedOccasion === 'undergarments' || filters.selectedOccasion === 'Undergarments';
     if (!isUndergarments) {
-      if (NON_APPAREL_REGEX.test(nameAndCat) && !APPAREL_KEYWORD_REGEX.test(product.name)) {
+      if (NON_APPAREL_REGEX.test(corpus) && !APPAREL_KEYWORD_REGEX.test(product.name)) {
         continue;
       }
     }
@@ -111,29 +129,20 @@ export function filterAndScoreProducts(
 
     // Text search query matching
     const q = filters.searchQuery.trim().toLowerCase();
-    const colorStr = product.color || '';
-    const descStr = audit.retailerDescriptionText || '';
-    
-    const matchesSearch = !q ||
-      product.name.toLowerCase().includes(q) ||
-      product.brand.toLowerCase().includes(q) ||
-      colorStr.toLowerCase().includes(q) ||
-      (product.tags && product.tags.some(t => t.toLowerCase().includes(q))) ||
-      descStr.toLowerCase().includes(q);
+    const matchesSearch = !q || corpus.includes(q);
 
     if (!matchesSearch) {
       continue;
     }
 
     // A. HARD RULES FILTER (EXCLUSIONS)
-    const textForAudit = `${product.name} ${(product.tags || []).join(' ')} ${descStr}`;
-    if (filters.noSlits && (/slit|split|side-open/i.test(textForAudit) || audit.hasSlit === true)) {
+    if (filters.noSlits && (/slit|split|side-open/i.test(corpus) || audit.hasSlit === true)) {
       continue;
     }
-    if (filters.noOpenBack && (/cutout|cut-out|backless|strapless|tube|halter|off-shoulder/i.test(textForAudit) || audit.isOpenBack === true)) {
+    if (filters.noOpenBack && (/cutout|cut-out|backless|strapless|tube|halter|off-shoulder/i.test(corpus) || audit.isOpenBack === true)) {
       continue;
     }
-    if (filters.isOpaque && (/sheer|mesh|chiffon|lace|see-through|transparent|pareo/i.test(textForAudit) || audit.isSheer === true)) {
+    if (filters.isOpaque && (/sheer|mesh|chiffon|lace|see-through|transparent|pareo/i.test(corpus) || audit.isSheer === true)) {
       continue;
     }
 
@@ -141,11 +150,10 @@ export function filterAndScoreProducts(
     if (filters.sleeveLengths && filters.sleeveLengths.length > 0) {
       const wantsLong = filters.sleeveLengths.some(s => /long|wrist|3\/4|Long Sleeve/i.test(s));
       const wantsShort = filters.sleeveLengths.some(s => /short|elbow|Short Sleeve/i.test(s));
-      const text = `${product.name} ${(product.tags || []).join(' ')} ${product.category} ${audit.sleeveLength}`.toLowerCase();
 
-      const isLong = /long sleeve|sweater|hoodie|cardigan|jacket|crewneck/i.test(text);
-      const isShort = /short sleeve|t-shirt|tee/i.test(text);
-      const isSleeveless = /tank|tube|camisole|sleeveless|bikini|strapless/i.test(text);
+      const isLong = /long sleeve|sweater|hoodie|cardigan|jacket|crewneck/i.test(corpus);
+      const isShort = /short sleeve|t-shirt|tee/i.test(corpus);
+      const isSleeveless = /tank|tube|camisole|sleeveless|bikini|strapless/i.test(corpus);
 
       if (wantsLong && !wantsShort && (isShort || isSleeveless)) continue;
       if (wantsShort && !wantsLong && (isLong || isSleeveless)) continue;
@@ -154,8 +162,8 @@ export function filterAndScoreProducts(
 
     // C. BOTTOMS FILTER (IF SELECTIONS EXIST)
     if (filters.hemlines && filters.hemlines.length > 0) {
-      const isSkirtOrDress = /skirt|dress|maxi/i.test(textForAudit);
-      const isPants = /pant|trouser|jean|legging|sweatpant|jogger|cargo/i.test(textForAudit);
+      const isSkirtOrDress = /skirt|dress|maxi/i.test(corpus);
+      const isPants = /pant|trouser|jean|legging|sweatpant|jogger|cargo/i.test(corpus);
 
       const wantsSkirt = filters.hemlines.some(b => /skirt|dress|maxi|floor|ankle|Maxi Skirt \/ Dress/i.test(b));
       const wantsPants = filters.hemlines.some(b => /pant|trouser|jean|legging|sweatpant|jogger|cargo|Pants \/ Trousers/i.test(b));
@@ -187,9 +195,9 @@ export function filterAndScoreProducts(
         continue;
       }
 
-      const nameAndCat = `${product.name} ${product.category} ${(product.tags || []).join(' ')}`;
+      const corpus = extractItemCorpus(product);
       const isUndergarments = filters.selectedOccasion === 'undergarments' || filters.selectedOccasion === 'Undergarments';
-      if (!isUndergarments && NON_APPAREL_REGEX.test(nameAndCat) && !APPAREL_KEYWORD_REGEX.test(product.name)) {
+      if (!isUndergarments && NON_APPAREL_REGEX.test(corpus) && !APPAREL_KEYWORD_REGEX.test(product.name)) {
         continue;
       }
 
