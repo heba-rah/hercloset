@@ -1,13 +1,15 @@
 'use client';
 
 import React from 'react';
-import { Tag, Store, Sparkles } from 'lucide-react';
+import { Tag, Store, Sparkles, Layers } from 'lucide-react';
 
 interface ClosetTopShelfProps {
   selectedOccasion: string;
   onSelectOccasion: (occasion: string) => void;
   selectedStore: string;
   onSelectStore: (store: string) => void;
+  selectedSubcategory?: string;
+  onSelectSubcategory?: (sub: string) => void;
   averageMatchScore: number;
   totalItemsCount: number;
   hasActiveFilters?: boolean;
@@ -18,6 +20,8 @@ export const ClosetTopShelf: React.FC<ClosetTopShelfProps> = ({
   onSelectOccasion,
   selectedStore,
   onSelectStore,
+  selectedSubcategory = 'All Types',
+  onSelectSubcategory,
   averageMatchScore,
   totalItemsCount,
   hasActiveFilters = false
@@ -35,6 +39,17 @@ export const ClosetTopShelf: React.FC<ClosetTopShelfProps> = ({
     { id: 'all', label: 'All Stores' },
     { id: 'urban planet', label: 'Urban Planet' },
     { id: 'ardene', label: 'Ardene' },
+  ];
+
+  const subcategories = [
+    'All Types',
+    'Tops & Blouses',
+    'Sweaters & Hoodies',
+    'Pants & Jeans',
+    'Skirts & Dresses',
+    'Jackets & Outerwear',
+    'Shoes & Sandals',
+    'Accessories'
   ];
 
   // Dynamic Color Coding based on score
@@ -71,7 +86,7 @@ export const ClosetTopShelf: React.FC<ClosetTopShelfProps> = ({
   const strokeDashoffset = circumference - (averageMatchScore / 100) * circumference;
 
   return (
-    <div className="w-full bg-[#EAE2D8] border-y-4 border-[#8A6B5D]/40 shadow-[inset_0_6px_12px_rgba(75,63,56,0.15)] py-4 px-4 md:px-8 border-t-[#8A6B5D] border-b-[#4B3F38]/20 my-4">
+    <div className="w-full bg-[#EAE2D8] border-y-4 border-[#8A6B5D]/40 shadow-[inset_0_6px_12px_rgba(75,63,56,0.15)] py-4 px-4 md:px-8 border-t-[#8A6B5D] border-b-[#4B3F38]/20 my-4 space-y-4">
 
       {/* 3-Compartment Layout */}
       <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-6 items-center max-w-[1700px] mx-auto">
@@ -212,6 +227,33 @@ export const ClosetTopShelf: React.FC<ClosetTopShelfProps> = ({
           </select>
         </div>
 
+      </div>
+
+      {/* SUBCATEGORY QUICK-FILTER BANNER (Placed Directly Below Occasion Selector) */}
+      <div className="max-w-[1700px] mx-auto pt-3 border-t border-[#D6CFCE]/40">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+          <div className="flex items-center gap-1 text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider shrink-0 mr-1">
+            <Layers className="w-3.5 h-3.5" />
+            <span>Category:</span>
+          </div>
+          {subcategories.map((sub) => {
+            const isSelected = (!selectedSubcategory && sub === 'All Types') || selectedSubcategory === sub;
+            return (
+              <button
+                key={sub}
+                type="button"
+                onClick={() => onSelectSubcategory && onSelectSubcategory(sub)}
+                className={
+                  isSelected
+                    ? 'bg-[#7A5C4D] text-[#FAF7F2] px-4 py-1.5 rounded-full text-xs font-semibold shadow-sm transition-all shrink-0 cursor-pointer'
+                    : 'bg-[#FAF7F2] text-[#5C4A42] border border-[#D6CFCE]/70 px-4 py-1.5 rounded-full text-xs hover:bg-[#EAE4DC] transition-all shrink-0 cursor-pointer'
+                }
+              >
+                {sub}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
     </div>

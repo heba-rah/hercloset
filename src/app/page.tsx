@@ -325,6 +325,8 @@ export default function Home() {
             onSelectOccasion={(occ) => handleFilterChange({ selectedOccasion: occ })}
             selectedStore={filters.selectedRetailer}
             onSelectStore={(store) => handleFilterChange({ selectedRetailer: store })}
+            selectedSubcategory={filters.selectedSubcategory}
+            onSelectSubcategory={(sub) => handleFilterChange({ selectedSubcategory: sub })}
             averageMatchScore={averageMatchScore}
             totalItemsCount={calculatedMatches.length}
             hasActiveFilters={hasModestyRules}

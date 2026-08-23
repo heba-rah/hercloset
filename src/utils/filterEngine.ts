@@ -52,17 +52,47 @@ function matchesCategory(product: Product, selectedCategory: string): boolean {
   return text.includes(cat);
 }
 
+export function matchSubcategory(item: Product, subcategory?: string): boolean {
+  if (!subcategory || subcategory === "All Types" || subcategory === "all") return true;
+  const text = extractItemCorpus(item);
+
+  switch (subcategory) {
+    case "Tops & Blouses":
+      return /\b(top|blouse|shirt|tee|t-shirt|polo|button-up|tunic|camisole|tank)\b/i.test(text);
+    case "Sweaters & Hoodies":
+      return /\b(sweater|knit|hoodie|sweatshirt|crewneck|cardigan|pullover|fleece)\b/i.test(text);
+    case "Pants & Jeans":
+      return /\b(pant|pants|jean|jeans|denim|trouser|trousers|legging|leggings|jogger|cargo|sweatpant)\b/i.test(text);
+    case "Skirts & Dresses":
+      return /\b(skirt|dress|maxi|midi|gown|wrap dress)\b/i.test(text);
+    case "Jackets & Outerwear":
+      return /\b(jacket|coat|parka|trench|blazer|puffer|windbreaker|shacket|vest)\b/i.test(text);
+    case "Shoes & Sandals":
+      return /\b(shoe|shoes|sneaker|sneakers|boot|boots|sandal|sandals|heel|heels|slide|slides|slipper|loafers|mule)\b/i.test(text);
+    case "Accessories":
+      return /\b(scarf|bandana|belt|hat|cap|beanie|bag|tote|purse|jewelry|sunglasses|gloves)\b/i.test(text);
+    default:
+      return true;
+  }
+}
+
 export function passesStrictModestyFilter(
   item: Product,
   modestyProfile?: ModestyFilterState | ModestyProfile | null,
   selectedOccasion?: string,
-  selectedStore?: string
+  selectedStore?: string,
+  selectedSubcategory?: string
 ): boolean {
   // 1. Store Filter
   if (selectedStore && selectedStore !== "All Stores" && selectedStore !== "all") {
     if (item.brand.toLowerCase() !== selectedStore.toLowerCase()) {
       return false;
     }
+  }
+
+  // Subcategory Quick-Filter
+  if (!matchSubcategory(item, selectedSubcategory)) {
+    return false;
   }
 
   const audit = item.modestyAudit || {};
@@ -91,6 +121,10 @@ export function passesStrictModestyFilter(
 
       case "Undergarments":
       case "undergarments":
+        // Purge shoes, sandals, slippers, boots, hats, and bags from Undergarments
+        if (/\b(shoe|shoes|sneaker|sneakers|boot|boots|sandal|sandals|heel|heels|slide|slides|slipper|slippers|clog|loafers|mule|hat|cap|bag|purse|tote)\b/i.test(text)) {
+          return false;
+        }
         if (/\b(onesie|jumpsuit|hoodie|jacket|sweater|fleece|jean|denim)\b/i.test(text)) return false;
         if (!/\b(bra|bras|underwear|panties|panty|thong|thongs|boxer|boxers|bralette|shapewear|undies)\b/i.test(text)) return false;
         break;
@@ -118,6 +152,15 @@ export function passesStrictModestyFilter(
   const hasActiveRules = noSlits || noCutouts || opaqueOnly || (sleeves && sleeves.length > 0) || (necklines && necklines.length > 0);
   if (!hasActiveRules) {
     return true;
+  }
+
+  // 1. Modesty Filtering Rule for Undergarments when modesty criteria exist:
+  const isUndergarmentOccasion = selectedOccasion === 'undergarments' || selectedOccasion === 'Undergarments';
+  if (isUndergarmentOccasion && hasActiveRules) {
+    const isThermalOrBaseLayer = /\b(thermal|long sleeve|long-sleeve|base layer|turtleneck|full coverage)\b/i.test(text);
+    if (!isThermalOrBaseLayer) {
+      return false;
+    }
   }
 
   // 3. Absolute Hard Disqualifications (Zero Tolerance)
@@ -186,7 +229,7 @@ export function filterAndScoreProducts(
     const corpus = extractItemCorpus(product);
 
     // Apply master strict whitelist filter
-    if (!passesStrictModestyFilter(product, filters, filters.selectedOccasion, filters.selectedRetailer)) {
+    if (!passesStrictModestyFilter(product, filters, filters.selectedOccasion, filters.selectedRetailer, filters.selectedSubcategory)) {
       continue;
     }
 
@@ -251,7 +294,7 @@ export function filterAndScoreProducts(
   // FALLBACK GRACEFUL DEGRADATION: If strict filters yielded 0 results, score top closest modest apparel!
   if (matches.length === 0 && products.length > 0) {
     for (const product of products) {
-      if (!passesStrictModestyFilter(product, null, filters.selectedOccasion, filters.selectedRetailer)) {
+      if (!passesStrictModestyFilter(product, null, filters.selectedOccasion, filters.selectedRetailer, filters.selectedSubcategory)) {
         continue;
       }
 

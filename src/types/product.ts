@@ -102,6 +102,7 @@ export interface ModestyFilterState {
   maxPrice?: number;
   searchQuery: string;
   selectedCategory: string;
+  selectedSubcategory?: string;
   selectedRetailer: string;
   selectedOccasion: string;
   sortBy?: 'relevance' | 'price_low' | 'price_high' | 'modesty_score';
