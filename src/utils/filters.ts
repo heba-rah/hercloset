@@ -32,23 +32,24 @@ export function matchCategory(item: Product, cat?: string): boolean {
     case "Pants & Jeans":
       return /\b(pant|pants|jean|jeans|denim|trouser|trousers|legging|leggings|jogger|cargo|sweatpant)\b/i.test(text);
     case 'Skirts & Dresses': {
-      // Reject tops, hoodies, pants, and jackets unless explicitly a skirt or dress
-      if (/\b(hoodie|sweater|sweatshirt|pant|pants|jogger|jean|jeans|jacket|coat|vest|blouse|tee|t-shirt)\b/i.test(text) && !/\b(skirt|skirts|dress|dresses|gown)\b/i.test(text)) {
-        return false;
-      }
+      // 1. HARD REJECT all skorts, shorts, tops, hoodies, pants, jeans, and jackets
+      const isDisqualified = /\b(skort|skorts|short|shorts|biker short|hoodie|sweater|sweatshirt|pant|pants|trouser|trousers|legging|leggings|jogger|joggers|jean|jeans|jacket|coat|vest|blouse|tee|t-shirt|top|flare|foldover)\b/i.test(text);
+      if (isDisqualified) return false;
 
       const isSkirt = /\b(skirt|skirts)\b/i.test(text);
 
-      // For skirts specifically: ONLY present Maxi / Long skirts and reject mini skirts!
+      // For skirts specifically: ONLY present Maxi / Long skirts!
       if (isSkirt) {
-        const isMiniOrShortSkirt = /\b(mini|mini skirt|short skirt|micro|mini-skirt|above knee)\b/i.test(text);
+        const isMiniOrShortSkirt = /\b(mini|mini skirt|short skirt|micro|mini-skirt|above knee|skort|skorts)\b/i.test(text);
         if (isMiniOrShortSkirt) return false;
-        return true;
+
+        const isMaxiOrLongSkirt = /\b(maxi|maxi skirt|floor|floor length|ankle|ankle length|long skirt|full length|tiered|column|longline)\b/i.test(text);
+        return isMaxiOrLongSkirt;
       }
 
       const isDress = /\b(dress|dresses|gown|wrap dress)\b/i.test(text);
       if (isDress) {
-        const isMiniDress = /\b(mini|mini dress|short dress|micro dress)\b/i.test(text);
+        const isMiniDress = /\b(mini|mini dress|short dress|micro dress|skort|skorts)\b/i.test(text);
         if (isMiniDress) return false;
         return true;
       }
