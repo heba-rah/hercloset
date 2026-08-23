@@ -1,0 +1,31 @@
+@import "tailwindcss";
+
+:root {
+  --bg-main: #F2EDE6;
+  --bg-surface: #FAF7F2;
+  --bg-card: #FAF7F2;
+  --border-subtle: #D6CFCE;
+  --border-accent: #B89A8E;
+  --text-main: #4B3F38;
+  --text-muted: #8A6B5D;
+  --btn-primary: #8A6B5D;
+  --btn-primary-hover: #4B3F38;
+  --btn-primary-text: #FFFFFF;
+}
+
+html, body {
+  background-color: #F2EDE6 !important;
+  color: #4B3F38 !important;
+  font-family: var(--font-sans), Inter, system-ui, sans-serif !important;
+  overflow-x: hidden !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.font-serif {
+  font-family: var(--font-serif), 'Playfair Display', Georgia, serif !important;
+}
+
+.font-sans {
+  font-family: var(--font-sans), Inter, system-ui, sans-serif !important;
+}
