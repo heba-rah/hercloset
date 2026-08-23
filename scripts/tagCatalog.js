@@ -35,11 +35,11 @@ function classifyItem(item) {
 
   // 2. SLEEVE CLASSIFICATION
   let sleeve = "short";
-  const isLong = /long sleeve|sweater|hoodie|cardigan|jacket|crewneck|wrist|3\/4/i.test(text) || audit.sleeveLength === 'wrist' || audit.sleeveLength === '3/4';
-  const isSleeveless = /tank|tube|camisole|sleeveless|bikini|strapless|halter|spaghetti/i.test(text) || audit.sleeveLength === 'sleeveless';
+  const isOuterwearOrLong = /\b(coat|pea coat|trench|jacket|parka|blazer|puffer|windbreaker|shacket|hoodie|sweater|cardigan|sweatshirt|crewneck|pullover|turtleneck|long sleeve|long-sleeve|longsleeve|wrist|3\/4)\b/i.test(text);
+  const isSleeveless = /\b(vest|tank|sleeveless|tube|halter|strapless|cami|camisole|spaghetti|bikini|corset|bandeau)\b/i.test(text);
   if (isSleeveless) {
     sleeve = "sleeveless";
-  } else if (isLong) {
+  } else if (isOuterwearOrLong) {
     sleeve = "long";
   } else {
     sleeve = "short";

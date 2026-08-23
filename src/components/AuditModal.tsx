@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { X, ShieldCheck, Sparkles, CheckCircle2, XCircle, Scan, ExternalLink, FileText, ShoppingBag } from 'lucide-react';
 import { Product } from '@/types/product';
+import { getProductSleeveAttribute } from '@/utils/filterEngine';
 
 interface AuditModalProps {
   product: Product | null;
@@ -228,7 +229,11 @@ export const AuditModal: React.FC<AuditModalProps> = ({ product, onClose }) => {
 
               <div className="p-3 rounded-xl bg-white border border-[#D6CFCE]">
                 <span className="text-[#8A6B5D] block text-[10px] uppercase font-semibold">5. Sleeve Length</span>
-                <span className="font-bold text-[#4B3F38] capitalize">{modestyAudit.sleeveLength}</span>
+                <span className="font-bold text-[#4B3F38] capitalize">
+                  {product ? (
+                    getProductSleeveAttribute(product) === 'wrist' ? 'Wrist (Long Sleeve)' : getProductSleeveAttribute(product)
+                  ) : modestyAudit.sleeveLength}
+                </span>
               </div>
 
               <div className="p-3 rounded-xl bg-white border border-[#D6CFCE]">

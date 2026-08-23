@@ -23,6 +23,28 @@ export function getItemCorpus(item: Product): string {
   return extractItemCorpus(item);
 }
 
+export function getProductSleeveAttribute(product: Product): string {
+  const text = getItemCorpus(product);
+
+  // 1. Explicit Sleeveless
+  if (/\b(vest|tank|sleeveless|tube|halter|strapless|cami|camisole|spaghetti strap|corset|bandeau)\b/i.test(text)) {
+    return "sleeveless";
+  }
+
+  // 2. Explicit Outerwear & Sweaters (Always Long / Wrist)
+  if (/\b(coat|pea coat|trench|jacket|parka|blazer|puffer|windbreaker|shacket|hoodie|sweater|cardigan|sweatshirt|crewneck|pullover|turtleneck|long sleeve|long-sleeve|longsleeve)\b/i.test(text)) {
+    return "wrist";
+  }
+
+  // 3. Explicit Short Sleeve
+  if (/\b(short sleeve|short-sleeve|tee|t-shirt|polo|cap sleeve)\b/i.test(text)) {
+    return "short";
+  }
+
+  // Fallback
+  return product.modestyAudit?.sleeveLength || "short";
+}
+
 export function matchSubcategory(item: Product, subcategory?: string): boolean {
   if (!subcategory || subcategory === 'All Types' || subcategory === 'all') return true;
   const text = getItemCorpus(item);
@@ -137,9 +159,11 @@ export function passesStrictModestyFilter(
 
   const wantsLong = sleeves.some(s => ['wrist', 'long', '3/4', 'Long Sleeve'].includes(s));
   const wantsShort = sleeves.some(s => ['short', 'cap', 'elbow', 'Short Sleeve'].includes(s));
-  const isExplicitSleeveless = isBareShoulderOrSleeveless || /\b(vest|vests|tank|tanks|camisole|cami|sleeveless|spaghetti|tube|halter|strapless|romper)\b/i.test(text);
-  const isExplicitLong = /\b(long sleeve|long-sleeve|longsleeve|sweatshirt|hoodie|sweater|cardigan|jacket|coat|turtleneck|parka|trench|windbreaker|blazer|pullover)\b/i.test(text);
-  const isExplicitShort = /\b(short sleeve|short-sleeve|shortsleeve|t-shirt|tee|tees|polo)\b/i.test(text);
+
+  const resolvedSleeve = getProductSleeveAttribute(item);
+  const isExplicitSleeveless = resolvedSleeve === "sleeveless" || isBareShoulderOrSleeveless || /\b(vest|vests|tank|tanks|camisole|cami|sleeveless|spaghetti|tube|halter|strapless|romper)\b/i.test(text);
+  const isExplicitLong = resolvedSleeve === "wrist" || /\b(coat|pea coat|trench|jacket|parka|blazer|puffer|windbreaker|shacket|long sleeve|long-sleeve|longsleeve|sweatshirt|hoodie|sweater|cardigan|coat|turtleneck|parka|trench|pullover)\b/i.test(text);
+  const isExplicitShort = resolvedSleeve === "short" || /\b(short sleeve|short-sleeve|shortsleeve|t-shirt|tee|tees|polo)\b/i.test(text);
 
   if ((wantsLong || wantsShort) && isExplicitSleeveless && !isExplicitLong) return false;
   
