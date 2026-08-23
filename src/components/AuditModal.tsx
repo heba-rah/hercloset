@@ -293,7 +293,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                 </div>
               </>
             ) : (
-              <div className="p-6 rounded-2xl border-2 border-dashed border-[#D6CFCE] bg-[#F2EDE6]/40 text-center space-y-3">
+              <div className="p-6 rounded-2xl border-2 border-dashed border-[#D6CFCE] bg-[#F2EDE6]/40 text-center space-y-2">
                 <ShieldCheck className="w-8 h-8 text-[#8A6B5D]/60 mx-auto" />
                 <div className="space-y-1">
                   <h4 className="text-sm font-bold text-[#4B3F38]">7-Point Audit Uncalculated</h4>
@@ -301,15 +301,6 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                     Set your custom modesty rules or session filters to run the 7-Point AI Audit against your personal coverage preferences.
                   </p>
                 </div>
-                {onOpenFilters && (
-                  <button
-                    onClick={onOpenFilters}
-                    className="px-5 py-2 bg-[#7A5C4D] hover:bg-[#684C3F] text-white rounded-full text-xs font-bold transition-all shadow-sm cursor-pointer inline-flex items-center gap-2"
-                  >
-                    <span>Configure Modesty Audit</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
-                )}
               </div>
             )}
 
