@@ -1,3 +1,7 @@
+
+
+https://github.com/user-attachments/assets/71c98dd7-f505-48fc-957e-f701b3c0e257
+
 # hercloset — Fashion Curated for Your Coverage
 
 > **hercloset** bridges the modesty gap in mainstream e-commerce through real-time catalog aggregation, automated visual garment audits, and zero-leak coverage filters tailored to individual preferences.
