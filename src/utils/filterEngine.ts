@@ -31,8 +31,12 @@ export function matchSubcategory(item: Product, subcategory?: string): boolean {
     case 'Tops & Blouses':
       return /\b(top|blouse|shirt|tee|t-shirt|polo|button-up|tunic|camisole|tank|cami)\b/i.test(text) && 
              !/\b(hoodie|sweater|jacket|fleece)\b/i.test(text);
-    case 'Sweaters & Hoodies':
-      return /\b(hoodie|sweater|cardigan|sweatshirt|crewneck|fleece|knit|pullover)\b/i.test(text);
+    case 'Sweaters & Hoodies': {
+      const isSleevelessOrTank = /\b(tank|tank top|one shoulder|one-shoulder|tube|cami|camisole|sleeveless|vest|halter|corset|bandeau|crop top|bra\b)\b/i.test(text);
+      if (isSleevelessOrTank) return false;
+      return /\b(hoodie|sweater|cardigan|sweatshirt|crewneck|fleece|pullover|turtleneck)\b/i.test(text) ||
+             (/\b(crochet|knit)\b/i.test(text) && /\b(long sleeve|sweater|cardigan|pullover)\b/i.test(text));
+    }
     case 'Pants & Jeans':
       return /\b(pant|pants|jean|jeans|denim|trouser|trousers|legging|leggings|jogger|cargo|sweatpant)\b/i.test(text);
     case 'Skirts & Dresses':
@@ -117,18 +121,35 @@ export function passesStrictModestyFilter(
   if (noSlits && /\b(slit|slits|split|split hem|side slit)\b/i.test(text)) return false;
   if (opaqueOnly && /\b(sheer|mesh|chiffon|lace|transparent|see-through|unlined)\b/i.test(text)) return false;
 
+  // Disqualify asymmetrical / one-shoulder / bare-shoulder tops unless explicitly long sleeved
+  const isBareShoulderOrSleeveless = /\b(one shoulder|one-shoulder|off-the-shoulder|off-shoulder|cold-shoulder|asymmetrical top|tank|tank top|tube|tube top|halter|halterneck|strapless|camisole|cami|sleeveless|spaghetti strap|corset|bandeau|vest|vests)\b/i.test(text);
+
+  if (isBareShoulderOrSleeveless) {
+    const hasExplicitLongSleeve = /\b(long sleeve|long-sleeve|longsleeve)\b/i.test(text);
+    if (!hasExplicitLongSleeve) {
+      return false; // Instantly reject all one-shoulder / tank / sleeveless items
+    }
+  }
+
   const sleeves: string[] = Array.isArray((filters as any).sleeves)
     ? (filters as any).sleeves
     : (Array.isArray(filters.sleeveLengths) ? filters.sleeveLengths : []);
 
   const wantsLong = sleeves.some(s => ['wrist', 'long', '3/4', 'Long Sleeve'].includes(s));
   const wantsShort = sleeves.some(s => ['short', 'cap', 'elbow', 'Short Sleeve'].includes(s));
-  const isExplicitSleeveless = /\b(vest|vests|tank|tanks|camisole|cami|sleeveless|spaghetti|tube|halter|strapless|romper)\b/i.test(text);
+  const isExplicitSleeveless = isBareShoulderOrSleeveless || /\b(vest|vests|tank|tanks|camisole|cami|sleeveless|spaghetti|tube|halter|strapless|romper)\b/i.test(text);
   const isExplicitLong = /\b(long sleeve|long-sleeve|longsleeve|sweatshirt|hoodie|sweater|cardigan|jacket|coat|turtleneck|parka|trench|windbreaker|blazer|pullover)\b/i.test(text);
   const isExplicitShort = /\b(short sleeve|short-sleeve|shortsleeve|t-shirt|tee|tees|polo)\b/i.test(text);
 
   if ((wantsLong || wantsShort) && isExplicitSleeveless && !isExplicitLong) return false;
-  if (wantsLong && !wantsShort && (!isExplicitLong || isExplicitShort)) return false;
+  
+  // Strict Long Sleeve check: item MUST positively contain a verified long-sleeve term
+  if (wantsLong && !wantsShort) {
+    if (!isExplicitLong || isBareShoulderOrSleeveless) {
+      return false;
+    }
+  }
+
   if (wantsShort && !wantsLong && (!isExplicitShort || isExplicitLong)) return false;
 
   return true;

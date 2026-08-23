@@ -23,8 +23,12 @@ export function matchCategory(item: Product, cat?: string): boolean {
     case "Tops & Blouses":
       return /\b(top|blouse|shirt|tee|t-shirt|polo|button-up|tunic|camisole|tank|cami)\b/i.test(text) && 
              !/\b(hoodie|sweater|jacket|fleece)\b/i.test(text);
-    case "Sweaters & Hoodies":
-      return /\b(hoodie|sweater|cardigan|sweatshirt|crewneck|fleece|knit|pullover)\b/i.test(text);
+    case "Sweaters & Hoodies": {
+      const isSleevelessOrTank = /\b(tank|tank top|one shoulder|one-shoulder|tube|cami|camisole|sleeveless|vest|halter|corset|bandeau|crop top|bra\b)\b/i.test(text);
+      if (isSleevelessOrTank) return false;
+      return /\b(hoodie|sweater|cardigan|sweatshirt|crewneck|fleece|pullover|turtleneck)\b/i.test(text) ||
+             (/\b(crochet|knit)\b/i.test(text) && /\b(long sleeve|sweater|cardigan|pullover)\b/i.test(text));
+    }
     case "Pants & Jeans":
       return /\b(pant|pants|jean|jeans|denim|trouser|trousers|legging|leggings|jogger|cargo|sweatpant)\b/i.test(text);
     case "Skirts & Dresses":
@@ -77,30 +81,47 @@ export function passesStrictModestyFilter(
   const noCutouts = Boolean('noCutouts' in profile ? profile.noCutouts : profile.noOpenBack);
   const opaqueOnly = Boolean('opaqueOnly' in profile ? profile.opaqueOnly : profile.isOpaque);
 
-  const sleeves: string[] = Array.isArray((profile as any).sleeves)
-    ? (profile as any).sleeves
-    : (Array.isArray(profile.sleeveLengths) ? profile.sleeveLengths : []);
-  const necklines: string[] = Array.isArray(profile.necklines) ? (profile.necklines as string[]) : [];
-
   // Exclude cuts / exposures
   if (noCutouts && /\b(crop|cropped|cutout|cut-out|cut out|backless|open back|strapless|tube|halter|bandeau|corset|bustier|off-shoulder|cold-shoulder|split front|slit front)\b/i.test(text)) return false;
   if (noSlits && /\b(slit|slits|split|split hem|side slit)\b/i.test(text)) return false;
   if (opaqueOnly && /\b(sheer|mesh|chiffon|lace|transparent|see-through|unlined)\b/i.test(text)) return false;
 
+  // Disqualify asymmetrical / one-shoulder / bare-shoulder tops unless explicitly long sleeved
+  const isBareShoulderOrSleeveless = /\b(one shoulder|one-shoulder|off-the-shoulder|off-shoulder|cold-shoulder|asymmetrical top|tank|tank top|tube|tube top|halter|halterneck|strapless|camisole|cami|sleeveless|spaghetti strap|corset|bandeau|vest|vests)\b/i.test(text);
+
+  if (isBareShoulderOrSleeveless) {
+    const hasExplicitLongSleeve = /\b(long sleeve|long-sleeve|longsleeve)\b/i.test(text);
+    if (!hasExplicitLongSleeve) {
+      return false; // Instantly reject all one-shoulder / tank / sleeveless items
+    }
+  }
+
   // Sleeve Enforcement
+  const sleeves: string[] = Array.isArray((profile as any).sleeves)
+    ? (profile as any).sleeves
+    : (Array.isArray(profile.sleeveLengths) ? profile.sleeveLengths : []);
+
   const wantsLong = sleeves.includes("Long Sleeve") || sleeves.includes("wrist") || sleeves.includes("3/4");
   const wantsShort = sleeves.includes("Short Sleeve") || sleeves.includes("short") || sleeves.includes("elbow");
-  const isExplicitSleeveless = /\b(vest|vests|tank|tanks|camisole|cami|sleeveless|spaghetti|tube|halter|strapless|romper|playsuit)\b/i.test(text);
+
+  const isExplicitSleeveless = isBareShoulderOrSleeveless || /\b(vest|vests|tank|tanks|camisole|cami|sleeveless|spaghetti|tube|halter|strapless|romper|playsuit)\b/i.test(text);
   const isExplicitLong = /\b(long sleeve|long-sleeve|longsleeve|sweatshirt|hoodie|sweater|cardigan|jacket|coat|turtleneck|parka|trench|windbreaker|blazer|pullover)\b/i.test(text);
   const isExplicitShort = /\b(short sleeve|short-sleeve|shortsleeve|t-shirt|tee|tees|polo)\b/i.test(text);
 
   if ((wantsLong || wantsShort) && isExplicitSleeveless && !isExplicitLong) return false;
-  if (wantsLong && !wantsShort && (!isExplicitLong || isExplicitShort)) return false;
+  
+  // Strict Long Sleeve check: item MUST positively contain a verified long-sleeve term
+  if (wantsLong && !wantsShort) {
+    if (!isExplicitLong || isBareShoulderOrSleeveless) {
+      return false;
+    }
+  }
+
   if (wantsShort && !wantsLong && (!isExplicitShort || isExplicitLong)) return false;
 
   // Neckline Enforcement
-  const wantsHigh = necklines.includes("High Neck") || necklines.includes("high");
-  const wantsCrew = necklines.includes("Crewneck") || necklines.includes("crew");
+  const wantsHigh = (profile.necklines || []).includes("High Neck" as any) || (profile.necklines || []).includes("high" as any);
+  const wantsCrew = (profile.necklines || []).includes("Crewneck" as any) || (profile.necklines || []).includes("crew" as any);
   if ((wantsHigh || wantsCrew) && /\b(v-neck|v neck|deep v|scoop|scoop neck|square neck|sweetheart|plunge|open collar)\b/i.test(text)) return false;
 
   return true;
