@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { X, ShieldCheck, Sparkles, CheckCircle2, XCircle, Scan, ExternalLink, FileText, ShoppingBag, ArrowRight } from 'lucide-react';
 import { Product } from '@/types/product';
-import { resolveSleeveLength, resolveHemline } from '@/utils/filterEngine';
+import { resolveSleeveLength, resolveHemline, resolveSilhouetteFit } from '@/utils/filterEngine';
 
 interface AuditModalProps {
   product: Product | null;
@@ -321,7 +321,9 @@ export const AuditModal: React.FC<AuditModalProps> = ({
 
                   <div className="p-3 rounded-xl bg-white border border-[#D6CFCE]">
                     <span className="text-[#8A6B5D] block text-[10px] uppercase font-semibold">7. Silhouette Fit</span>
-                    <span className="font-bold text-[#4B3F38] capitalize">{modestyAudit.fit}</span>
+                    <span className="font-bold text-[#4B3F38] capitalize">
+                      {product ? resolveSilhouetteFit(product) : modestyAudit.fit}
+                    </span>
                   </div>
                 </div>
               </>

@@ -77,6 +77,27 @@ export function resolveHemline(item: Product): string {
   return "Standard Length";
 }
 
+export function resolveSilhouetteFit(item: Product): string {
+  const text = getItemCorpus(item);
+
+  // 1. Fitted / Bodycon / Tight Keywords
+  if (/\b(ribbed|rib|bodycon|fitted|tight|contour|seamless|slim fit|slim|snug|compression|corset|bustier|sculpt|stretch|shapewear)\b/i.test(text)) {
+    return "Fitted / Bodycon";
+  }
+
+  // 2. Loose / Oversized Keywords
+  if (/\b(oversized|baggy|loose|boyfriend|slouchy|relaxed|boxy|wide leg|tunic|drape)\b/i.test(text)) {
+    return "Relaxed / Loose";
+  }
+
+  // Fallback check on modestyAudit
+  const auditFit = item.modestyAudit?.fit;
+  if (auditFit === 'fitted' || auditFit === 'bodycon') return "Fitted / Bodycon";
+  if (auditFit === 'loose' || auditFit === 'relaxed') return "Relaxed / Loose";
+
+  return "Standard Fit";
+}
+
 export function matchSubcategory(item: Product, subcategory?: string): boolean {
   if (!subcategory || subcategory === 'All Types' || subcategory === 'all') return true;
   const text = getItemCorpus(item);
