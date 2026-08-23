@@ -14,6 +14,53 @@ export function getItemCorpus(item: Product): string {
   ].join(" ").toLowerCase();
 }
 
+export function resolveSleeveLength(item: Product): string {
+  const text = getItemCorpus(item);
+
+  // Explicit T-Shirts & Short Sleeves (Check BEFORE generic crewneck/top)
+  if (/\b(t-shirt|t shirt|tee|tees|short sleeve|short-sleeve|shortsleeve|polo|cap sleeve)\b/i.test(text)) {
+    return "Short Sleeve";
+  }
+
+  // Explicit Sleeveless
+  if (/\b(tank|tank top|sleeveless|tube top|tube|halter|strapless|cami|camisole|spaghetti strap|corset|bandeau|vest|vests)\b/i.test(text)) {
+    return "Sleeveless";
+  }
+
+  // Explicit Long Sleeves
+  if (/\b(long sleeve|long-sleeve|longsleeve|hoodie|sweater|cardigan|sweatshirt|jacket|coat|parka|trench|blazer|pullover|turtleneck)\b/i.test(text)) {
+    return "Wrist (Long Sleeve)";
+  }
+
+  return "Short Sleeve"; // Safe default for general tops
+}
+
+export function resolveHemline(item: Product): string {
+  const text = getItemCorpus(item);
+
+  // Tops / Shirts / Outerwear Lengths
+  const isTop = /\b(shirt|tee|t-shirt|top|hoodie|sweater|cardigan|blouse|jacket|coat|tank)\b/i.test(text);
+  const isSkirtOrDress = /\b(skirt|dress|gown)\b/i.test(text);
+
+  if (/\b(crop|cropped|short waist|midriff|baby tee)\b/i.test(text)) {
+    return "Cropped (Above Waist)";
+  }
+
+  if (isSkirtOrDress) {
+    if (/\b(maxi|floor|ankle)\b/i.test(text)) return "Maxi / Floor";
+    if (/\b(midi|calf)\b/i.test(text)) return "Midi";
+    if (/\b(mini|short skirt|micro)\b/i.test(text)) return "Mini";
+    return "Midi";
+  }
+
+  if (isTop) {
+    if (/\b(tunic|longline|oversized)\b/i.test(text)) return "Hip / Tunic Length";
+    return "Standard Waist Length";
+  }
+
+  return "Standard Length";
+}
+
 // B. Category Matcher
 export function matchCategory(item: Product, cat?: string): boolean {
   if (!cat || cat === "All Types" || cat === "all") return true;
