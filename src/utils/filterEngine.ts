@@ -49,11 +49,14 @@ export function filterByOccasion(item: Product, occasion: string): boolean {
 
     case "Sleepwear":
     case "sleepwear":
-      return /pajama|pj|robe|nightgown|sleep|lounge|boxer|slippers|thermal/i.test(text);
+      return /\b(onesie|onesies|pajama|pajamas|pj|pjs|robe|robes|nightgown|sleep|sleepwear|lounge|loungewear)\b/i.test(text);
 
     case "Undergarments":
-    case "undergarments":
-      return /bra|underwear|panties|thong|bralette|shapewear|undies|tights|stockings|socks|underwire/i.test(text);
+    case "undergarments": {
+      const isExcluded = /onesie|jumpsuit|romper|hoodie|jacket|sweater|fleece/i.test(text);
+      const isIntimate = /\b(bra|bras|underwear|panties|panty|thong|thongs|boxer|boxers|bralette|bralettes|undies|underwire|lingerie|shapewear)\b/i.test(text);
+      return isIntimate && !isExcluded;
+    }
 
     case "Going Out":
     case "going_out":
