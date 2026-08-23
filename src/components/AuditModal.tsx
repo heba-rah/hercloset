@@ -243,52 +243,75 @@ export const AuditModal: React.FC<AuditModalProps> = ({
               7-Point Verified Modesty Audit
             </h4>
 
-            {getStatusBadge(
-              modestyAudit.hasSlit,
-              '1. Leg Slits Test',
-              'AI detected open thigh/side leg slit',
-              'Zero thigh or side leg slits detected'
+            {hasActiveFilters ? (
+              <>
+                {getStatusBadge(
+                  modestyAudit.hasSlit,
+                  '1. Leg Slits Test',
+                  'AI detected open thigh/side leg slit',
+                  'Zero thigh or side leg slits detected'
+                )}
+
+                {getStatusBadge(
+                  modestyAudit.isOpenBack,
+                  '2. Open Back / Cutout Test',
+                  'AI detected exposed open back cutout',
+                  'Full rear torso coverage verified'
+                )}
+
+                {getStatusBadge(
+                  modestyAudit.isSheer,
+                  '3. Fabric Opacity Test',
+                  'AI detected sheer/transparent unlined fabric layer',
+                  '100% opaque fabric density verified'
+                )}
+
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="p-3 rounded-xl bg-white border border-[#D6CFCE]">
+                    <span className="text-[#8A6B5D] block text-[10px] uppercase font-semibold">4. Neckline</span>
+                    <span className="font-bold text-[#4B3F38] uppercase">{modestyAudit.neckline}</span>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-white border border-[#D6CFCE]">
+                    <span className="text-[#8A6B5D] block text-[10px] uppercase font-semibold">5. Sleeve Length</span>
+                    <span className="font-bold text-[#4B3F38] capitalize">
+                      {product ? resolveSleeveLength(product) : modestyAudit.sleeveLength}
+                    </span>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-white border border-[#D6CFCE]">
+                    <span className="text-[#8A6B5D] block text-[10px] uppercase font-semibold">6. Hemline</span>
+                    <span className="font-bold text-[#4B3F38] capitalize">
+                      {product ? resolveHemline(product) : modestyAudit.hemline}
+                    </span>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-white border border-[#D6CFCE]">
+                    <span className="text-[#8A6B5D] block text-[10px] uppercase font-semibold">7. Silhouette Fit</span>
+                    <span className="font-bold text-[#4B3F38] capitalize">{modestyAudit.fit}</span>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="p-6 rounded-2xl border-2 border-dashed border-[#D6CFCE] bg-[#F2EDE6]/40 text-center space-y-3">
+                <ShieldCheck className="w-8 h-8 text-[#8A6B5D]/60 mx-auto" />
+                <div className="space-y-1">
+                  <h4 className="text-sm font-bold text-[#4B3F38]">7-Point Audit Uncalculated</h4>
+                  <p className="text-xs text-[#8A6B5D] max-w-sm mx-auto leading-relaxed">
+                    Set your custom modesty rules or session filters to run the 7-Point AI Audit against your personal coverage preferences.
+                  </p>
+                </div>
+                {onOpenFilters && (
+                  <button
+                    onClick={onOpenFilters}
+                    className="px-5 py-2 bg-[#7A5C4D] hover:bg-[#684C3F] text-white rounded-full text-xs font-bold transition-all shadow-sm cursor-pointer inline-flex items-center gap-2"
+                  >
+                    <span>Configure Modesty Audit</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
             )}
-
-            {getStatusBadge(
-              modestyAudit.isOpenBack,
-              '2. Open Back / Cutout Test',
-              'AI detected exposed open back cutout',
-              'Full rear torso coverage verified'
-            )}
-
-            {getStatusBadge(
-              modestyAudit.isSheer,
-              '3. Fabric Opacity Test',
-              'AI detected sheer/transparent unlined fabric layer',
-              '100% opaque fabric density verified'
-            )}
-
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="p-3 rounded-xl bg-white border border-[#D6CFCE]">
-                <span className="text-[#8A6B5D] block text-[10px] uppercase font-semibold">4. Neckline</span>
-                <span className="font-bold text-[#4B3F38] uppercase">{modestyAudit.neckline}</span>
-              </div>
-
-              <div className="p-3 rounded-xl bg-white border border-[#D6CFCE]">
-                <span className="text-[#8A6B5D] block text-[10px] uppercase font-semibold">5. Sleeve Length</span>
-                <span className="font-bold text-[#4B3F38] capitalize">
-                  {product ? resolveSleeveLength(product) : modestyAudit.sleeveLength}
-                </span>
-              </div>
-
-              <div className="p-3 rounded-xl bg-white border border-[#D6CFCE]">
-                <span className="text-[#8A6B5D] block text-[10px] uppercase font-semibold">6. Hemline</span>
-                <span className="font-bold text-[#4B3F38] capitalize">
-                  {product ? resolveHemline(product) : modestyAudit.hemline}
-                </span>
-              </div>
-
-              <div className="p-3 rounded-xl bg-white border border-[#D6CFCE]">
-                <span className="text-[#8A6B5D] block text-[10px] uppercase font-semibold">7. Silhouette Fit</span>
-                <span className="font-bold text-[#4B3F38] capitalize">{modestyAudit.fit}</span>
-              </div>
-            </div>
 
           </div>
 
