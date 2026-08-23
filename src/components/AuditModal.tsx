@@ -32,6 +32,10 @@ export const AuditModal: React.FC<AuditModalProps> = ({
     ? product.price
     : `$${product.price}`;
 
+  const corpus = `${product.name} ${product.category} ${(product as any).subcategory || ''}`.toLowerCase();
+  const isUpperGarment = /\b(top|blouse|shirt|tee|t-shirt|polo|sweater|hoodie|cardigan|sweatshirt|crewneck|fleece|pullover|jacket|coat|parka|blazer|vest|shacket)\b/i.test(corpus);
+  const isLowerGarment = /\b(pant|pants|jean|jeans|trouser|trousers|legging|leggings|jogger|cargo|skirt|skirts|slack|bottoms)\b/i.test(corpus) && !/\b(dress|gown)\b/i.test(corpus);
+
   const getStatusBadge = (condition: boolean, label: string, failNote: string, passNote: string) => {
     if (condition) {
       return (
@@ -245,18 +249,43 @@ export const AuditModal: React.FC<AuditModalProps> = ({
 
             {hasActiveFilters ? (
               <>
-                {getStatusBadge(
-                  modestyAudit.hasSlit,
-                  '1. Leg Slits Test',
-                  'AI detected open thigh/side leg slit',
-                  'Zero thigh or side leg slits detected'
+                {isUpperGarment ? (
+                  getStatusBadge(
+                    modestyAudit.hasSlit,
+                    '1. Front Placket & Midriff Test',
+                    'AI detected exposed midriff or open front button placket',
+                    'Full front torso & waist coverage verified'
+                  )
+                ) : (
+                  getStatusBadge(
+                    modestyAudit.hasSlit,
+                    '1. Leg Slits Test',
+                    'AI detected open thigh or side leg slit',
+                    'Zero thigh or side leg slits detected'
+                  )
                 )}
 
-                {getStatusBadge(
-                  modestyAudit.isOpenBack,
-                  '2. Open Back / Cutout Test',
-                  'AI detected exposed open back cutout',
-                  'Full rear torso coverage verified'
+                {isUpperGarment ? (
+                  getStatusBadge(
+                    modestyAudit.isOpenBack,
+                    '2. Cutouts & Open Back Test',
+                    'AI detected exposed open back or torso cutout',
+                    'Full rear torso coverage verified'
+                  )
+                ) : isLowerGarment ? (
+                  getStatusBadge(
+                    modestyAudit.isOpenBack,
+                    '2. Waistband & Hip Exposure Test',
+                    'AI detected ultra low-rise or exposed waistband',
+                    'Full waist & hip coverage verified'
+                  )
+                ) : (
+                  getStatusBadge(
+                    modestyAudit.isOpenBack,
+                    '2. Open Back / Cutout Test',
+                    'AI detected exposed open back cutout',
+                    'Full rear torso coverage verified'
+                  )
                 )}
 
                 {getStatusBadge(
@@ -269,18 +298,22 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div className="p-3 rounded-xl bg-white border border-[#D6CFCE]">
                     <span className="text-[#8A6B5D] block text-[10px] uppercase font-semibold">4. Neckline</span>
-                    <span className="font-bold text-[#4B3F38] uppercase">{modestyAudit.neckline}</span>
+                    <span className="font-bold text-[#4B3F38] uppercase">
+                      {isLowerGarment ? 'N/A (Legwear)' : modestyAudit.neckline}
+                    </span>
                   </div>
 
                   <div className="p-3 rounded-xl bg-white border border-[#D6CFCE]">
                     <span className="text-[#8A6B5D] block text-[10px] uppercase font-semibold">5. Sleeve Length</span>
                     <span className="font-bold text-[#4B3F38] capitalize">
-                      {product ? resolveSleeveLength(product) : modestyAudit.sleeveLength}
+                      {isLowerGarment
+                        ? 'N/A (Legwear)'
+                        : product ? resolveSleeveLength(product) : modestyAudit.sleeveLength}
                     </span>
                   </div>
 
                   <div className="p-3 rounded-xl bg-white border border-[#D6CFCE]">
-                    <span className="text-[#8A6B5D] block text-[10px] uppercase font-semibold">6. Hemline</span>
+                    <span className="text-[#8A6B5D] block text-[10px] uppercase font-semibold">6. Hemline / Length</span>
                     <span className="font-bold text-[#4B3F38] capitalize">
                       {product ? resolveHemline(product) : modestyAudit.hemline}
                     </span>
