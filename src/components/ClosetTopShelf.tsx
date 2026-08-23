@@ -62,32 +62,24 @@ export const ClosetTopShelf: React.FC<ClosetTopShelfProps> = ({
     if (pct >= 70) {
       return {
         stroke: '#059669',
-        text: 'text-[#059669]',
-        badgeBg: 'bg-emerald-50 border-emerald-300 text-emerald-800',
+        text: 'text-emerald-700',
+        badgeBg: 'bg-emerald-100 border-emerald-300 text-emerald-800',
         label: 'High Modesty'
       };
     }
-    if (pct >= 30) {
+    if (pct >= 35) {
       return {
         stroke: '#D97706',
-        text: 'text-[#D97706]',
-        badgeBg: 'bg-amber-50 border-amber-300 text-amber-800',
+        text: 'text-amber-700',
+        badgeBg: 'bg-amber-100 border-amber-300 text-amber-800',
         label: 'Moderate Match'
       };
     }
-    if (pct > 0) {
-      return {
-        stroke: '#7A5C4D',
-        text: 'text-[#7A5C4D]',
-        badgeBg: 'bg-[#EAE4DC] border-[#D6CFCE] text-[#7A5C4D]',
-        label: 'Strict Curation'
-      };
-    }
     return {
-      stroke: '#9CA3AF',
-      text: 'text-[#9CA3AF]',
-      badgeBg: 'bg-gray-100 border-gray-300 text-gray-700',
-      label: 'No Matches'
+      stroke: '#EA580C',
+      text: 'text-orange-700',
+      badgeBg: 'bg-orange-100 border-orange-300 text-orange-800',
+      label: 'Strict Curation'
     };
   };
 
