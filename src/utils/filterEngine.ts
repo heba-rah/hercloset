@@ -35,32 +35,32 @@ function matchesCategory(product: Product, selectedCategory: string): boolean {
 }
 
 export function filterByOccasion(item: Product, occasion: string): boolean {
-  if (!occasion || occasion === 'all' || occasion === 'All Occasions') return true;
+  if (!occasion || occasion === "All Occasions" || occasion === "all") return true;
   const text = `${item.name || ""} ${item.category || ""} ${(item.tags || []).join(" ")}`.toLowerCase();
 
   switch (occasion) {
-    case "Everyday Wear":
-    case "everyday":
-      return /tee|t-shirt|crewneck|sweatshirt|jeans|denim|hoodie|sweater|cardigan|cargo|casual|basic|oversized/i.test(text);
-
     case "Gymwear":
     case "gymwear":
-      return /active|gym|athletic|workout|legging|sports bra|runner|jogger|sweatpant|biker|track|fleece|dry-fit|seamless/i.test(text);
+      if (/onesie|slipper|pajama|pj|jean|denim/i.test(text)) return false;
+      return /\b(active|gym|athletic|workout|legging|leggings|sports bra|runner|jogger|joggers|track|fleece|biker|sweatpant|sweatpants)\b/i.test(text);
+
+    case "Everyday Wear":
+    case "everyday":
+      if (/onesie|slipper|pajama|pj|bra\b|thong|bikini/i.test(text)) return false;
+      return /\b(tee|t-shirt|crewneck|sweatshirt|jeans|jean|denim|hoodie|sweater|cardigan|cargo|casual|top)\b/i.test(text);
 
     case "Sleepwear":
     case "sleepwear":
-      return /\b(onesie|onesies|pajama|pajamas|pj|pjs|robe|robes|nightgown|sleep|sleepwear|lounge|loungewear)\b/i.test(text);
+      return /\b(onesie|onesies|pajama|pajamas|pj|pjs|robe|robes|nightgown|sleep|slippers|loungewear)\b/i.test(text);
 
     case "Undergarments":
-    case "undergarments": {
-      const isExcluded = /onesie|jumpsuit|romper|hoodie|jacket|sweater|fleece/i.test(text);
-      const isIntimate = /\b(bra|bras|underwear|panties|panty|thong|thongs|boxer|boxers|bralette|bralettes|undies|underwire|lingerie|shapewear)\b/i.test(text);
-      return isIntimate && !isExcluded;
-    }
+    case "undergarments":
+      if (/onesie|jumpsuit|hoodie|jacket|sweater/i.test(text)) return false;
+      return /\b(bra|bras|underwear|panties|panty|thong|thongs|boxer|boxers|bralette|shapewear|undies)\b/i.test(text);
 
     case "Going Out":
     case "going_out":
-      return /dress|blazer|corset|satin|silk|bodysuit|party|halter|skirt|evening|blouse|cocktail|heels|mesh top/i.test(text);
+      return /\b(dress|dresses|blazer|corset|satin|silk|bodysuit|party|halter|skirt|evening|blouse|cocktail)\b/i.test(text);
 
     case "All Occasions":
     default:
@@ -180,6 +180,11 @@ export function filterAndScoreProducts(
   // FALLBACK GRACEFUL DEGRADATION: If strict filters yielded 0 results, score top closest modest apparel!
   if (matches.length === 0 && products.length > 0) {
     for (const product of products) {
+      // Must STILL respect occasion filter even in fallback!
+      if (!filterByOccasion(product, filters.selectedOccasion)) {
+        continue;
+      }
+
       const nameAndCat = `${product.name} ${product.category} ${(product.tags || []).join(' ')}`;
       const isUndergarments = filters.selectedOccasion === 'undergarments' || filters.selectedOccasion === 'Undergarments';
       if (!isUndergarments && NON_APPAREL_REGEX.test(nameAndCat) && !APPAREL_KEYWORD_REGEX.test(product.name)) {
