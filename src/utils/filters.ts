@@ -24,9 +24,15 @@ export function matchCategory(item: Product, cat?: string): boolean {
       return /\b(top|blouse|shirt|tee|t-shirt|polo|button-up|tunic|camisole|tank|cami)\b/i.test(text) &&
         !/\b(hoodie|sweater|jacket|fleece)\b/i.test(text);
     case "Sweaters & Hoodies": {
+      // 1. Hard reject ALL legwear, pants, sweatpants, joggers, jeans, skirts, and shorts
+      const isLegwearOrBottom = /\b(pant|pants|sweatpant|sweatpants|jogger|joggers|trouser|trousers|jean|jeans|skirt|skirts|skort|skorts|short|shorts|legging|leggings)\b/i.test(text);
+      if (isLegwearOrBottom) return false;
+
+      // 2. Hard reject sleeveless, tank, and bare shoulder tops
       const isSleevelessOrTank = /\b(tank|tank top|one shoulder|one-shoulder|tube|cami|camisole|sleeveless|vest|halter|corset|bandeau|crop top|bra\b)\b/i.test(text);
       if (isSleevelessOrTank) return false;
-      return /\b(hoodie|sweater|cardigan|sweatshirt|crewneck|fleece|pullover|turtleneck)\b/i.test(text) ||
+
+      return /\b(hoodie|hoodies|sweater|sweaters|cardigan|cardigans|sweatshirt|sweatshirts|crewneck|crewnecks|fleece|pullover|pullovers|turtleneck)\b/i.test(text) ||
         (/\b(crochet|knit)\b/i.test(text) && /\b(long sleeve|sweater|cardigan|pullover)\b/i.test(text));
     }
     case "Pants & Jeans":
