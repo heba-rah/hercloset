@@ -1,16 +1,14 @@
-import { Product, ModestyFilterState, CalculatedMatch, Neckline, SleeveLength, Hemline } from '@/types/product';
+import { Product, ModestyFilterState, CalculatedMatch } from '@/types/product';
 
 const NON_APPAREL_REGEX = /\b(sock|socks|ring|rings|earring|earrings|necklace|bracelet|jewelry|scrunchie|scrunchies|hair|headband|bag|bags|tote|purse|backpack|wallet|perfume|fragrance|candle|shoe|shoes|slide|slides|sandal|sandals|boot|boots|sneaker|sneakers|gloss|lip|nail|polish)\b/i;
 const APPAREL_KEYWORD_REGEX = /\b(dress|dresses|top|tops|shirt|shirts|pant|pants|trouser|trousers|skirt|skirts|sweater|sweaters|hoodie|hoodies|blazer|blazers|cardigan|cardigans|jacket|jackets|coat|coats|vest|vests|suit|suits|bodysuit|bodysuits|romper|rompers|jumpsuit|jumpsuits|jogger|joggers|sweatpant|sweatpants|jeans|onesie|onesies)\b/i;
 
-const OCCASION_KEYWORDS: Record<string, string[]> = {
-  'gymwear': ['active', 'gym', 'workout', 'athletic', 'legging', 'hoodie', 'top', 'tee', 'sweat', 'jacket', 'sport', 'track', 'jogger', 'fleece', 'onesie'],
-  'graduation': ['dress', 'maxi', 'gown', 'formal', 'eid', 'event', 'satin', 'velvet', 'suit', 'blazer', 'graduation', 'skirt', 'luxe'],
-  'wedding': ['dress', 'maxi', 'gown', 'formal', 'event', 'satin', 'velvet', 'suit', 'blazer', 'luxe'],
-  'workwear': ['work', 'office', 'blazer', 'trouser', 'pant', 'shirt', 'button', 'blouse', 'suit', 'tailored', 'cardigan', 'sweater'],
-  'school': ['casual', 'everyday', 'tee', 'top', 'jeans', 'sweater', 'cardigan', 'hoodie', 'denim', 'school', 'crew'],
-  'casual': ['casual', 'everyday', 'tee', 'top', 'jeans', 'sweater', 'cardigan', 'hoodie', 'denim', 'crew'],
-  'eid': ['dress', 'maxi', 'gown', 'formal', 'eid', 'event', 'satin', 'velvet', 'suit', 'blazer', 'skirt', 'luxe', 'kaftan', 'abaya']
+const OCCASION_REGEXES: Record<string, RegExp> = {
+  'everyday': /tee|t-shirt|jeans|hoodie|sweater|crewneck|sweatshirt|cardigan|cargo|casual|denim/i,
+  'gymwear': /active|legging|sports bra|runner|jogger|sweatpants|tank|biker|track|fleece|athletic/i,
+  'sleepwear': /pajama|pj|robe|nightgown|sleep|lounge|slippers/i,
+  'undergarments': /bra|underwear|panties|thong|bralette|shapewear|socks|tights|bikini bottom|bikini top/i,
+  'going_out': /dress|blazer|corset|satin|silk|heels|bodysuit|party|halter|skirt|formal|blouse/i,
 };
 
 export function parsePrice(price: string | number): number {
@@ -47,14 +45,12 @@ function matchesCategory(product: Product, selectedCategory: string): boolean {
 function matchesOccasion(product: Product, selectedOccasion: string): boolean {
   if (!selectedOccasion || selectedOccasion === 'all') return true;
   const occ = selectedOccasion.toLowerCase();
-  
-  if (product.occasion && product.occasion.toLowerCase() === occ) return true;
-  if (product.tags && product.tags.some(t => t.toLowerCase() === occ || t.toLowerCase().includes(occ))) return true;
 
-  const keywords = OCCASION_KEYWORDS[occ];
-  if (keywords) {
-    const text = `${product.name} ${product.category} ${(product.tags || []).join(' ')}`.toLowerCase();
-    return keywords.some(kw => text.includes(kw));
+  const regex = OCCASION_REGEXES[occ];
+  const text = `${product.name} ${product.category} ${(product.tags || []).join(' ')} ${product.occasion || ''}`;
+  
+  if (regex) {
+    return regex.test(text);
   }
 
   return true;
@@ -71,10 +67,12 @@ export function filterAndScoreProducts(
     const matchReasons: string[] = [];
     const warnings: string[] = [];
 
-    // Filter out non-apparel items (socks, jewelry, bags, footwear, accessories)
+    // Filter out non-apparel items (socks, jewelry, bags, footwear, accessories) EXCEPT when Undergarments occasion is selected
     const nameAndCat = `${product.name} ${product.category} ${(product.tags || []).join(' ')}`;
-    if (NON_APPAREL_REGEX.test(nameAndCat) && !APPAREL_KEYWORD_REGEX.test(product.name)) {
-      continue;
+    if (filters.selectedOccasion !== 'undergarments') {
+      if (NON_APPAREL_REGEX.test(nameAndCat) && !APPAREL_KEYWORD_REGEX.test(product.name)) {
+        continue;
+      }
     }
 
     // Category filter (inclusive keyword matching)
@@ -87,7 +85,7 @@ export function filterAndScoreProducts(
       continue;
     }
 
-    // Occasion filter (inclusive keyword matching)
+    // Occasion filter (inclusive regex matching)
     if (!matchesOccasion(product, filters.selectedOccasion)) {
       continue;
     }
@@ -170,7 +168,7 @@ export function filterAndScoreProducts(
   if (matches.length === 0 && products.length > 0) {
     for (const product of products) {
       const nameAndCat = `${product.name} ${product.category} ${(product.tags || []).join(' ')}`;
-      if (NON_APPAREL_REGEX.test(nameAndCat) && !APPAREL_KEYWORD_REGEX.test(product.name)) {
+      if (filters.selectedOccasion !== 'undergarments' && NON_APPAREL_REGEX.test(nameAndCat) && !APPAREL_KEYWORD_REGEX.test(product.name)) {
         continue;
       }
 

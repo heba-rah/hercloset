@@ -280,9 +280,12 @@ export default function Home() {
     return count;
   }, [filters]);
 
-  const hasActiveFilters = useMemo(() => {
-    return currentUser !== null || activeFilterCount > 0;
-  }, [currentUser, activeFilterCount]);
+  const hasModestyRules = useMemo(() => {
+    if (currentUser !== null) return true;
+    if (filters.noSlits || filters.noOpenBack || filters.isOpaque) return true;
+    if (filters.necklines.length > 0 || filters.sleeveLengths.length > 0 || filters.hemlines.length > 0 || filters.fits.length > 0) return true;
+    return false;
+  }, [currentUser, filters]);
 
   return (
     <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#F2EDE6] text-[#4B3F38] flex flex-col font-sans selection:bg-[#B89A8E] selection:text-white">
@@ -330,7 +333,7 @@ export default function Home() {
             onSelectStore={(store) => handleFilterChange({ selectedRetailer: store })}
             averageMatchScore={averageMatchScore}
             totalItemsCount={calculatedMatches.length}
-            hasActiveFilters={hasActiveFilters}
+            hasActiveFilters={hasModestyRules}
           />
 
           {/* Main Full-Width Content Area with Persistent Stylist Tile in Position #1 */}
