@@ -14,8 +14,8 @@ export const ModestyStylistAvatar: React.FC<ModestyStylistAvatarProps> = ({
 }) => {
   const [isHovered, setIsHovered] = useState<boolean>(false);
 
-  // Extract first name cleanly
-  const firstName = userName ? userName.split(' ')[0] : 'Amina';
+  // Extract first name cleanly or fallback to "A Beautiful Guest"
+  const displayName = userName && userName.trim() !== '' ? userName.split(' ')[0] : 'A Beautiful Guest';
 
   return (
     <div className="break-inside-avoid mb-4 inline-block w-full font-sans bg-transparent p-2">
@@ -25,7 +25,7 @@ export const ModestyStylistAvatar: React.FC<ModestyStylistAvatarProps> = ({
         
         {/* Top of Tile: Borderless Floating Name Typography */}
         <h3 className="text-xl md:text-2xl font-serif italic text-[#3D312A] text-center tracking-wide mb-2 font-bold">
-          {firstName}
+          {displayName}
         </h3>
 
         {/* Middle of Tile: Interactive Freestanding Persona Avatar with Hover Animation & Foot Shadow */}
@@ -37,7 +37,7 @@ export const ModestyStylistAvatar: React.FC<ModestyStylistAvatarProps> = ({
           {/* Crisp Avatar Display */}
           <img
             src={isHovered ? '/avatars/default.gif' : '/avatars/default.png'}
-            alt={`${firstName}'s Modesty Stylist Avatar`}
+            alt={`${displayName}'s Modesty Stylist Avatar`}
             className="w-[160px] h-[160px] md:w-[190px] md:h-[190px] object-contain drop-shadow-xl [image-rendering:pixelated] mx-auto"
           />
 
