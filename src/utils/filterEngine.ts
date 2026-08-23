@@ -100,6 +100,11 @@ export function passesStrictModestyFilter(
   const activeSubcategory = subcategory || (filters as ModestyFilterState)?.selectedSubcategory;
   if (!matchSubcategory(item, activeSubcategory)) return false;
 
+  // Shoes & Sandals or Accessories tabs display all items in those categories without modesty filtering
+  if (activeSubcategory === 'Shoes & Sandals' || activeSubcategory === 'Accessories') {
+    return true;
+  }
+
   if (!filters) return true;
 
   const text = getItemCorpus(item);

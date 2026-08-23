@@ -182,7 +182,7 @@ export const ClosetTopShelf: React.FC<ClosetTopShelfProps> = ({
                 </div>
 
                 <p className="text-[11px] text-[#8A6B5D] font-semibold">
-                  Live score across {passingItemsCount} of {totalItemsCount} Canadian items
+                  Live score across {passingItemsCount} of {totalItemsCount} items in this section
                 </p>
               </div>
             </>
@@ -202,11 +202,11 @@ export const ClosetTopShelf: React.FC<ClosetTopShelfProps> = ({
                 </div>
 
                 <div className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-[#EAE4DC] text-[#7A5C4D] border border-[#D6CFCE]/60">
-                  Unfiltered
+                  No Filters Set
                 </div>
 
                 <p className="text-[11px] text-[#8A6B5D] font-semibold">
-                  Browsing full catalog • Set filters to see match score
+                  Showing all {totalItemsCount} items in this section
                 </p>
               </div>
             </>
