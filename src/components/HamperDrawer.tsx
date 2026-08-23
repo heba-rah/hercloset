@@ -10,6 +10,7 @@ interface HamperDrawerProps {
   hamperItems: Product[];
   onRemoveFromHamper: (productId: string) => void;
   onClearHamper: () => void;
+  onDoneShopping?: () => void;
 }
 
 export const HamperDrawer: React.FC<HamperDrawerProps> = ({
@@ -17,7 +18,8 @@ export const HamperDrawer: React.FC<HamperDrawerProps> = ({
   onClose,
   hamperItems,
   onRemoveFromHamper,
-  onClearHamper
+  onClearHamper,
+  onDoneShopping
 }) => {
   if (!isOpen) return null;
 
@@ -133,14 +135,20 @@ export const HamperDrawer: React.FC<HamperDrawerProps> = ({
             <div className="flex gap-2">
               <button
                 onClick={onClearHamper}
-                className="flex-1 py-2.5 px-3 rounded-xl bg-white border border-[#D6CFCE] text-xs font-bold text-[#4B3F38] hover:bg-[#FAF7F2] transition-all"
+                className="flex-1 py-2.5 px-3 rounded-xl bg-white border border-[#D6CFCE] text-xs font-bold text-[#4B3F38] hover:bg-[#FAF7F2] transition-all cursor-pointer"
               >
                 Clear Hamper
               </button>
 
               <button
-                onClick={onClose}
-                className="flex-1 py-2.5 px-3 rounded-xl bg-[#8A6B5D] hover:bg-[#4B3F38] text-white font-bold text-xs shadow-md transition-all"
+                onClick={() => {
+                  if (onDoneShopping) {
+                    onDoneShopping();
+                  } else {
+                    onClose();
+                  }
+                }}
+                className="flex-1 py-2.5 px-3 rounded-xl bg-[#8A6B5D] hover:bg-[#4B3F38] text-white font-bold text-xs shadow-md transition-all cursor-pointer"
               >
                 Done Shopping
               </button>

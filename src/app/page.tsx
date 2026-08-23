@@ -14,6 +14,7 @@ import { AuthLandingPage } from '@/components/AuthLandingPage';
 import { PermanentProfileModal } from '@/components/PermanentProfileModal';
 import { HamperDrawer } from '@/components/HamperDrawer';
 import { HamperButton } from '@/components/HamperButton';
+import { ReceiptModal } from '@/components/ReceiptModal';
 import { Sparkles, ShieldCheck, X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 // Helper function to produce truncated pagination numbers with ellipsis (e.g. [1, 2, 3, '...', 42])
@@ -85,6 +86,7 @@ export default function Home() {
 
   const [hamper, setHamper] = useState<Product[]>([]);
   const [isHamperOpen, setIsHamperOpen] = useState<boolean>(false);
+  const [isReceiptModalOpen, setIsReceiptModalOpen] = useState<boolean>(false);
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -499,7 +501,22 @@ export default function Home() {
             hamperItems={hamper}
             onRemoveFromHamper={(id) => setHamper(prev => prev.filter(p => p.id !== id))}
             onClearHamper={() => setHamper([])}
+            onDoneShopping={() => {
+              setIsHamperOpen(false);
+              setIsReceiptModalOpen(true);
+            }}
           />
+
+          {/* Curation & Modesty Receipt Modal */}
+          {isReceiptModalOpen && (
+            <ReceiptModal
+              isOpen={isReceiptModalOpen}
+              onClose={() => setIsReceiptModalOpen(false)}
+              items={hamper}
+              userName={currentUser?.name || 'Guest Shopper'}
+              onClearHamper={() => setHamper([])}
+            />
+          )}
 
           {/* Mobile Filters Drawer */}
           {isMobileFiltersOpen && (
