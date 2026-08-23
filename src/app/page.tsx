@@ -65,6 +65,7 @@ const INITIAL_FILTERS: ModestyFilterState = {
   selectedRetailer: 'all',
   selectedOccasion: 'all',
   selectedSubcategory: 'All Types',
+  targetDemographic: 'all',
   demoMode: 'ai_search'
 };
 
@@ -265,6 +266,7 @@ export default function Home() {
     if (filters.selectedCategory !== 'all') count++;
     if (filters.selectedRetailer !== 'all') count++;
     if (filters.selectedOccasion !== 'all') count++;
+    if (filters.targetDemographic && filters.targetDemographic !== 'all') count++;
     if (filters.maxPrice) count++;
     if (filters.searchQuery) count++;
     if (filters.noSlits) count++;
@@ -279,9 +281,9 @@ export default function Home() {
 
   const scopedItemsCount = useMemo(() => {
     return mockProducts.filter(item =>
-      passesStrictModestyFilter(item, null, filters.selectedOccasion, filters.selectedRetailer, filters.selectedSubcategory)
+      passesStrictModestyFilter(item, { targetDemographic: filters.targetDemographic } as any, filters.selectedOccasion, filters.selectedRetailer, filters.selectedSubcategory)
     ).length;
-  }, [filters.selectedOccasion, filters.selectedRetailer, filters.selectedSubcategory]);
+  }, [filters.selectedOccasion, filters.selectedRetailer, filters.selectedSubcategory, filters.targetDemographic]);
 
   const hasModestyRules = useMemo(() => {
     if (filters.noSlits || filters.noOpenBack || filters.noCropped || filters.isOpaque) return true;
@@ -340,6 +342,8 @@ export default function Home() {
             onSelectStore={(store) => handleFilterChange({ selectedRetailer: store })}
             selectedSubcategory={filters.selectedSubcategory}
             onSelectSubcategory={(sub) => handleFilterChange({ selectedSubcategory: sub })}
+            targetDemographic={filters.targetDemographic}
+            onSelectDemographic={(demo) => handleFilterChange({ targetDemographic: demo })}
             passingItemsCount={calculatedMatches.length}
             totalItemsCount={scopedItemsCount}
             hasActiveFilters={hasModestyRules}

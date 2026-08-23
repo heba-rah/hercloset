@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ShieldCheck, RotateCcw, Filter, Check, EyeOff, Layers, Scissors, DollarSign, ArrowUpDown, Tag, Info } from 'lucide-react';
-import { ModestyFilterState, Neckline, SleeveLength, Hemline } from '@/types/product';
+import { ShieldCheck, RotateCcw, Filter, Check, EyeOff, Layers, Scissors, DollarSign, ArrowUpDown, Tag, Info, Users } from 'lucide-react';
+import { ModestyFilterState, Neckline, SleeveLength, Hemline, TargetDemographic } from '@/types/product';
 
 interface ModestyFiltersProps {
   filters: ModestyFilterState;
@@ -20,6 +20,15 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
   onCloseMobileDrawer
 }) => {
   const [activeTab, setActiveTab] = useState<'modesty' | 'shopping'>('modesty');
+
+  const demographicOptions: { id: TargetDemographic; label: string; icon: string }[] = [
+    { id: 'all', label: 'All', icon: '✨' },
+    { id: 'women', label: 'Women', icon: '👩' },
+    { id: 'men', label: 'Men', icon: '👨' },
+    { id: 'girls', label: 'Girls', icon: '👧' },
+    { id: 'boys', label: 'Boys', icon: '👦' },
+    { id: 'kids', label: 'All Kids', icon: '🧒' },
+  ];
 
   // Exact 4 Setup Categories
   const necklines: { id: Neckline; label: string; ids: Neckline[] }[] = [
@@ -106,6 +115,39 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
             Done
           </button>
         )}
+      </div>
+
+      {/* Target Demographic Quick Selector: WHO ARE WE SHOPPING FOR? */}
+      <div className="bg-[#F2EDE6] p-3.5 rounded-xl border border-[#D6CFCE] space-y-2">
+        <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider flex items-center justify-between">
+          <span className="flex items-center gap-1.5">
+            <Users className="w-3.5 h-3.5 text-[#8A6B5D]" /> Who Are We Shopping For?
+          </span>
+          <span className="text-[10px] text-[#8A6B5D]/80 font-semibold capitalize">
+            {filters.targetDemographic === 'all' || !filters.targetDemographic ? 'Everyone' : filters.targetDemographic}
+          </span>
+        </label>
+
+        <div className="grid grid-cols-3 gap-1.5">
+          {demographicOptions.map((opt) => {
+            const isSelected = (!filters.targetDemographic && opt.id === 'all') || filters.targetDemographic === opt.id;
+            return (
+              <button
+                key={opt.id}
+                type="button"
+                onClick={() => onFilterChange({ targetDemographic: opt.id })}
+                className={`py-2 px-2 rounded-xl text-xs font-bold transition-all border flex items-center justify-center gap-1 cursor-pointer ${
+                  isSelected
+                    ? 'bg-[#3D312A] border-[#3D312A] text-white shadow-sm'
+                    : 'bg-white border-[#D6CFCE] text-[#6E5D53] hover:bg-[#EAE4DC]'
+                }`}
+              >
+                <span>{opt.icon}</span>
+                <span>{opt.label}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* DUAL TAB SWITCHER BAR */}

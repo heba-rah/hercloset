@@ -1,4 +1,4 @@
-import { Product, ModestyFilterState, ModestyProfile } from '@/types/product';
+import { Product, ModestyFilterState, ModestyProfile, TargetDemographic } from '@/types/product';
 
 // A. Full Item Corpus Extractor
 export function getItemCorpus(item: Product): string {
@@ -97,6 +97,39 @@ export function matchOccasion(item: Product, occ?: string): boolean {
   }
 }
 
+export function matchTargetDemographic(item: Product, target?: TargetDemographic): boolean {
+  if (!target || target === 'all') return true;
+
+  const category = (item.category || '').toLowerCase();
+  const text = `${item.name} ${item.category} ${Array.isArray(item.tags) ? item.tags.join(' ') : (item.tags || '')}`.toLowerCase();
+
+  switch (target) {
+    case 'women':
+      if (category.startsWith('girls') || category.startsWith('boys') || category.startsWith('mens') || category.includes('kids')) {
+        return false;
+      }
+      return category.includes('women') || /\b(women|womens|ladies|woman)\b/i.test(text);
+
+    case 'men':
+      if (category.startsWith('womens') || category.startsWith('girls') || category.startsWith('boys') || category.includes('kids')) {
+        return false;
+      }
+      return category.includes('mens') || category.includes('men') || /\b(men|mens|guys|guy)\b/i.test(text);
+
+    case 'girls':
+      return category.includes('girls') || /\b(girls|girl|girls')\b/i.test(text);
+
+    case 'boys':
+      return category.includes('boys') || /\b(boys|boy|boys')\b/i.test(text);
+
+    case 'kids':
+      return category.includes('girls') || category.includes('boys') || category.includes('kids') || /\b(girls|boys|kids|youth|toddler|children)\b/i.test(text);
+
+    default:
+      return true;
+  }
+}
+
 export function isGarmentCropped(item: Product): boolean {
   const text = getItemCorpus(item);
   const audit = item.modestyAudit || {};
@@ -118,6 +151,9 @@ export function passesStrictModestyFilter(
   profile?: ModestyFilterState | ModestyProfile | null
 ): boolean {
   if (!profile || Object.keys(profile).length === 0) return true;
+
+  const targetDemo = (profile as ModestyFilterState)?.targetDemographic || (profile as ModestyProfile)?.targetDemographic;
+  if (!matchTargetDemographic(item, targetDemo)) return false;
   const text = getItemCorpus(item);
 
   const noSlits = Boolean(profile.noSlits);

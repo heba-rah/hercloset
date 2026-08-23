@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Tag, Store, Sparkles, Layers } from 'lucide-react';
+import { Tag, Store, Sparkles, Layers, Users } from 'lucide-react';
+import { TargetDemographic } from '@/types/product';
 
 interface ClosetTopShelfProps {
   selectedOccasion: string;
@@ -10,6 +11,8 @@ interface ClosetTopShelfProps {
   onSelectStore: (store: string) => void;
   selectedSubcategory?: string;
   onSelectSubcategory?: (sub: string) => void;
+  targetDemographic?: TargetDemographic;
+  onSelectDemographic?: (demo: TargetDemographic) => void;
   passingItemsCount: number;
   totalItemsCount: number;
   hasActiveFilters?: boolean;
@@ -22,10 +25,21 @@ export const ClosetTopShelf: React.FC<ClosetTopShelfProps> = ({
   onSelectStore,
   selectedSubcategory = 'All Types',
   onSelectSubcategory,
+  targetDemographic = 'all',
+  onSelectDemographic,
   passingItemsCount,
   totalItemsCount,
   hasActiveFilters = false
 }) => {
+  const demographics: { id: TargetDemographic; label: string }[] = [
+    { id: 'all', label: 'All Demographics' },
+    { id: 'women', label: 'Women' },
+    { id: 'men', label: 'Men' },
+    { id: 'girls', label: 'Girls (Kids & Teens)' },
+    { id: 'boys', label: 'Boys (Kids & Teens)' },
+    { id: 'kids', label: 'All Kids (Girls & Boys)' },
+  ];
+
   const occasions = [
     { id: 'all', label: 'All Occasions' },
     { id: 'everyday', label: 'Everyday Wear' },
@@ -53,8 +67,8 @@ export const ClosetTopShelf: React.FC<ClosetTopShelfProps> = ({
   ];
 
   // Ratio Formula Calculation: passingItems / totalItems * 100
-  const matchPercentage = totalItemsCount > 0 
-    ? Math.round((passingItemsCount / totalItemsCount) * 100) 
+  const matchPercentage = totalItemsCount > 0
+    ? Math.round((passingItemsCount / totalItemsCount) * 100)
     : 0;
 
   // Dynamic Rating & Color Badges based on Pass Rate
@@ -86,33 +100,55 @@ export const ClosetTopShelf: React.FC<ClosetTopShelfProps> = ({
   const gaugeTheme = getGaugeColor(matchPercentage);
 
   // SVG Circular Gauge parameters
-  const radius = 34;
+  const radius = 30;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (matchPercentage / 100) * circumference;
 
   return (
     <div className="w-full bg-[#EAE2D8] border-y-4 border-[#8A6B5D]/40 shadow-[inset_0_6px_12px_rgba(75,63,56,0.15)] py-4 px-4 md:px-8 border-t-[#8A6B5D] border-b-[#4B3F38]/20 my-4 space-y-4">
 
-      {/* 3-Compartment Layout */}
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-6 items-center max-w-[1700px] mx-auto">
+      {/* 4-Compartment Layout */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-center max-w-[1700px] mx-auto">
 
-        {/* LEFT COMPARTMENT — "OCCASION" STORAGE BASKET/BIN */}
-        <div className="bg-[#FAF7F2] rounded-xl border border-[#D6CFCE] p-4 shadow-[0_4px_6px_rgba(75,63,56,0.08),inset_0_2px_4px_rgba(255,255,255,0.8)] flex flex-col items-center">
-          {/* Top Detail: Small Leather/Wood Handle Icon */}
-          <div className="w-8 h-1.5 bg-[#8A6B5D]/60 rounded-full mx-auto mb-2" />
+        {/* COMPARTMENT 1 — "WHO ARE WE SHOPPING FOR?" */}
+        <div className="bg-[#FAF7F2] rounded-xl border border-[#D6CFCE] p-3.5 shadow-[0_4px_6px_rgba(75,63,56,0.08),inset_0_2px_4px_rgba(255,255,255,0.8)] flex flex-col items-center">
+          <div className="w-8 h-1.5 bg-[#8A6B5D]/60 rounded-full mx-auto mb-1.5" />
 
-          <div className="flex items-center gap-1.5 mb-2">
+          <div className="flex items-center gap-1.5 mb-1.5">
+            <Users className="w-3.5 h-3.5 text-[#8A6B5D]" />
+            <h3 className="text-[10px] font-bold tracking-[0.2em] text-[#8A6B5D] uppercase text-center">
+              SHOPPING FOR
+            </h3>
+          </div>
+
+          <select
+            value={targetDemographic}
+            onChange={(e) => onSelectDemographic && onSelectDemographic(e.target.value as TargetDemographic)}
+            className="w-full bg-white border border-[#B89A8E]/60 rounded-lg px-3 py-2 text-xs font-bold text-[#4B3F38] cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#8A6B5D] shadow-inner"
+          >
+            {demographics.map((demo) => (
+              <option key={demo.id} value={demo.id}>
+                {demo.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* COMPARTMENT 2 — "OCCASION" */}
+        <div className="bg-[#FAF7F2] rounded-xl border border-[#D6CFCE] p-3.5 shadow-[0_4px_6px_rgba(75,63,56,0.08),inset_0_2px_4px_rgba(255,255,255,0.8)] flex flex-col items-center">
+          <div className="w-8 h-1.5 bg-[#8A6B5D]/60 rounded-full mx-auto mb-1.5" />
+
+          <div className="flex items-center gap-1.5 mb-1.5">
             <Tag className="w-3.5 h-3.5 text-[#8A6B5D]" />
-            <h3 className="text-[11px] font-bold tracking-[0.25em] text-[#8A6B5D] uppercase text-center">
+            <h3 className="text-[10px] font-bold tracking-[0.2em] text-[#8A6B5D] uppercase text-center">
               OCCASION
             </h3>
           </div>
 
-          {/* Inset Select Box */}
           <select
             value={selectedOccasion}
             onChange={(e) => onSelectOccasion(e.target.value)}
-            className="w-full bg-white border border-[#B89A8E]/60 rounded-lg px-3.5 py-2 text-xs font-bold text-[#4B3F38] cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#8A6B5D] shadow-inner"
+            className="w-full bg-white border border-[#B89A8E]/60 rounded-lg px-3 py-2 text-xs font-bold text-[#4B3F38] cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#8A6B5D] shadow-inner"
           >
             {occasions.map((occ) => (
               <option key={occ.id} value={occ.id}>
@@ -122,28 +158,26 @@ export const ClosetTopShelf: React.FC<ClosetTopShelfProps> = ({
           </select>
         </div>
 
-        {/* CENTER COMPARTMENT — "LIVE MODESTY GAUGE" (WITH GUEST EMPTY STATE) */}
-        <div className="bg-[#FAF7F2]/80 border border-[#D6CFCE] rounded-xl p-3 sm:px-6 shadow-sm flex items-center justify-center gap-4">
-
+        {/* COMPARTMENT 3 — "LIVE MODESTY GAUGE" */}
+        <div className="bg-[#FAF7F2]/90 border border-[#D6CFCE] rounded-xl p-3 shadow-sm flex items-center justify-center gap-3">
           {hasActiveFilters ? (
-            /* ACTIVE FILTER STATE WITH LIVE RADIAL PROGRESS RING */
             <>
-              <div className="relative w-20 h-20 flex items-center justify-center shrink-0">
-                <svg className="w-full h-full transform -rotate-90" viewBox="0 0 90 90">
+              <div className="relative w-16 h-16 flex items-center justify-center shrink-0">
+                <svg className="w-full h-full transform -rotate-90" viewBox="0 0 80 80">
                   <circle
-                    cx="45"
-                    cy="45"
+                    cx="40"
+                    cy="40"
                     r={radius}
                     className="stroke-[#D6CFCE]/50"
-                    strokeWidth="6"
+                    strokeWidth="5"
                     fill="transparent"
                   />
                   <circle
-                    cx="45"
-                    cy="45"
+                    cx="40"
+                    cy="40"
                     r={radius}
                     stroke={gaugeTheme.stroke}
-                    strokeWidth="6"
+                    strokeWidth="5"
                     strokeDasharray={circumference}
                     strokeDashoffset={strokeDashoffset}
                     strokeLinecap="round"
@@ -152,77 +186,71 @@ export const ClosetTopShelf: React.FC<ClosetTopShelfProps> = ({
                   />
                 </svg>
 
-                {/* Percentage Number Inside Circle */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                  <span className={`text-lg font-extrabold font-mono ${gaugeTheme.text}`}>
+                  <span className={`text-base font-extrabold font-mono ${gaugeTheme.text}`}>
                     {matchPercentage}%
                   </span>
                 </div>
               </div>
 
-              {/* Focal Text & Label */}
-              <div className="space-y-1">
-                <div className="flex items-center gap-1.5">
-                  <Sparkles className="w-4 h-4 text-[#8A6B5D]" />
-                  <span className="font-serif italic text-lg font-bold text-[#4B3F38]">
+              <div className="space-y-0.5 min-w-0">
+                <div className="flex items-center gap-1">
+                  <Sparkles className="w-3.5 h-3.5 text-[#8A6B5D]" />
+                  <span className="font-serif italic text-base font-bold text-[#4B3F38] truncate">
                     Modest Match
                   </span>
                 </div>
 
-                <div className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border ${gaugeTheme.badgeBg}`}>
+                <div className={`inline-block px-2 py-0.5 rounded-full text-[9px] font-extrabold border ${gaugeTheme.badgeBg}`}>
                   {gaugeTheme.label}
                 </div>
 
-                <p className="text-[11px] text-[#8A6B5D] font-semibold">
-                  Live score across {passingItemsCount} of {totalItemsCount} items in this section
+                <p className="text-[10px] text-[#8A6B5D] font-semibold truncate">
+                  {passingItemsCount} of {totalItemsCount} items pass
                 </p>
               </div>
             </>
           ) : (
-            /* GUEST / UNFILTERED EMPTY STATE WITH NEUTRAL DASHED TRACK */
             <>
-              <div className="w-20 h-20 rounded-full border-2 border-dashed border-[#D6CFCE] flex items-center justify-center shrink-0 bg-[#F2EDE6]/40">
-                <span className="text-xl font-bold font-mono text-[#8A6B5D]">—</span>
+              <div className="w-16 h-16 rounded-full border-2 border-dashed border-[#D6CFCE] flex items-center justify-center shrink-0 bg-[#F2EDE6]/40">
+                <span className="text-lg font-bold font-mono text-[#8A6B5D]">—</span>
               </div>
 
-              <div className="space-y-1">
-                <div className="flex items-center gap-1.5">
-                  <Sparkles className="w-4 h-4 text-[#8A6B5D]/60" />
-                  <span className="font-serif italic text-lg font-bold text-[#4B3F38]">
+              <div className="space-y-0.5 min-w-0">
+                <div className="flex items-center gap-1">
+                  <Sparkles className="w-3.5 h-3.5 text-[#8A6B5D]/60" />
+                  <span className="font-serif italic text-base font-bold text-[#4B3F38] truncate">
                     Modest Match
                   </span>
                 </div>
 
-                <div className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-[#EAE4DC] text-[#7A5C4D] border border-[#D6CFCE]/60">
+                <div className="inline-block px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-[#EAE4DC] text-[#7A5C4D] border border-[#D6CFCE]/60">
                   No Filters Set
                 </div>
 
-                <p className="text-[11px] text-[#8A6B5D] font-semibold">
-                  Showing all {totalItemsCount} items in this section
+                <p className="text-[10px] text-[#8A6B5D] font-semibold truncate">
+                  Showing {totalItemsCount} items
                 </p>
               </div>
             </>
           )}
-
         </div>
 
-        {/* RIGHT COMPARTMENT — "STORES" STORAGE BASKET/BIN */}
-        <div className="bg-[#FAF7F2] rounded-xl border border-[#D6CFCE] p-4 shadow-[0_4px_6px_rgba(75,63,56,0.08),inset_0_2px_4px_rgba(255,255,255,0.8)] flex flex-col items-center">
-          {/* Top Detail: Small Leather/Wood Handle Icon */}
-          <div className="w-8 h-1.5 bg-[#8A6B5D]/60 rounded-full mx-auto mb-2" />
+        {/* COMPARTMENT 4 — "STORES" */}
+        <div className="bg-[#FAF7F2] rounded-xl border border-[#D6CFCE] p-3.5 shadow-[0_4px_6px_rgba(75,63,56,0.08),inset_0_2px_4px_rgba(255,255,255,0.8)] flex flex-col items-center">
+          <div className="w-8 h-1.5 bg-[#8A6B5D]/60 rounded-full mx-auto mb-1.5" />
 
-          <div className="flex items-center gap-1.5 mb-2">
+          <div className="flex items-center gap-1.5 mb-1.5">
             <Store className="w-3.5 h-3.5 text-[#8A6B5D]" />
-            <h3 className="text-[11px] font-bold tracking-[0.25em] text-[#8A6B5D] uppercase text-center">
+            <h3 className="text-[10px] font-bold tracking-[0.2em] text-[#8A6B5D] uppercase text-center">
               STORES
             </h3>
           </div>
 
-          {/* Inset Select Box */}
           <select
             value={selectedStore}
             onChange={(e) => onSelectStore(e.target.value)}
-            className="w-full bg-white border border-[#B89A8E]/60 rounded-lg px-3.5 py-2 text-xs font-bold text-[#4B3F38] cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#8A6B5D] shadow-inner"
+            className="w-full bg-white border border-[#B89A8E]/60 rounded-lg px-3 py-2 text-xs font-bold text-[#4B3F38] cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#8A6B5D] shadow-inner"
           >
             {stores.map((s) => (
               <option key={s.id} value={s.id}>
@@ -234,7 +262,7 @@ export const ClosetTopShelf: React.FC<ClosetTopShelfProps> = ({
 
       </div>
 
-      {/* SUBCATEGORY QUICK-FILTER BANNER (Placed Directly Below Occasion Selector) */}
+      {/* SUBCATEGORY QUICK-FILTER BANNER */}
       <div className="max-w-[1700px] mx-auto pt-3 border-t border-[#D6CFCE]/40">
         <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
           <div className="flex items-center gap-1 text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider shrink-0 mr-1">

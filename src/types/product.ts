@@ -76,6 +76,8 @@ export interface Product {
   modestyAudit: ModestyAudit;
 }
 
+export type TargetDemographic = 'all' | 'women' | 'men' | 'girls' | 'boys' | 'kids';
+
 export interface ModestyProfile {
   name: string;
   necklines: Neckline[];
@@ -88,6 +90,7 @@ export interface ModestyProfile {
   isOpaque: boolean;
   selectedRetailers: string[];
   selectedOccasions: string[];
+  targetDemographic?: TargetDemographic;
   isProfileComplete: boolean;
 }
 
@@ -107,6 +110,7 @@ export interface ModestyFilterState {
   selectedSubcategory?: string;
   selectedRetailer: string;
   selectedOccasion: string;
+  targetDemographic?: TargetDemographic;
   sortBy?: 'relevance' | 'price_low' | 'price_high' | 'modesty_score';
   demoMode?: 'ai_search' | 'broken_keyword' | 'strict_rule';
 }

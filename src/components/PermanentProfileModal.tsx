@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ShieldCheck, X, Check, Save, UserCheck, Scissors, EyeOff, Layers, LogOut } from 'lucide-react';
-import { ModestyProfile, Neckline, SleeveLength, Hemline } from '@/types/product';
+import { ShieldCheck, X, Check, Save, UserCheck, Scissors, EyeOff, Layers, LogOut, Users } from 'lucide-react';
+import { ModestyProfile, Neckline, SleeveLength, Hemline, TargetDemographic } from '@/types/product';
 import { AvatarCarousel } from '@/components/AvatarCarousel';
 
 interface PermanentProfileModalProps {
@@ -20,6 +20,15 @@ export const PermanentProfileModal: React.FC<PermanentProfileModalProps> = ({
 }) => {
   const [profile, setProfile] = useState<ModestyProfile>(initialProfile);
   const [savedSuccess, setSavedSuccess] = useState<boolean>(false);
+
+  const demographicOptions: { id: TargetDemographic; label: string; icon: string }[] = [
+    { id: 'all', label: 'All', icon: '✨' },
+    { id: 'women', label: 'Women', icon: '👩' },
+    { id: 'men', label: 'Men', icon: '👨' },
+    { id: 'girls', label: 'Girls', icon: '👧' },
+    { id: 'boys', label: 'Boys', icon: '👦' },
+    { id: 'kids', label: 'All Kids', icon: '🧒' },
+  ];
 
   // Exact 4 Setup Categories
   const necklines: { id: Neckline; label: string; ids: Neckline[] }[] = [
@@ -126,6 +135,39 @@ export const PermanentProfileModal: React.FC<PermanentProfileModalProps> = ({
               profile={profile}
               onChangeProfile={(updated) => setProfile(prev => ({ ...prev, ...updated }))}
             />
+          </div>
+
+          {/* Default Shopping Audience (Who Are We Shopping For?) */}
+          <div>
+            <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider flex items-center justify-between mb-2">
+              <span className="flex items-center gap-1.5">
+                <Users className="w-3.5 h-3.5 text-[#8A6B5D]" /> Default Shopping Audience
+              </span>
+              <span className="text-[10px] text-[#8A6B5D]/80 font-normal capitalize">
+                {profile.targetDemographic === 'all' || !profile.targetDemographic ? 'Everyone' : profile.targetDemographic}
+              </span>
+            </label>
+
+            <div className="grid grid-cols-3 gap-2">
+              {demographicOptions.map((opt) => {
+                const isSelected = (!profile.targetDemographic && opt.id === 'all') || profile.targetDemographic === opt.id;
+                return (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => setProfile(prev => ({ ...prev, targetDemographic: opt.id }))}
+                    className={`py-2.5 px-2 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-1 cursor-pointer ${
+                      isSelected
+                        ? 'bg-[#3D312A] border-[#3D312A] text-white shadow-sm'
+                        : 'bg-white border-[#D6CFCE] text-[#6E5D53] hover:bg-[#F2EDE6]'
+                    }`}
+                  >
+                    <span>{opt.icon}</span>
+                    <span>{opt.label}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {/* Sleeve Length Preferred */}

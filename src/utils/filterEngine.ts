@@ -1,4 +1,4 @@
-import { Product, ModestyFilterState, CalculatedMatch, ModestyProfile } from '@/types/product';
+import { Product, ModestyFilterState, CalculatedMatch, ModestyProfile, TargetDemographic } from '@/types/product';
 
 export function parsePrice(price: string | number): number {
   if (typeof price === 'number') return price;
@@ -219,6 +219,39 @@ export function filterByOccasion(item: Product, occasion: string): boolean {
   return matchOccasion(item, occasion);
 }
 
+export function matchTargetDemographic(item: Product, target?: TargetDemographic): boolean {
+  if (!target || target === 'all') return true;
+
+  const category = (item.category || '').toLowerCase();
+  const text = `${item.name} ${item.category} ${Array.isArray(item.tags) ? item.tags.join(' ') : (item.tags || '')}`.toLowerCase();
+
+  switch (target) {
+    case 'women':
+      if (category.startsWith('girls') || category.startsWith('boys') || category.startsWith('mens') || category.includes('kids')) {
+        return false;
+      }
+      return category.includes('women') || /\b(women|womens|ladies|woman)\b/i.test(text);
+
+    case 'men':
+      if (category.startsWith('womens') || category.startsWith('girls') || category.startsWith('boys') || category.includes('kids')) {
+        return false;
+      }
+      return category.includes('mens') || category.includes('men') || /\b(men|mens|guys|guy)\b/i.test(text);
+
+    case 'girls':
+      return category.includes('girls') || /\b(girls|girl|girls')\b/i.test(text);
+
+    case 'boys':
+      return category.includes('boys') || /\b(boys|boy|boys')\b/i.test(text);
+
+    case 'kids':
+      return category.includes('girls') || category.includes('boys') || category.includes('kids') || /\b(girls|boys|kids|youth|toddler|children)\b/i.test(text);
+
+    default:
+      return true;
+  }
+}
+
 export function passesStrictModestyFilter(
   item: Product,
   filters?: ModestyFilterState | ModestyProfile | null,
@@ -236,6 +269,9 @@ export function passesStrictModestyFilter(
 
   const activeSubcategory = subcategory || (filters as ModestyFilterState)?.selectedSubcategory;
   if (!matchSubcategory(item, activeSubcategory)) return false;
+
+  const targetDemo = (filters as ModestyFilterState)?.targetDemographic || (filters as ModestyProfile)?.targetDemographic;
+  if (!matchTargetDemographic(item, targetDemo)) return false;
 
   // Shoes & Sandals or Accessories tabs display all items in those categories without modesty filtering
   if (activeSubcategory === 'Shoes & Sandals' || activeSubcategory === 'Accessories') {
