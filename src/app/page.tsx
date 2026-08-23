@@ -327,8 +327,8 @@ export default function Home() {
             onSelectStore={(store) => handleFilterChange({ selectedRetailer: store })}
             selectedSubcategory={filters.selectedSubcategory}
             onSelectSubcategory={(sub) => handleFilterChange({ selectedSubcategory: sub })}
-            averageMatchScore={averageMatchScore}
-            totalItemsCount={calculatedMatches.length}
+            passingItemsCount={calculatedMatches.length}
+            totalItemsCount={mockProducts.length}
             hasActiveFilters={hasModestyRules}
           />
 

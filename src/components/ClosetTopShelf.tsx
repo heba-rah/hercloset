@@ -10,7 +10,7 @@ interface ClosetTopShelfProps {
   onSelectStore: (store: string) => void;
   selectedSubcategory?: string;
   onSelectSubcategory?: (sub: string) => void;
-  averageMatchScore: number;
+  passingItemsCount: number;
   totalItemsCount: number;
   hasActiveFilters?: boolean;
 }
@@ -22,7 +22,7 @@ export const ClosetTopShelf: React.FC<ClosetTopShelfProps> = ({
   onSelectStore,
   selectedSubcategory = 'All Types',
   onSelectSubcategory,
-  averageMatchScore,
+  passingItemsCount,
   totalItemsCount,
   hasActiveFilters = false
 }) => {
@@ -52,9 +52,14 @@ export const ClosetTopShelf: React.FC<ClosetTopShelfProps> = ({
     'Accessories'
   ];
 
-  // Dynamic Color Coding based on score
-  const getGaugeColor = (score: number) => {
-    if (score >= 80) {
+  // Ratio Formula Calculation: passingItems / totalItems * 100
+  const matchPercentage = totalItemsCount > 0 
+    ? Math.round((passingItemsCount / totalItemsCount) * 100) 
+    : 0;
+
+  // Dynamic Rating & Color Badges based on Pass Rate
+  const getGaugeColor = (pct: number) => {
+    if (pct >= 70) {
       return {
         stroke: '#059669',
         text: 'text-[#059669]',
@@ -62,28 +67,36 @@ export const ClosetTopShelf: React.FC<ClosetTopShelfProps> = ({
         label: 'High Modesty'
       };
     }
-    if (score >= 60) {
+    if (pct >= 30) {
       return {
         stroke: '#D97706',
         text: 'text-[#D97706]',
         badgeBg: 'bg-amber-50 border-amber-300 text-amber-800',
-        label: 'Moderate Modesty'
+        label: 'Moderate Match'
+      };
+    }
+    if (pct > 0) {
+      return {
+        stroke: '#7A5C4D',
+        text: 'text-[#7A5C4D]',
+        badgeBg: 'bg-[#EAE4DC] border-[#D6CFCE] text-[#7A5C4D]',
+        label: 'Strict Curation'
       };
     }
     return {
-      stroke: '#DC2626',
-      text: 'text-[#DC2626]',
-      badgeBg: 'bg-rose-50 border-rose-300 text-rose-800',
-      label: 'Low Modesty'
+      stroke: '#9CA3AF',
+      text: 'text-[#9CA3AF]',
+      badgeBg: 'bg-gray-100 border-gray-300 text-gray-700',
+      label: 'No Matches'
     };
   };
 
-  const gaugeTheme = getGaugeColor(averageMatchScore);
+  const gaugeTheme = getGaugeColor(matchPercentage);
 
   // SVG Circular Gauge parameters
   const radius = 34;
   const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (averageMatchScore / 100) * circumference;
+  const strokeDashoffset = circumference - (matchPercentage / 100) * circumference;
 
   return (
     <div className="w-full bg-[#EAE2D8] border-y-4 border-[#8A6B5D]/40 shadow-[inset_0_6px_12px_rgba(75,63,56,0.15)] py-4 px-4 md:px-8 border-t-[#8A6B5D] border-b-[#4B3F38]/20 my-4 space-y-4">
@@ -150,7 +163,7 @@ export const ClosetTopShelf: React.FC<ClosetTopShelfProps> = ({
                 {/* Percentage Number Inside Circle */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
                   <span className={`text-lg font-extrabold font-mono ${gaugeTheme.text}`}>
-                    {averageMatchScore}%
+                    {matchPercentage}%
                   </span>
                 </div>
               </div>
@@ -169,7 +182,7 @@ export const ClosetTopShelf: React.FC<ClosetTopShelfProps> = ({
                 </div>
 
                 <p className="text-[11px] text-[#8A6B5D] font-semibold">
-                  Live score across {totalItemsCount} Canadian items
+                  Live score across {passingItemsCount} of {totalItemsCount} Canadian items
                 </p>
               </div>
             </>
