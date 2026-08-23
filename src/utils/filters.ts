@@ -31,9 +31,30 @@ export function matchCategory(item: Product, cat?: string): boolean {
     }
     case "Pants & Jeans":
       return /\b(pant|pants|jean|jeans|denim|trouser|trousers|legging|leggings|jogger|cargo|sweatpant)\b/i.test(text);
-    case "Skirts & Dresses":
-      return /\b(skirt|skirts|dress|dresses|maxi|midi|gown|wrap dress)\b/i.test(text) &&
-        !/\b(hoodie|sweater|sweatshirt|pant|jogger|jean|jacket)\b/i.test(text);
+    case 'Skirts & Dresses': {
+      // Reject tops, hoodies, pants, and jackets unless explicitly a skirt or dress
+      if (/\b(hoodie|sweater|sweatshirt|pant|pants|jogger|jean|jeans|jacket|coat|vest|blouse|tee|t-shirt)\b/i.test(text) && !/\b(skirt|skirts|dress|dresses|gown)\b/i.test(text)) {
+        return false;
+      }
+
+      const isSkirt = /\b(skirt|skirts)\b/i.test(text);
+
+      // For skirts specifically: ONLY present Maxi / Long skirts and reject mini skirts!
+      if (isSkirt) {
+        const isMiniOrShortSkirt = /\b(mini|mini skirt|short skirt|micro|mini-skirt|above knee)\b/i.test(text);
+        if (isMiniOrShortSkirt) return false;
+        return true;
+      }
+
+      const isDress = /\b(dress|dresses|gown|wrap dress)\b/i.test(text);
+      if (isDress) {
+        const isMiniDress = /\b(mini|mini dress|short dress|micro dress)\b/i.test(text);
+        if (isMiniDress) return false;
+        return true;
+      }
+
+      return false;
+    }
     case "Jackets & Outerwear":
       return /\b(jacket|coat|parka|trench|blazer|puffer|windbreaker|shacket|vest)\b/i.test(text);
     case "Shoes & Sandals":

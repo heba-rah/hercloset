@@ -103,9 +103,30 @@ export function matchSubcategory(item: Product, subcategory?: string): boolean {
       // 3. Positive match only for true legwear / pants / jeans / bottoms
       return isExplicitLegwear || /\b(denim|flare|wide leg|straight leg|skinny leg|bootcut|slack|slacks)\b/i.test(text);
     }
-    case 'Skirts & Dresses':
-      return /\b(skirt|skirts|dress|dresses|maxi|midi|gown|wrap dress)\b/i.test(text) && 
-             !/\b(hoodie|sweater|sweatshirt|pant|jogger|jean|jacket)\b/i.test(text);
+    case 'Skirts & Dresses': {
+      // Reject tops, hoodies, pants, and jackets unless explicitly a skirt or dress
+      if (/\b(hoodie|sweater|sweatshirt|pant|pants|jogger|jean|jeans|jacket|coat|vest|blouse|tee|t-shirt)\b/i.test(text) && !/\b(skirt|skirts|dress|dresses|gown)\b/i.test(text)) {
+        return false;
+      }
+
+      const isSkirt = /\b(skirt|skirts)\b/i.test(text);
+
+      // For skirts specifically: ONLY present Maxi / Long skirts and reject mini skirts!
+      if (isSkirt) {
+        const isMiniOrShortSkirt = /\b(mini|mini skirt|short skirt|micro|mini-skirt|above knee)\b/i.test(text);
+        if (isMiniOrShortSkirt) return false;
+        return true;
+      }
+
+      const isDress = /\b(dress|dresses|gown|wrap dress)\b/i.test(text);
+      if (isDress) {
+        const isMiniDress = /\b(mini|mini dress|short dress|micro dress)\b/i.test(text);
+        if (isMiniDress) return false;
+        return true;
+      }
+
+      return false;
+    }
     case 'Jackets & Outerwear':
       return /\b(jacket|coat|parka|trench|blazer|puffer|windbreaker|shacket|vest)\b/i.test(text);
     case 'Shoes & Sandals':
@@ -196,6 +217,13 @@ export function passesStrictModestyFilter(
   if (noCutouts && (hasCutoutsOrBareShoulders(item) || /\b(backless|open back|cutout|cut-out|strapless|tube|halter)\b/i.test(text))) return false;
   if (noSlits && /\b(slit|slits|split|split hem|side slit)\b/i.test(text)) return false;
   if (opaqueOnly && /\b(sheer|mesh|chiffon|lace|transparent|see-through|unlined)\b/i.test(text)) return false;
+
+  // For skirts specifically: ONLY present Maxi skirts and reject mini/short skirts
+  const isSkirt = /\b(skirt|skirts)\b/i.test(text);
+  if (isSkirt) {
+    const isMiniOrShortSkirt = /\b(mini|mini skirt|short skirt|micro|mini-skirt|above knee)\b/i.test(text);
+    if (isMiniOrShortSkirt) return false;
+  }
 
   // Sleeve and Neckline constraints ONLY apply to upper-body garments (tops, blouses, sweaters, hoodies, outerwear, dresses, bodysuits, jumpsuits).
   // They must NOT disqualify legwear (Pants & Jeans), skirts, shoes, or accessories!
