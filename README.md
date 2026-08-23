@@ -1,6 +1,10 @@
 
 
-https://github.com/user-attachments/assets/71c98dd7-f505-48fc-957e-f701b3c0e257
+
+
+https://github.com/user-attachments/assets/e73d1f99-c95a-407e-a52c-64cccd2f1d14
+
+
 
 # hercloset — Fashion Curated for Your Coverage
 
