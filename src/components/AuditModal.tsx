@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { X, ShieldCheck, Sparkles, CheckCircle2, XCircle, Scan, ExternalLink, FileText, ShoppingBag } from 'lucide-react';
 import { Product } from '@/types/product';
-import { resolveSleeveLength, resolveHemline } from '@/utils/filterEngine';
+import { getProductSleeveAttribute } from '@/utils/filterEngine';
 
 interface AuditModalProps {
   product: Product | null;
@@ -162,10 +162,10 @@ export const AuditModal: React.FC<AuditModalProps> = ({ product, onClose }) => {
               <div
                 style={{ width: `${modestyAudit.modestyScore}%` }}
                 className={`h-full rounded-full transition-all duration-1000 ${modestyAudit.modestyScore >= 90
-                    ? 'bg-[#8A6B5D]'
-                    : modestyAudit.modestyScore >= 75
-                      ? 'bg-[#B89A8E]'
-                      : 'bg-rose-500'
+                  ? 'bg-[#8A6B5D]'
+                  : modestyAudit.modestyScore >= 75
+                    ? 'bg-[#B89A8E]'
+                    : 'bg-rose-500'
                   }`}
               />
             </div>
@@ -230,15 +230,15 @@ export const AuditModal: React.FC<AuditModalProps> = ({ product, onClose }) => {
               <div className="p-3 rounded-xl bg-white border border-[#D6CFCE]">
                 <span className="text-[#8A6B5D] block text-[10px] uppercase font-semibold">5. Sleeve Length</span>
                 <span className="font-bold text-[#4B3F38] capitalize">
-                  {product ? resolveSleeveLength(product) : modestyAudit.sleeveLength}
+                  {product ? (
+                    getProductSleeveAttribute(product) === 'wrist' ? 'Wrist (Long Sleeve)' : getProductSleeveAttribute(product)
+                  ) : modestyAudit.sleeveLength}
                 </span>
               </div>
 
               <div className="p-3 rounded-xl bg-white border border-[#D6CFCE]">
                 <span className="text-[#8A6B5D] block text-[10px] uppercase font-semibold">6. Hemline</span>
-                <span className="font-bold text-[#4B3F38] capitalize">
-                  {product ? resolveHemline(product) : modestyAudit.hemline}
-                </span>
+                <span className="font-bold text-[#4B3F38] capitalize">{modestyAudit.hemline}</span>
               </div>
 
               <div className="p-3 rounded-xl bg-white border border-[#D6CFCE]">
