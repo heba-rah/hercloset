@@ -73,6 +73,7 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
       setStep('profile_setup');
     } else {
       const user: UserAccount = {
+        id: `user_${Date.now()}`,
         name: fullName || email.split('@')[0] || 'Amina Syed',
         email: email,
         isLoggedIn: true,
@@ -85,6 +86,7 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
 
   const handleGoogleSignIn = () => {
     const googleUser: UserAccount = {
+      id: `user_google_${Date.now()}`,
       name: 'Amina Syed',
       email: 'amina.syed@gmail.com',
       isLoggedIn: true,
@@ -101,6 +103,7 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
       isProfileComplete: true
     };
     const finalUser: UserAccount = {
+      id: `user_${Date.now()}`,
       name: fullName.trim() || 'Amina Syed',
       email: email.trim(),
       isLoggedIn: true,

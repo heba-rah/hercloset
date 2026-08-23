@@ -5,7 +5,7 @@ const APPAREL_KEYWORD_REGEX = /\b(dress|dresses|top|tops|shirt|shirts|pant|pants
 
 export function parsePrice(price: string | number): number {
   if (typeof price === 'number') return price;
-  const cleaned = price.replace(/[^0-9.]/g, '');
+  const cleaned = String(price).replace(/[^0-9.]/g, '');
   return parseFloat(cleaned) || 0;
 }
 
@@ -54,6 +54,16 @@ function matchesCategory(product: Product, selectedCategory: string): boolean {
 
 export function filterByOccasion(item: Product, occasion: string): boolean {
   if (!occasion || occasion === "All Occasions" || occasion === "all") return true;
+
+  // Direct Enum Field Evaluation
+  if (item.occasion) {
+    const itemOcc = String(item.occasion).toLowerCase();
+    const reqOcc = occasion.toLowerCase();
+    if (itemOcc === reqOcc) return true;
+    if (reqOcc === 'everyday' && itemOcc === 'everyday wear') return true;
+    if (reqOcc === 'going_out' && itemOcc === 'going out') return true;
+  }
+
   const text = extractItemCorpus(item);
 
   switch (occasion) {
@@ -93,12 +103,12 @@ export function filterAndScoreProducts(
   let matches: CalculatedMatch[] = [];
 
   for (const product of products) {
-    const audit = product.modestyAudit;
+    const audit = product.modestyAudit || {};
     const matchReasons: string[] = [];
     const warnings: string[] = [];
     const corpus = extractItemCorpus(product);
 
-    // Filter out non-apparel items (socks, jewelry, bags, footwear, accessories) EXCEPT when Undergarments occasion is selected
+    // Filter out non-apparel items EXCEPT when Undergarments occasion is selected
     const isUndergarments = filters.selectedOccasion === 'undergarments' || filters.selectedOccasion === 'Undergarments';
     if (!isUndergarments) {
       if (NON_APPAREL_REGEX.test(corpus) && !APPAREL_KEYWORD_REGEX.test(product.name)) {
@@ -106,7 +116,7 @@ export function filterAndScoreProducts(
       }
     }
 
-    // Category filter (inclusive keyword matching)
+    // Category filter
     if (!matchesCategory(product, filters.selectedCategory)) {
       continue;
     }
@@ -116,7 +126,7 @@ export function filterAndScoreProducts(
       continue;
     }
 
-    // Occasion filter (strict multi-keyword regex matching)
+    // Occasion filter (exact enums + regex matching)
     if (!filterByOccasion(product, filters.selectedOccasion)) {
       continue;
     }
@@ -135,32 +145,31 @@ export function filterAndScoreProducts(
       continue;
     }
 
-    // A. HARD RULES FILTER (EXCLUSIONS)
-    if (filters.noSlits && (/slit|split|side-open/i.test(corpus) || audit.hasSlit === true)) {
-      continue;
-    }
-    if (filters.noOpenBack && (/cutout|cut-out|backless|strapless|tube|halter|off-shoulder/i.test(corpus) || audit.isOpenBack === true)) {
-      continue;
-    }
-    if (filters.isOpaque && (/sheer|mesh|chiffon|lace|see-through|transparent|pareo/i.test(corpus) || audit.isSheer === true)) {
-      continue;
-    }
+    // A. HARD RULES FILTER (EXACT BOOLEAN FIELDS)
+    const hasSlits = product.has_slits ?? audit.hasSlit ?? /slit|split|side-open/i.test(corpus);
+    const hasCutouts = product.has_cutouts ?? audit.isOpenBack ?? /cutout|cut-out|backless|strapless|tube|halter|off-shoulder/i.test(corpus);
+    const isSheer = product.is_sheer ?? audit.isSheer ?? /sheer|mesh|chiffon|lace|see-through|transparent|pareo/i.test(corpus);
 
-    // B. SLEEVE FILTER (IF SELECTIONS EXIST)
+    if (filters.noSlits && hasSlits) continue;
+    if (filters.noOpenBack && hasCutouts) continue;
+    if (filters.isOpaque && isSheer) continue;
+
+    // B. SLEEVE FILTER (EXACT ENUM FIELDS)
     if (filters.sleeveLengths && filters.sleeveLengths.length > 0) {
       const wantsLong = filters.sleeveLengths.some(s => /long|wrist|3\/4|Long Sleeve/i.test(s));
       const wantsShort = filters.sleeveLengths.some(s => /short|elbow|Short Sleeve/i.test(s));
 
-      const isLong = /long sleeve|sweater|hoodie|cardigan|jacket|crewneck/i.test(corpus);
-      const isShort = /short sleeve|t-shirt|tee/i.test(corpus);
-      const isSleeveless = /tank|tube|camisole|sleeveless|bikini|strapless/i.test(corpus);
+      const sleeve = product.sleeve;
+      const isLong = sleeve === 'long' || /long sleeve|sweater|hoodie|cardigan|jacket|crewneck/i.test(corpus);
+      const isShort = sleeve === 'short' || /short sleeve|t-shirt|tee/i.test(corpus);
+      const isSleeveless = sleeve === 'sleeveless' || /tank|tube|camisole|sleeveless|bikini|strapless/i.test(corpus);
 
       if (wantsLong && !wantsShort && (isShort || isSleeveless)) continue;
       if (wantsShort && !wantsLong && (isLong || isSleeveless)) continue;
       if ((wantsLong || wantsShort) && isSleeveless) continue;
     }
 
-    // C. BOTTOMS FILTER (IF SELECTIONS EXIST)
+    // C. BOTTOMS FILTER (EXACT FIELD AND REGEX)
     if (filters.hemlines && filters.hemlines.length > 0) {
       const isSkirtOrDress = /skirt|dress|maxi/i.test(corpus);
       const isPants = /pant|trouser|jean|legging|sweatpant|jogger|cargo/i.test(corpus);
@@ -172,11 +181,11 @@ export function filterAndScoreProducts(
       if (wantsPants && !wantsSkirt && isSkirtOrDress) continue;
     }
 
-    // Match reasons & warnings for modesty score display
-    let score = audit.modestyScore;
-    if (audit.hasSlit) score -= 15;
-    if (audit.isOpenBack) score -= 15;
-    if (audit.isSheer) score -= 20;
+    // Match score evaluation using product.modesty_score if present
+    let score = typeof product.modesty_score === 'number' ? product.modesty_score : (audit.modestyScore || 90);
+    if (hasSlits) score -= 15;
+    if (hasCutouts) score -= 15;
+    if (isSheer) score -= 20;
 
     matches.push({
       product,
@@ -190,7 +199,6 @@ export function filterAndScoreProducts(
   // FALLBACK GRACEFUL DEGRADATION: If strict filters yielded 0 results, score top closest modest apparel!
   if (matches.length === 0 && products.length > 0) {
     for (const product of products) {
-      // Must STILL respect occasion filter even in fallback!
       if (!filterByOccasion(product, filters.selectedOccasion)) {
         continue;
       }
@@ -207,11 +215,8 @@ export function filterAndScoreProducts(
         continue;
       }
 
-      const audit = product.modestyAudit;
-      let score = audit.modestyScore;
-      if (audit.hasSlit) score -= 15;
-      if (audit.isOpenBack) score -= 15;
-      if (audit.isSheer) score -= 20;
+      const audit = product.modestyAudit || {};
+      let score = typeof product.modesty_score === 'number' ? product.modesty_score : (audit.modestyScore || 90);
 
       matches.push({
         product,
