@@ -516,6 +516,11 @@ export default function Home() {
           <AuditModal
             product={selectedAuditProduct}
             onClose={() => setSelectedAuditProduct(null)}
+            hasActiveFilters={hasModestyRules}
+            onOpenFilters={() => {
+              setSelectedAuditProduct(null);
+              setIsMobileFiltersOpen(true);
+            }}
           />
 
           {/* Clean Brand Motto Footer */}
