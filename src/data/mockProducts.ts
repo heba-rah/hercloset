@@ -11,7 +11,7 @@ export interface Product {
   modestyAudit: {
     neckline: 'high' | 'crew' | 'scoop' | 'v-neck' | 'plunge';
     sleeveLength: 'wrist' | '3/4' | 'elbow' | 'short' | 'sleeveless';
-    hemline: 'floor' | 'ankle' | 'midi' | 'knee' | 'mini';
+    hemline: 'floor' | 'ankle' | 'midi' | 'knee' | 'mini' | 'cropped';
     hasSlit: boolean;
     isOpenBack: boolean;
     isSheer: boolean;
@@ -7345,12 +7345,12 @@ export const mockProducts: Product[] = [
     "modestyAudit": {
       "neckline": "crew",
       "sleeveLength": "wrist",
-      "hemline": "midi",
-      "hasSlit": false,
+      "hemline": "cropped",
+      "hasSlit": true,
       "isOpenBack": false,
       "isSheer": false,
-      "fit": "relaxed",
-      "modestyScore": 98
+      "fit": "fitted",
+      "modestyScore": 40
     }
   },
   {

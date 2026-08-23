@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { X, ShieldCheck, Sparkles, CheckCircle2, XCircle, Scan, ExternalLink, FileText, ShoppingBag, ArrowRight } from 'lucide-react';
 import { Product } from '@/types/product';
-import { resolveSleeveLength, resolveHemline, resolveSilhouetteFit } from '@/utils/filterEngine';
+import { resolveSleeveLength, resolveHemline, resolveSilhouetteFit, isGarmentCropped } from '@/utils/filterEngine';
 
 interface AuditModalProps {
   product: Product | null;
@@ -35,6 +35,14 @@ export const AuditModal: React.FC<AuditModalProps> = ({
   const corpus = `${product.name} ${product.category} ${(product as any).subcategory || ''}`.toLowerCase();
   const isUpperGarment = /\b(top|blouse|shirt|tee|t-shirt|polo|sweater|hoodie|cardigan|sweatshirt|crewneck|fleece|pullover|jacket|coat|parka|blazer|vest|shacket)\b/i.test(corpus);
   const isLowerGarment = /\b(pant|pants|jean|jeans|trouser|trousers|legging|leggings|jogger|cargo|skirt|skirts|slack|bottoms)\b/i.test(corpus) && !/\b(dress|gown)\b/i.test(corpus);
+
+  const isCropped = isGarmentCropped(product);
+  const isUpperGarmentFail = isUpperGarment && (modestyAudit.hasSlit || isCropped);
+
+  // Dynamic audit score calculation: cropped tops / failed midriff tests drop score to 40/100
+  const displayedAuditScore = isCropped || (isUpperGarment ? isUpperGarmentFail : modestyAudit.hasSlit) || modestyAudit.isOpenBack || modestyAudit.isSheer
+    ? Math.min(modestyAudit.modestyScore, 40)
+    : modestyAudit.modestyScore;
 
   const getStatusBadge = (condition: boolean, label: string, failNote: string, passNote: string) => {
     if (condition) {
@@ -167,16 +175,16 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                   Base AI Modesty Score
                 </span>
                 <span className="font-mono font-bold text-lg text-[#8A6B5D]">
-                  {modestyAudit.modestyScore}/100
+                  {displayedAuditScore}/100
                 </span>
               </div>
 
               <div className="w-full h-2.5 rounded-full bg-white overflow-hidden border border-[#D6CFCE]">
                 <div
-                  style={{ width: `${modestyAudit.modestyScore}%` }}
-                  className={`h-full rounded-full transition-all duration-1000 ${modestyAudit.modestyScore >= 90
+                  style={{ width: `${displayedAuditScore}%` }}
+                  className={`h-full rounded-full transition-all duration-1000 ${displayedAuditScore >= 90
                     ? 'bg-[#8A6B5D]'
-                    : modestyAudit.modestyScore >= 75
+                    : displayedAuditScore >= 75
                       ? 'bg-[#B89A8E]'
                       : 'bg-rose-500'
                     }`}
@@ -251,9 +259,9 @@ export const AuditModal: React.FC<AuditModalProps> = ({
               <>
                 {isUpperGarment ? (
                   getStatusBadge(
-                    modestyAudit.hasSlit,
+                    modestyAudit.hasSlit || isCropped,
                     '1. Front Placket & Midriff Test',
-                    'AI detected exposed midriff or open front button placket',
+                    'AI detected exposed midriff, cropped hemline, or open front button placket',
                     'Full front torso & waist coverage verified'
                   )
                 ) : (

@@ -1,6 +1,6 @@
 export type Neckline = 'high' | 'crew' | 'scoop' | 'v-neck' | 'plunge';
 export type SleeveLength = 'wrist' | '3/4' | 'elbow' | 'short' | 'sleeveless';
-export type Hemline = 'floor' | 'ankle' | 'midi' | 'knee' | 'mini';
+export type Hemline = 'floor' | 'ankle' | 'midi' | 'knee' | 'mini' | 'cropped';
 export type GarmentFit = 'loose' | 'relaxed' | 'fitted' | 'bodycon';
 export type Occasion = 'gymwear' | 'graduation' | 'wedding' | 'workwear' | 'school' | 'casual' | 'eid' | 'formal';
 
