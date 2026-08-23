@@ -10,12 +10,14 @@ interface ModestyStylistAvatarProps {
 
 export const ModestyStylistAvatar: React.FC<ModestyStylistAvatarProps> = ({
   onOpenFilters,
-  userName = 'Amina'
+  userName
 }) => {
   const [isHovered, setIsHovered] = useState<boolean>(false);
 
-  // Extract first name cleanly or fallback to "A Beautiful Guest"
-  const displayName = userName && userName.trim() !== '' ? userName.split(' ')[0] : 'A Beautiful Guest';
+  // Extract first name cleanly or fallback to "A Beautiful Guest" for guest shoppers
+  const displayName = userName && userName.trim() !== '' && !/^guest$/i.test(userName.trim())
+    ? userName.split(' ')[0]
+    : 'A Beautiful Guest';
 
   return (
     <div className="break-inside-avoid mb-4 inline-block w-full font-sans bg-transparent p-2">

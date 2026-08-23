@@ -75,7 +75,7 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
     } else {
       const user: UserAccount = {
         id: `user_${Date.now()}`,
-        name: fullName || email.split('@')[0] || 'Amina Syed',
+        name: fullName || email.split('@')[0] || 'Valued Shopper',
         email: email,
         isLoggedIn: true,
         profile: { ...profile, name: `${fullName || 'My'} Modesty Rules`, isProfileComplete: true }
@@ -88,10 +88,10 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
   const handleGoogleSignIn = () => {
     const googleUser: UserAccount = {
       id: `user_google_${Date.now()}`,
-      name: 'Amina Syed',
-      email: 'amina.syed@gmail.com',
+      name: 'Valued Shopper',
+      email: 'shopper@gmail.com',
       isLoggedIn: true,
-      profile: { ...profile, name: "Amina's Modesty Rules", isProfileComplete: true }
+      profile: { ...profile, name: "My Modesty Rules", isProfileComplete: true }
     };
     localStorage.setItem('hercloset_user_account', JSON.stringify(googleUser));
     onCompleteAuth(googleUser);
@@ -105,7 +105,7 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
     };
     const finalUser: UserAccount = {
       id: `user_${Date.now()}`,
-      name: fullName.trim() || 'Amina Syed',
+      name: fullName.trim() || 'Valued Shopper',
       email: email.trim(),
       isLoggedIn: true,
       profile: finalProfile
