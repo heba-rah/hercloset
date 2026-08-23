@@ -159,7 +159,7 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
             <img
               src="/logo/logo.png"
               alt="hercloset logo"
-              className={`w-64 h-64 md:w-80 md:h-80 lg:w-[380px] lg:h-[380px] object-contain mb-8 drop-shadow-md mx-auto transition-all duration-700 ease-out transform ${
+              className={`w-36 h-36 md:w-52 md:h-52 object-contain mb-6 drop-shadow-md mx-auto transition-all duration-700 ease-out transform ${
                 isMounted ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-4 scale-95'
               }`}
             />
@@ -189,10 +189,9 @@ export const AuthLandingPage: React.FC<AuthLandingPageProps> = ({
             }`}>
               <button
                 onClick={() => setPanelState('entered')}
-                className="bg-[#7A5C4D] hover:bg-[#684C3F] text-[#FAF7F2] px-10 py-3.5 rounded-full text-sm font-semibold tracking-widest uppercase shadow-md hover:shadow-xl transition-all duration-300 flex items-center gap-3 mx-auto cursor-pointer active:scale-95 group hover:scale-105"
+                className="bg-[#7A5C4D] hover:bg-[#684C3F] text-[#FAF7F2] rounded-full px-10 py-3 text-sm font-semibold uppercase tracking-widest shadow-md hover:shadow-xl transition-all duration-300 flex items-center gap-3 mx-auto cursor-pointer active:scale-95 group hover:scale-105"
               >
-                <span>ENTER</span>
-                <ArrowRight className="w-4 h-4 text-amber-200 group-hover:translate-x-1 transition-transform" />
+                <span>ENTER →</span>
               </button>
             </div>
 
