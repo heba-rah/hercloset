@@ -100,6 +100,6 @@ hercloset/
 
 ---
 
-## 📄 License & Brand Motto
+
 
 *hercloset — Fashion Curated for Your Coverage*
