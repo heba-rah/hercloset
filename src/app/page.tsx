@@ -62,6 +62,7 @@ const INITIAL_FILTERS: ModestyFilterState = {
   selectedCategory: 'all',
   selectedRetailer: 'all',
   selectedOccasion: 'all',
+  selectedSubcategory: 'All Types',
   demoMode: 'ai_search'
 };
 
