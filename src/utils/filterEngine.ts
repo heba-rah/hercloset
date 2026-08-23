@@ -127,39 +127,41 @@ export function filterAndScoreProducts(
 
     // A. HARD RULES FILTER (EXCLUSIONS)
     const textForAudit = `${product.name} ${(product.tags || []).join(' ')} ${descStr}`;
-    if (filters.noSlits && (/slit|split|cut-out|open back/i.test(textForAudit) || audit.hasSlit === true)) {
+    if (filters.noSlits && (/slit|split|side-open/i.test(textForAudit) || audit.hasSlit === true)) {
       continue;
     }
-    if (filters.noOpenBack && (/cutout|cut-out|backless|strapless|tube/i.test(textForAudit) || audit.isOpenBack === true)) {
+    if (filters.noOpenBack && (/cutout|cut-out|backless|strapless|tube|halter|off-shoulder/i.test(textForAudit) || audit.isOpenBack === true)) {
       continue;
     }
-    if (filters.isOpaque && (/sheer|mesh|chiffon|lace|see-through|pareo/i.test(textForAudit) || audit.isSheer === true)) {
+    if (filters.isOpaque && (/sheer|mesh|chiffon|lace|see-through|transparent|pareo/i.test(textForAudit) || audit.isSheer === true)) {
       continue;
     }
 
     // B. SLEEVE FILTER (IF SELECTIONS EXIST)
     if (filters.sleeveLengths && filters.sleeveLengths.length > 0) {
-      const hasShort = filters.sleeveLengths.some(s => /short|elbow/i.test(s));
-      const hasLong = filters.sleeveLengths.some(s => /long|wrist|3\/4/i.test(s));
+      const wantsLong = filters.sleeveLengths.some(s => /long|wrist|3\/4|Long Sleeve/i.test(s));
+      const wantsShort = filters.sleeveLengths.some(s => /short|elbow|Short Sleeve/i.test(s));
       const text = `${product.name} ${(product.tags || []).join(' ')} ${product.category} ${audit.sleeveLength}`.toLowerCase();
 
-      const isLong = /long sleeve|sweater|hoodie|cardigan|jacket|crewneck|wrist|3\/4/i.test(text);
-      const isShort = /short sleeve|t-shirt|tee|short|elbow/i.test(text);
-      const isSleeveless = /tank|tube|camisole|sleeveless|bikini/i.test(text);
+      const isLong = /long sleeve|sweater|hoodie|cardigan|jacket|crewneck/i.test(text);
+      const isShort = /short sleeve|t-shirt|tee/i.test(text);
+      const isSleeveless = /tank|tube|camisole|sleeveless|bikini|strapless/i.test(text);
 
-      if (hasLong && !hasShort && (isShort || isSleeveless)) continue;
-      if (hasShort && !hasLong && (isLong || isSleeveless)) continue;
-      if (!hasLong && !hasShort && isSleeveless) continue;
+      if (wantsLong && !wantsShort && (isShort || isSleeveless)) continue;
+      if (wantsShort && !wantsLong && (isLong || isSleeveless)) continue;
+      if ((wantsLong || wantsShort) && isSleeveless) continue;
     }
 
     // C. BOTTOMS FILTER (IF SELECTIONS EXIST)
     if (filters.hemlines && filters.hemlines.length > 0) {
-      const hasSkirt = filters.hemlines.some(b => /skirt|dress|maxi|floor|ankle/i.test(b));
-      const hasPants = filters.hemlines.some(b => /pant|trouser|jeans|sweatpant|jogger|midi|knee/i.test(b));
-      const text = `${product.name} ${(product.tags || []).join(' ')} ${product.category} ${audit.hemline}`.toLowerCase();
+      const isSkirtOrDress = /skirt|dress|maxi/i.test(textForAudit);
+      const isPants = /pant|trouser|jean|legging|sweatpant|jogger|cargo/i.test(textForAudit);
 
-      if (hasSkirt && !hasPants && !/skirt|dress|maxi|floor|ankle/i.test(text)) continue;
-      if (hasPants && !hasSkirt && !/pant|trouser|jean|legging|sweatpant|jogger/i.test(text)) continue;
+      const wantsSkirt = filters.hemlines.some(b => /skirt|dress|maxi|floor|ankle|Maxi Skirt \/ Dress/i.test(b));
+      const wantsPants = filters.hemlines.some(b => /pant|trouser|jean|legging|sweatpant|jogger|cargo|Pants \/ Trousers/i.test(b));
+
+      if (wantsSkirt && !wantsPants && isPants) continue;
+      if (wantsPants && !wantsSkirt && isSkirtOrDress) continue;
     }
 
     // Match reasons & warnings for modesty score display

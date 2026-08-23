@@ -88,22 +88,6 @@ export default function Home() {
   // Load permanent user account and modesty profile from localStorage on mount
   useEffect(() => {
     try {
-      const storedProfile = localStorage.getItem('user_modesty_profile');
-      if (storedProfile) {
-        const parsedProf: ModestyProfile = JSON.parse(storedProfile);
-        setProfile(parsedProf);
-        setFilters(prev => ({
-          ...prev,
-          necklines: parsedProf.necklines || prev.necklines,
-          sleeveLengths: parsedProf.sleeveLengths || prev.sleeveLengths,
-          hemlines: parsedProf.hemlines || prev.hemlines,
-          fits: parsedProf.fits || prev.fits,
-          noSlits: parsedProf.noSlits ?? prev.noSlits,
-          noOpenBack: parsedProf.noOpenBack ?? prev.noOpenBack,
-          isOpaque: parsedProf.isOpaque ?? prev.isOpaque,
-        }));
-      }
-
       const storedUser = localStorage.getItem('hercloset_user_account');
       if (storedUser) {
         const parsedUser: UserAccount = JSON.parse(storedUser);
@@ -113,19 +97,23 @@ export default function Home() {
         if (!shouldShowLanding) {
           setTimeout(() => setIsFeedRevealed(true), 50);
         }
-        if (parsedUser.profile) {
-          setProfile(parsedUser.profile);
-          setFilters(prev => ({
-            ...prev,
-            necklines: parsedUser.profile.necklines || prev.necklines,
-            sleeveLengths: parsedUser.profile.sleeveLengths || prev.sleeveLengths,
-            hemlines: parsedUser.profile.hemlines || prev.hemlines,
-            fits: parsedUser.profile.fits || prev.fits,
-            noSlits: parsedUser.profile.noSlits ?? prev.noSlits,
-            noOpenBack: parsedUser.profile.noOpenBack ?? prev.noOpenBack,
-            isOpaque: parsedUser.profile.isOpaque ?? prev.isOpaque,
-          }));
-        }
+
+        const savedPermanentKey = `modesty_profile_${parsedUser.email}`;
+        const savedPermanentRaw = localStorage.getItem(savedPermanentKey);
+        const savedPermanent = savedPermanentRaw ? JSON.parse(savedPermanentRaw) : null;
+        const activeProf = savedPermanent || parsedUser.profile || INITIAL_PROFILE;
+
+        setProfile(activeProf);
+        setFilters(prev => ({
+          ...prev,
+          necklines: activeProf.necklines || [],
+          sleeveLengths: activeProf.sleeveLengths || [],
+          hemlines: activeProf.hemlines || [],
+          fits: activeProf.fits || [],
+          noSlits: activeProf.noSlits ?? false,
+          noOpenBack: activeProf.noOpenBack ?? false,
+          isOpaque: activeProf.isOpaque ?? false,
+        }));
       }
     } catch {
       // fallback
@@ -144,16 +132,22 @@ export default function Home() {
 
   const handleCompleteAuth = (account: UserAccount) => {
     setCurrentUser(account);
-    setProfile(account.profile);
+
+    const savedPermanentKey = `modesty_profile_${account.email}`;
+    const savedPermanentRaw = localStorage.getItem(savedPermanentKey);
+    const savedPermanent = savedPermanentRaw ? JSON.parse(savedPermanentRaw) : null;
+    const activeProf = savedPermanent || account.profile || INITIAL_PROFILE;
+
+    setProfile(activeProf);
     setFilters(prev => ({
       ...prev,
-      necklines: account.profile.necklines,
-      sleeveLengths: account.profile.sleeveLengths,
-      hemlines: account.profile.hemlines,
-      fits: account.profile.fits,
-      noSlits: account.profile.noSlits,
-      noOpenBack: account.profile.noOpenBack,
-      isOpaque: account.profile.isOpaque,
+      necklines: activeProf.necklines || [],
+      sleeveLengths: activeProf.sleeveLengths || [],
+      hemlines: activeProf.hemlines || [],
+      fits: activeProf.fits || [],
+      noSlits: activeProf.noSlits ?? false,
+      noOpenBack: activeProf.noOpenBack ?? false,
+      isOpaque: activeProf.isOpaque ?? false,
     }));
     setShowAuthLandingPage(false);
     setIsFeedRevealed(false);
