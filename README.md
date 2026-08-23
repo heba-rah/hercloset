@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# hercloset — Fashion Curated for Your Coverage
 
-## Getting Started
+> **hercloset** is an AI-powered modest fashion curation engine and catalog aggregator for Canadian retail brands (including Urban Planet and Ardene). It enforces zero-leak modesty filters, computer vision garment audits, and personalized coverage preferences.
 
-First, run the development server:
+---
+
+## ✨ Features & Highlights
+
+- **7-Point AI Vision Modesty Audit**: Interactive inspection modal with simulated computer vision bounding scans and tailored 7-point verification checklists (Leg Slits / Midriff Openings, Open Back & Cutouts, Fabric Opacity, Necklines, Sleeve Lengths, Hemlines, and Silhouette Fit).
+- **Strict Whitelist Modesty Engine**: High-accuracy classification pipeline enforcing hard constraints for cutouts, leg slits, sheer fabrics, sleeve coverage, necklines, and midriff exposure (`noCropped`).
+- **Garment-Aware Attribute Resolution**:
+  - **Sleeve Classifier**: Prioritizes explicit T-shirt/tee terms over generic crewnecks.
+  - **Hemline Classifier**: Distinguishes skirts/dresses (`Maxi / Floor`, `Midi`, `Mini`) from tops (`Standard Waist Length`, `Hip / Tunic Length`, `Cropped`).
+  - **Silhouette Fit Classifier**: Detects ribbed, bodycon, tight, contour, and seamless fabrics (`Fitted / Bodycon` vs `Relaxed / Loose`).
+  - **Legwear Scoping**: Ensures sleeve and neckline rules do not mistakenly disqualify Pants, Jeans, or Skirts.
+  - **Maxi Skirts Only**: Strictly excludes skorts, shorts, and mini skirts under the *Skirts & Dresses* category.
+- **Scoped Modest Match Pass-Rate Gauge**: Real-time circular progress ring calculating pass-rate relative specifically to the active Occasion + Category + Store scope.
+- **AI Catalog Tagging Engine**: Node.js script (`scripts/tagCatalog.js`) classifying 5,000+ raw catalog items into structured JSON schema (`src/data/catalog_tagged.json`).
+- **Pinterest Masonry Grid Layout**: Responsive asymmetrical product card grid with warm earth tone aesthetics and direct store purchase links.
+
+---
+
+## 🚀 Getting Started & How to Run
+
+### Prerequisites
+
+Ensure you have **Node.js** (v18.x or v20.x+) and **npm** installed on your system.
+
+### 1. Install Dependencies
+
+Clone the repository and install project packages:
+
+```bash
+git clone https://github.com/heba-rah/hercloset.git
+cd hercloset
+npm install
+```
+
+### 2. (Optional) Run the AI Catalog Tagging Script
+
+To re-classify or tag raw catalog items into `catalog_tagged.json`:
+
+```bash
+node scripts/tagCatalog.js
+```
+
+### 3. Start the Local Development Server
+
+Run Next.js in development mode with Turbopack:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open your browser and navigate to:
+👉 **[http://localhost:3000](http://localhost:3000)**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠️ Available Scripts
 
-## Learn More
+| Command | Description |
+| :--- | :--- |
+| `npm run dev` | Launches Next.js dev server on port 3000 |
+| `npm run build` | Compiles optimized Next.js production build |
+| `npm run start` | Runs the compiled production build locally |
+| `node scripts/tagCatalog.js` | Runs the AI catalog classification pipeline |
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📂 Project Architecture
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```text
+hercloset/
+├── scripts/
+│   └── tagCatalog.js             # Node.js catalog tagging & classification script
+├── src/
+│   ├── app/
+│   │   ├── globals.css           # Global CSS design tokens & overflow rules
+│   │   ├── layout.tsx            # Root layout wrapper
+│   │   └── page.tsx              # Main store feed, pagination, and scoped gauge state
+│   ├── components/
+│   │   ├── AuditModal.tsx        # AI Vision Bounding Scan & tailored 7-Point Audit modal
+│   │   ├── AuthLandingPage.tsx   # Grand entrance landing hero & account auth modal
+│   │   ├── ClosetTopShelf.tsx    # Wardrobe top shelf, subcategory pills & match ring dial
+│   │   ├── Header.tsx            # Navigation header & search query bar
+│   │   ├── ModestyFilters.tsx    # Session preferences & hard constraint toggles
+│   │   ├── PermanentProfileModal.tsx # User profile setup modal
+│   │   └── PinterestGrid.tsx     # Asymmetrical Pinterest-style product feed
+│   ├── data/
+│   │   ├── catalog_tagged.json   # Classifed 5,000-item tagged dataset
+│   │   └── mockProducts.ts       # Raw catalog source products
+│   ├── types/
+│   │   └── product.ts            # TypeScript interfaces & type definitions
+│   └── utils/
+│       ├── filterEngine.ts       # Master filter engine & attribute resolution functions
+│       └── filters.ts            # Strict modesty whitelist classification engine
+└── README.md
+```
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📄 License & Brand Motto
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+*hercloset — Fashion Curated for Your Coverage*

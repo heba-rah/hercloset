@@ -1,15 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ShieldCheck, RotateCcw, Filter, Check, EyeOff, Layers, Scissors, HeartHandshake, DollarSign, ArrowUpDown, Tag, Info } from 'lucide-react';
-import { ModestyFilterState, Neckline, SleeveLength, Hemline, GarmentFit } from '@/types/product';
+import { ShieldCheck, RotateCcw, Filter, Check, EyeOff, Layers, Scissors, DollarSign, ArrowUpDown, Tag, Info } from 'lucide-react';
+import { ModestyFilterState, Neckline, SleeveLength, Hemline } from '@/types/product';
 
 interface ModestyFiltersProps {
   filters: ModestyFilterState;
   onFilterChange: (updates: Partial<ModestyFilterState>) => void;
   onReset: () => void;
-  onApplyStrictPreset: () => void;
-  onApplySmartPreset: () => void;
   isMobileDrawer?: boolean;
   onCloseMobileDrawer?: () => void;
 }
@@ -18,42 +16,25 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
   filters,
   onFilterChange,
   onReset,
-  onApplyStrictPreset,
-  onApplySmartPreset,
   isMobileDrawer,
   onCloseMobileDrawer
 }) => {
   const [activeTab, setActiveTab] = useState<'modesty' | 'shopping'>('modesty');
 
-  const necklines: { id: Neckline; label: string }[] = [
-    { id: 'high', label: 'High Neck' },
-    { id: 'crew', label: 'Crew' },
-    { id: 'scoop', label: 'Scoop' },
-    { id: 'v-neck', label: 'V-Neck' },
-    { id: 'plunge', label: 'Plunge' },
+  // Exact 4 Setup Categories
+  const necklines: { id: Neckline; label: string; ids: Neckline[] }[] = [
+    { id: 'high', label: 'High Neck', ids: ['high'] },
+    { id: 'crew', label: 'Crewneck', ids: ['crew'] }
   ];
 
-  const sleeveLengths: { id: SleeveLength; label: string }[] = [
-    { id: 'wrist', label: 'Full Wrist' },
-    { id: '3/4', label: '3/4 Sleeve' },
-    { id: 'elbow', label: 'Elbow' },
-    { id: 'short', label: 'Short Sleeve' },
-    { id: 'sleeveless', label: 'Sleeveless' },
+  const sleeveLengths: { id: string; label: string; ids: SleeveLength[] }[] = [
+    { id: 'long', label: 'Long Sleeve', ids: ['wrist', '3/4'] },
+    { id: 'short', label: 'Short Sleeve', ids: ['elbow', 'short'] }
   ];
 
-  const hemlines: { id: Hemline; label: string }[] = [
-    { id: 'floor', label: 'Floor Maxi' },
-    { id: 'ankle', label: 'Ankle' },
-    { id: 'midi', label: 'Midi' },
-    { id: 'knee', label: 'Knee' },
-    { id: 'mini', label: 'Mini' },
-  ];
-
-  const fits: { id: GarmentFit; label: string }[] = [
-    { id: 'loose', label: 'Loose' },
-    { id: 'relaxed', label: 'Relaxed' },
-    { id: 'fitted', label: 'Fitted' },
-    { id: 'bodycon', label: 'Bodycon' },
+  const hemlines: { id: string; label: string; ids: Hemline[] }[] = [
+    { id: 'skirt', label: 'Maxi Skirt / Dress', ids: ['floor', 'ankle'] },
+    { id: 'pants', label: 'Pants / Trousers', ids: ['midi', 'knee'] }
   ];
 
   const categories = [
@@ -65,14 +46,45 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
     { id: 'Outerwear', label: 'Sweaters & Jackets' },
   ];
 
-  const toggleArrayItem = <T extends string>(current: T[], item: T): T[] => {
-    return current.includes(item)
-      ? current.filter(x => x !== item)
-      : [...current, item];
+  const isSleeveSelected = (ids: SleeveLength[]) => ids.some(id => filters.sleeveLengths.includes(id));
+  const isNecklineSelected = (ids: Neckline[]) => ids.some(id => filters.necklines.includes(id));
+  const isHemlineSelected = (ids: Hemline[]) => ids.some(id => filters.hemlines.includes(id));
+
+  const toggleSleeveOption = (ids: SleeveLength[]) => {
+    const isSelected = isSleeveSelected(ids);
+    let updated = [...filters.sleeveLengths];
+    if (isSelected) {
+      updated = updated.filter(s => !ids.includes(s));
+    } else {
+      updated = Array.from(new Set([...updated, ...ids]));
+    }
+    onFilterChange({ sleeveLengths: updated });
+  };
+
+  const toggleNecklineOption = (ids: Neckline[]) => {
+    const isSelected = isNecklineSelected(ids);
+    let updated = [...filters.necklines];
+    if (isSelected) {
+      updated = updated.filter(n => !ids.includes(n));
+    } else {
+      updated = Array.from(new Set([...updated, ...ids]));
+    }
+    onFilterChange({ necklines: updated });
+  };
+
+  const toggleHemlineOption = (ids: Hemline[]) => {
+    const isSelected = isHemlineSelected(ids);
+    let updated = [...filters.hemlines];
+    if (isSelected) {
+      updated = updated.filter(h => !ids.includes(h));
+    } else {
+      updated = Array.from(new Set([...updated, ...ids]));
+    }
+    onFilterChange({ hemlines: updated });
   };
 
   return (
-    <div className="bg-[#FAF7F2] border border-[#D6CFCE] rounded-2xl p-5 text-[#4B3F38] shadow-sm space-y-5 font-sans">
+    <div className="bg-[#FAF7F2] border border-[#D6CFCE] rounded-2xl p-5 text-[#3D312A] shadow-sm space-y-5 font-sans pb-28">
       
       {/* Drawer Header & Title */}
       <div className="flex items-center justify-between border-b border-[#D6CFCE] pb-3">
@@ -81,7 +93,7 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
             <Filter className="w-4 h-4" />
           </div>
           <div>
-            <h3 className="font-serif italic font-bold text-base text-[#4B3F38]">Session Preferences</h3>
+            <h3 className="font-serif italic font-bold text-base text-[#3D312A]">Session Preferences</h3>
             <p className="text-xs text-[#8A6B5D]">Temporary filters for current search</p>
           </div>
         </div>
@@ -89,7 +101,7 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
         {isMobileDrawer && onCloseMobileDrawer && (
           <button
             onClick={onCloseMobileDrawer}
-            className="text-xs text-[#4B3F38] bg-[#D6CFCE]/40 px-2.5 py-1 rounded-lg hover:bg-[#D6CFCE]"
+            className="text-xs font-bold text-[#3D312A] bg-[#D6CFCE]/40 px-3 py-1.5 rounded-lg hover:bg-[#D6CFCE] cursor-pointer"
           >
             Done
           </button>
@@ -100,10 +112,10 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
       <div className="flex bg-[#F2EDE6] p-1 rounded-xl border border-[#D6CFCE]">
         <button
           onClick={() => setActiveTab('modesty')}
-          className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold transition-all ${
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
             activeTab === 'modesty'
-              ? 'bg-[#8A6B5D] text-white shadow-sm'
-              : 'text-[#4B3F38]/70 hover:text-[#4B3F38]'
+              ? 'bg-[#3D312A] text-white shadow-sm'
+              : 'text-[#6E5D53] hover:text-[#3D312A]'
           }`}
         >
           <ShieldCheck className="w-3.5 h-3.5" />
@@ -112,10 +124,10 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
 
         <button
           onClick={() => setActiveTab('shopping')}
-          className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold transition-all ${
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
             activeTab === 'shopping'
-              ? 'bg-[#8A6B5D] text-white shadow-sm'
-              : 'text-[#4B3F38]/70 hover:text-[#4B3F38]'
+              ? 'bg-[#3D312A] text-white shadow-sm'
+              : 'text-[#6E5D53] hover:text-[#3D312A]'
           }`}
         >
           <DollarSign className="w-3.5 h-3.5" />
@@ -127,99 +139,91 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
       {activeTab === 'modesty' && (
         <div className="space-y-5 animate-in fade-in duration-200">
           
-          {/* Quick Presets */}
-          <div>
-            <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider block mb-2">
-              Quick Modesty Presets
-            </label>
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                onClick={onApplyStrictPreset}
-                className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-[#8A6B5D] hover:bg-[#4B3F38] text-white text-xs font-semibold transition-all shadow-sm"
-              >
-                <ShieldCheck className="w-3.5 h-3.5" />
-                <span>Strict Coverage</span>
-              </button>
-
-              <button
-                onClick={onApplySmartPreset}
-                className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-[#B89A8E] hover:bg-[#8A6B5D] text-white text-xs font-semibold transition-all shadow-sm"
-              >
-                <HeartHandshake className="w-3.5 h-3.5" />
-                <span>Smart Casual</span>
-              </button>
-            </div>
-          </div>
-
           {/* Hard Constraints Checkboxes */}
           <div className="space-y-2 bg-[#F2EDE6] p-3.5 rounded-xl border border-[#D6CFCE]">
             <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider block mb-1">
               Hard Constraints (Must Pass)
             </label>
 
-            <label className="flex items-center justify-between p-2 rounded-lg hover:bg-white cursor-pointer transition-all">
+            <button
+              type="button"
+              onClick={() => onFilterChange({ noSlits: !filters.noSlits })}
+              className={`w-full p-2.5 rounded-xl border text-xs font-bold flex items-center justify-between transition-all cursor-pointer ${
+                filters.noSlits
+                  ? 'bg-white border-[#3D312A] text-[#3D312A] shadow-xs'
+                  : 'bg-[#F2EDE6] border-transparent text-[#6E5D53]'
+              }`}
+            >
               <div className="flex items-center gap-2.5">
-                <Scissors className="w-4 h-4 text-rose-700 shrink-0" />
-                <span className="text-xs font-medium text-[#4B3F38]">No Slits (Thigh or Back)</span>
+                <Scissors className="w-4 h-4 text-rose-600 shrink-0" />
+                <span>No Slits</span>
               </div>
-              <input
-                type="checkbox"
-                checked={filters.noSlits}
-                onChange={(e) => onFilterChange({ noSlits: e.target.checked })}
-                className="w-4 h-4 rounded border-[#D6CFCE] bg-white text-[#8A6B5D] focus:ring-[#8A6B5D]"
-              />
-            </label>
+              <div className={`w-4 h-4 rounded flex items-center justify-center border ${
+                filters.noSlits ? 'bg-[#3D312A] border-[#3D312A] text-white' : 'border-[#D6CFCE] bg-white'
+              }`}>
+                {filters.noSlits && <Check className="w-3 h-3 text-white" />}
+              </div>
+            </button>
 
-            <label className="flex items-center justify-between p-2 rounded-lg hover:bg-white cursor-pointer transition-all">
+            <button
+              type="button"
+              onClick={() => onFilterChange({ noOpenBack: !filters.noOpenBack })}
+              className={`w-full p-2.5 rounded-xl border text-xs font-bold flex items-center justify-between transition-all cursor-pointer ${
+                filters.noOpenBack
+                  ? 'bg-white border-[#3D312A] text-[#3D312A] shadow-xs'
+                  : 'bg-[#F2EDE6] border-transparent text-[#6E5D53]'
+              }`}
+            >
               <div className="flex items-center gap-2.5">
                 <EyeOff className="w-4 h-4 text-[#8A6B5D] shrink-0" />
-                <span className="text-xs font-medium text-[#4B3F38]">No Open Back / Cutouts</span>
+                <span>No Cutouts</span>
               </div>
-              <input
-                type="checkbox"
-                checked={filters.noOpenBack}
-                onChange={(e) => onFilterChange({ noOpenBack: e.target.checked })}
-                className="w-4 h-4 rounded border-[#D6CFCE] bg-white text-[#8A6B5D] focus:ring-[#8A6B5D]"
-              />
-            </label>
+              <div className={`w-4 h-4 rounded flex items-center justify-center border ${
+                filters.noOpenBack ? 'bg-[#3D312A] border-[#3D312A] text-white' : 'border-[#D6CFCE] bg-white'
+              }`}>
+                {filters.noOpenBack && <Check className="w-3 h-3 text-white" />}
+              </div>
+            </button>
 
-            <label className="flex items-center justify-between p-2 rounded-lg hover:bg-white cursor-pointer transition-all">
+            <button
+              type="button"
+              onClick={() => onFilterChange({ noCropped: !filters.noCropped })}
+              className={`w-full p-2.5 rounded-xl border text-xs font-bold flex items-center justify-between transition-all cursor-pointer ${
+                filters.noCropped
+                  ? 'bg-white border-[#3D312A] text-[#3D312A] shadow-xs'
+                  : 'bg-[#F2EDE6] border-transparent text-[#6E5D53]'
+              }`}
+            >
               <div className="flex items-center gap-2.5">
-                <Layers className="w-4 h-4 text-[#B89A8E] shrink-0" />
-                <span className="text-xs font-medium text-[#4B3F38]">100% Opaque (No Sheer)</span>
+                <ShieldCheck className="w-4 h-4 text-[#8A6B5D] shrink-0" />
+                <span>No Cropped Tops / Midriff Exposure</span>
               </div>
-              <input
-                type="checkbox"
-                checked={filters.isOpaque}
-                onChange={(e) => onFilterChange({ isOpaque: e.target.checked })}
-                className="w-4 h-4 rounded border-[#D6CFCE] bg-white text-[#8A6B5D] focus:ring-[#8A6B5D]"
-              />
-            </label>
-          </div>
+              <div className={`w-4 h-4 rounded flex items-center justify-center border ${
+                filters.noCropped ? 'bg-[#3D312A] border-[#3D312A] text-white' : 'border-[#D6CFCE] bg-white'
+              }`}>
+                {filters.noCropped && <Check className="w-3 h-3 text-white" />}
+              </div>
+            </button>
 
-          {/* Neckline Selector */}
-          <div>
-            <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider block mb-2">
-              Neckline Preferred
-            </label>
-            <div className="flex flex-wrap gap-1.5">
-              {necklines.map((item) => {
-                const selected = filters.necklines.includes(item.id);
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => onFilterChange({ necklines: toggleArrayItem(filters.necklines, item.id) })}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1 border ${selected
-                        ? 'bg-[#8A6B5D] border-[#8A6B5D] text-white font-semibold'
-                        : 'bg-white border-[#D6CFCE] text-[#4B3F38] hover:bg-[#F2EDE6]'
-                      }`}
-                  >
-                    {selected && <Check className="w-3 h-3 text-white" />}
-                    <span>{item.label}</span>
-                  </button>
-                );
-              })}
-            </div>
+            <button
+              type="button"
+              onClick={() => onFilterChange({ isOpaque: !filters.isOpaque })}
+              className={`w-full p-2.5 rounded-xl border text-xs font-bold flex items-center justify-between transition-all cursor-pointer ${
+                filters.isOpaque
+                  ? 'bg-white border-[#3D312A] text-[#3D312A] shadow-xs'
+                  : 'bg-[#F2EDE6] border-transparent text-[#6E5D53]'
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <Layers className="w-4 h-4 text-[#8A6B5D] shrink-0" />
+                <span>100% Opaque</span>
+              </div>
+              <div className={`w-4 h-4 rounded flex items-center justify-center border ${
+                filters.isOpaque ? 'bg-[#3D312A] border-[#3D312A] text-white' : 'border-[#D6CFCE] bg-white'
+              }`}>
+                {filters.isOpaque && <Check className="w-3 h-3 text-white" />}
+              </div>
+            </button>
           </div>
 
           {/* Sleeve Length Selector */}
@@ -227,19 +231,20 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
             <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider block mb-2">
               Sleeve Length
             </label>
-            <div className="flex flex-wrap gap-1.5">
+            <div className="grid grid-cols-2 gap-2">
               {sleeveLengths.map((item) => {
-                const selected = filters.sleeveLengths.includes(item.id);
+                const selected = isSleeveSelected(item.ids);
                 return (
                   <button
                     key={item.id}
-                    onClick={() => onFilterChange({ sleeveLengths: toggleArrayItem(filters.sleeveLengths, item.id) })}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1 border ${selected
-                        ? 'bg-[#8A6B5D] border-[#8A6B5D] text-white font-semibold'
-                        : 'bg-white border-[#D6CFCE] text-[#4B3F38] hover:bg-[#F2EDE6]'
-                      }`}
+                    onClick={() => toggleSleeveOption(item.ids)}
+                    className={`px-3 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 border cursor-pointer ${
+                      selected
+                        ? 'bg-[#3D312A] border-[#3D312A] text-white shadow-sm'
+                        : 'bg-[#FAF7F2] border-[#D6CFCE] text-[#6E5D53] hover:bg-[#F2EDE6]'
+                    }`}
                   >
-                    {selected && <Check className="w-3 h-3 text-white" />}
+                    {selected && <Check className="w-3.5 h-3.5 text-amber-200" />}
                     <span>{item.label}</span>
                   </button>
                 );
@@ -247,49 +252,51 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
             </div>
           </div>
 
-          {/* Hemline Selector */}
+          {/* Neckline Selector */}
           <div>
             <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider block mb-2">
-              Hemline Length
+              Neckline Preferred
             </label>
-            <div className="flex flex-wrap gap-1.5">
+            <div className="grid grid-cols-2 gap-2">
+              {necklines.map((item) => {
+                const selected = isNecklineSelected(item.ids);
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => toggleNecklineOption(item.ids)}
+                    className={`px-3 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 border cursor-pointer ${
+                      selected
+                        ? 'bg-[#3D312A] border-[#3D312A] text-white shadow-sm'
+                        : 'bg-[#FAF7F2] border-[#D6CFCE] text-[#6E5D53] hover:bg-[#F2EDE6]'
+                    }`}
+                  >
+                    {selected && <Check className="w-3.5 h-3.5 text-amber-200" />}
+                    <span>{item.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Bottoms Selector */}
+          <div>
+            <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider block mb-2">
+              Bottoms Style
+            </label>
+            <div className="grid grid-cols-2 gap-2">
               {hemlines.map((item) => {
-                const selected = filters.hemlines.includes(item.id);
+                const selected = isHemlineSelected(item.ids);
                 return (
                   <button
                     key={item.id}
-                    onClick={() => onFilterChange({ hemlines: toggleArrayItem(filters.hemlines, item.id) })}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1 border ${selected
-                        ? 'bg-[#8A6B5D] border-[#8A6B5D] text-white font-semibold'
-                        : 'bg-white border-[#D6CFCE] text-[#4B3F38] hover:bg-[#F2EDE6]'
-                      }`}
+                    onClick={() => toggleHemlineOption(item.ids)}
+                    className={`px-3 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 border cursor-pointer ${
+                      selected
+                        ? 'bg-[#3D312A] border-[#3D312A] text-white shadow-sm'
+                        : 'bg-[#FAF7F2] border-[#D6CFCE] text-[#6E5D53] hover:bg-[#F2EDE6]'
+                    }`}
                   >
-                    {selected && <Check className="w-3 h-3 text-white" />}
-                    <span>{item.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Fit Selector */}
-          <div>
-            <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider block mb-2">
-              Silhouette Fit
-            </label>
-            <div className="flex flex-wrap gap-1.5">
-              {fits.map((item) => {
-                const selected = filters.fits.includes(item.id);
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => onFilterChange({ fits: toggleArrayItem(filters.fits, item.id) })}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1 border ${selected
-                        ? 'bg-[#8A6B5D] border-[#8A6B5D] text-white font-semibold'
-                        : 'bg-white border-[#D6CFCE] text-[#4B3F38] hover:bg-[#F2EDE6]'
-                      }`}
-                  >
-                    {selected && <Check className="w-3 h-3 text-white" />}
+                    {selected && <Check className="w-3.5 h-3.5 text-amber-200" />}
                     <span>{item.label}</span>
                   </button>
                 );
@@ -312,10 +319,10 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
             <div className="grid grid-cols-3 gap-2">
               <button
                 onClick={() => onFilterChange({ sortBy: 'relevance' })}
-                className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all border ${
+                className={`px-3 py-2 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
                   !filters.sortBy || filters.sortBy === 'relevance'
-                    ? 'bg-[#8A6B5D] text-white border-[#8A6B5D]'
-                    : 'bg-white border-[#D6CFCE] text-[#4B3F38] hover:bg-[#F2EDE6]'
+                    ? 'bg-[#3D312A] text-white border-[#3D312A]'
+                    : 'bg-white border-[#D6CFCE] text-[#6E5D53] hover:bg-[#F2EDE6]'
                 }`}
               >
                 AI Relevance
@@ -323,10 +330,10 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
 
               <button
                 onClick={() => onFilterChange({ sortBy: 'price_low' })}
-                className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all border ${
+                className={`px-3 py-2 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
                   filters.sortBy === 'price_low'
-                    ? 'bg-[#8A6B5D] text-white border-[#8A6B5D]'
-                    : 'bg-white border-[#D6CFCE] text-[#4B3F38] hover:bg-[#F2EDE6]'
+                    ? 'bg-[#3D312A] text-white border-[#3D312A]'
+                    : 'bg-white border-[#D6CFCE] text-[#6E5D53] hover:bg-[#F2EDE6]'
                 }`}
               >
                 Price: Low to High
@@ -334,10 +341,10 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
 
               <button
                 onClick={() => onFilterChange({ sortBy: 'price_high' })}
-                className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all border ${
+                className={`px-3 py-2 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
                   filters.sortBy === 'price_high'
-                    ? 'bg-[#8A6B5D] text-white border-[#8A6B5D]'
-                    : 'bg-white border-[#D6CFCE] text-[#4B3F38] hover:bg-[#F2EDE6]'
+                    ? 'bg-[#3D312A] text-white border-[#3D312A]'
+                    : 'bg-white border-[#D6CFCE] text-[#6E5D53] hover:bg-[#F2EDE6]'
                 }`}
               >
                 Price: High to Low
@@ -366,7 +373,7 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
                 const val = parseInt(e.target.value);
                 onFilterChange({ maxPrice: val >= 200 ? undefined : val });
               }}
-              className="w-full accent-[#8A6B5D] cursor-pointer"
+              className="w-full accent-[#3D312A] cursor-pointer"
             />
             
             <div className="flex justify-between text-[10px] text-[#8A6B5D] font-mono">
@@ -386,10 +393,10 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
                 <button
                   key={c.id}
                   onClick={() => onFilterChange({ selectedCategory: c.id })}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border cursor-pointer ${
                     filters.selectedCategory === c.id
-                      ? 'bg-[#8A6B5D] border-[#8A6B5D] text-white'
-                      : 'bg-white border-[#D6CFCE] text-[#4B3F38] hover:bg-[#F2EDE6]'
+                      ? 'bg-[#3D312A] border-[#3D312A] text-white'
+                      : 'bg-white border-[#D6CFCE] text-[#6E5D53] hover:bg-[#F2EDE6]'
                   }`}
                 >
                   {c.label}
@@ -413,7 +420,7 @@ export const ModestyFilters: React.FC<ModestyFiltersProps> = ({
       <div className="pt-2 border-t border-[#D6CFCE]">
         <button
           onClick={onReset}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-[#F2EDE6] border border-[#D6CFCE] text-xs font-semibold text-[#4B3F38] transition-all"
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-[#F2EDE6] border border-[#D6CFCE] text-xs font-bold text-[#3D312A] transition-all cursor-pointer"
         >
           <RotateCcw className="w-3.5 h-3.5 text-[#8A6B5D]" />
           <span>Reset Session Filters</span>

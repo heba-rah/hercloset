@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ShieldCheck, X, Check, Save, UserCheck, HeartHandshake, Scissors, EyeOff, Layers, LogOut } from 'lucide-react';
+import { ShieldCheck, X, Check, Save, UserCheck, Scissors, EyeOff, Layers, LogOut } from 'lucide-react';
 import { ModestyProfile, Neckline, SleeveLength, Hemline } from '@/types/product';
+import { AvatarCarousel } from '@/components/AvatarCarousel';
 
 interface PermanentProfileModalProps {
   initialProfile: ModestyProfile;
@@ -20,67 +21,63 @@ export const PermanentProfileModal: React.FC<PermanentProfileModalProps> = ({
   const [profile, setProfile] = useState<ModestyProfile>(initialProfile);
   const [savedSuccess, setSavedSuccess] = useState<boolean>(false);
 
-  const necklines: { id: Neckline; label: string }[] = [
-    { id: 'high', label: 'High Neck' },
-    { id: 'crew', label: 'Crew' },
-    { id: 'scoop', label: 'Scoop' },
-    { id: 'v-neck', label: 'V-Neck' },
-    { id: 'plunge', label: 'Plunge' },
+  // Exact 4 Setup Categories
+  const necklines: { id: Neckline; label: string; ids: Neckline[] }[] = [
+    { id: 'high', label: 'High Neck', ids: ['high'] },
+    { id: 'crew', label: 'Crewneck', ids: ['crew'] }
   ];
 
-  const sleeveLengths: { id: SleeveLength; label: string }[] = [
-    { id: 'wrist', label: 'Full Wrist' },
-    { id: '3/4', label: '3/4 Sleeve' },
-    { id: 'elbow', label: 'Elbow' },
-    { id: 'short', label: 'Short Sleeve' },
-    { id: 'sleeveless', label: 'Sleeveless' },
+  const sleeveLengths: { id: string; label: string; ids: SleeveLength[] }[] = [
+    { id: 'long', label: 'Long Sleeve', ids: ['wrist'] },
+    { id: 'short', label: 'Short Sleeve', ids: ['elbow', '3/4', 'short'] }
   ];
 
-  const hemlines: { id: Hemline; label: string }[] = [
-    { id: 'floor', label: 'Floor Maxi' },
-    { id: 'ankle', label: 'Ankle' },
-    { id: 'midi', label: 'Midi' },
-    { id: 'knee', label: 'Knee' },
-    { id: 'mini', label: 'Mini' },
+  const hemlines: { id: string; label: string; ids: Hemline[] }[] = [
+    { id: 'skirt', label: 'Maxi Skirt / Dress', ids: ['floor'] },
+    { id: 'pants', label: 'Pants / Trousers', ids: ['ankle'] }
   ];
 
-  const toggleArrayItem = <T extends string>(current: T[], item: T): T[] => {
-    return current.includes(item)
-      ? current.filter(x => x !== item)
-      : [...current, item];
+  const isSleeveSelected = (ids: SleeveLength[]) => ids.some(id => profile.sleeveLengths.includes(id));
+  const isNecklineSelected = (ids: Neckline[]) => ids.some(id => profile.necklines.includes(id));
+  const isHemlineSelected = (ids: Hemline[]) => ids.some(id => profile.hemlines.includes(id));
+
+  const toggleSleeveOption = (ids: SleeveLength[]) => {
+    const isSelected = isSleeveSelected(ids);
+    let updated = [...profile.sleeveLengths];
+    if (isSelected) {
+      updated = updated.filter(s => !ids.includes(s));
+    } else {
+      updated = Array.from(new Set([...updated, ...ids]));
+    }
+    setProfile(prev => ({ ...prev, sleeveLengths: updated.length > 0 ? updated : ['wrist'] }));
   };
 
-  const handleApplyStrictPreset = () => {
-    setProfile(prev => ({
-      ...prev,
-      name: 'Strict Coverage Default',
-      necklines: ['high'],
-      sleeveLengths: ['wrist'],
-      hemlines: ['floor'],
-      fits: ['loose', 'relaxed'],
-      noSlits: true,
-      noOpenBack: true,
-      isOpaque: true
-    }));
+  const toggleNecklineOption = (ids: Neckline[]) => {
+    const isSelected = isNecklineSelected(ids);
+    let updated = [...profile.necklines];
+    if (isSelected) {
+      updated = updated.filter(n => !ids.includes(n));
+    } else {
+      updated = Array.from(new Set([...updated, ...ids]));
+    }
+    setProfile(prev => ({ ...prev, necklines: updated.length > 0 ? updated : ['high'] }));
   };
 
-  const handleApplySmartPreset = () => {
-    setProfile(prev => ({
-      ...prev,
-      name: 'Smart Casual Default',
-      necklines: ['high', 'crew'],
-      sleeveLengths: ['wrist', '3/4'],
-      hemlines: ['floor', 'ankle', 'midi'],
-      fits: [],
-      noSlits: true,
-      noOpenBack: true,
-      isOpaque: true
-    }));
+  const toggleHemlineOption = (ids: Hemline[]) => {
+    const isSelected = isHemlineSelected(ids);
+    let updated = [...profile.hemlines];
+    if (isSelected) {
+      updated = updated.filter(h => !ids.includes(h));
+    } else {
+      updated = Array.from(new Set([...updated, ...ids]));
+    }
+    setProfile(prev => ({ ...prev, hemlines: updated.length > 0 ? updated : ['floor'] }));
   };
 
   const handleSave = () => {
     const updated = { ...profile, isProfileComplete: true };
     try {
+      localStorage.setItem('user_modesty_profile', JSON.stringify(updated));
       localStorage.setItem('hercloset_permanent_profile', JSON.stringify(updated));
     } catch {
       // ignore
@@ -94,7 +91,7 @@ export const PermanentProfileModal: React.FC<PermanentProfileModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#4B3F38]/60 backdrop-blur-md animate-in fade-in duration-200 font-sans">
-      <div className="relative w-full max-w-xl bg-[#FAF7F2] border border-[#D6CFCE] rounded-3xl shadow-2xl overflow-hidden flex flex-col text-[#4B3F38] max-h-[90vh]">
+      <div className="relative w-full max-w-xl bg-[#FAF7F2] border border-[#D6CFCE] rounded-3xl shadow-2xl overflow-hidden flex flex-col text-[#3D312A] max-h-[90vh]">
         
         {/* Header */}
         <div className="p-6 border-b border-[#D6CFCE] bg-[#F2EDE6] flex items-center justify-between">
@@ -103,10 +100,10 @@ export const PermanentProfileModal: React.FC<PermanentProfileModalProps> = ({
               <UserCheck className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="font-serif italic font-bold text-xl text-[#4B3F38]">
+              <h3 className="font-serif italic font-bold text-xl text-[#3D312A]">
                 Permanent Modesty Profile
               </h3>
-              <p className="text-xs text-[#8A6B5D] font-sans">
+              <p className="text-xs text-[#8A6B5D] font-sans font-medium">
                 These settings are saved to your account and automatically applied whenever you log in.
               </p>
             </div>
@@ -114,7 +111,7 @@ export const PermanentProfileModal: React.FC<PermanentProfileModalProps> = ({
 
           <button
             onClick={onClose}
-            className="p-2 rounded-full bg-white text-[#4B3F38] hover:bg-[#FAF7F2] border border-[#D6CFCE] transition-all"
+            className="p-2 rounded-full bg-white text-[#3D312A] hover:bg-[#FAF7F2] border border-[#D6CFCE] cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -123,74 +120,38 @@ export const PermanentProfileModal: React.FC<PermanentProfileModalProps> = ({
         {/* Scrollable Body */}
         <div className="p-6 overflow-y-auto space-y-6 flex-1">
           
-          {/* Preset Selector */}
-          <div>
-            <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider block mb-2.5">
-              Account Preset Defaults
-            </label>
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                onClick={handleApplyStrictPreset}
-                className="flex items-center justify-center gap-2 p-3 rounded-2xl bg-[#8A6B5D] hover:bg-[#4B3F38] text-white text-xs font-semibold transition-all shadow-sm"
-              >
-                <ShieldCheck className="w-4 h-4" />
-                <span>Strict Coverage Preset</span>
-              </button>
-
-              <button
-                onClick={handleApplySmartPreset}
-                className="flex items-center justify-center gap-2 p-3 rounded-2xl bg-[#B89A8E] hover:bg-[#8A6B5D] text-white text-xs font-semibold transition-all shadow-sm"
-              >
-                <HeartHandshake className="w-4 h-4" />
-                <span>Smart Casual Preset</span>
-              </button>
-            </div>
+          {/* STYLIST AVATAR & WARM GREETING CONTAINER */}
+          <div className="bg-[#F2EDE6] p-6 rounded-3xl border border-[#D6CFCE]">
+            <AvatarCarousel
+              profile={profile}
+              onChangeProfile={(updated) => setProfile(prev => ({ ...prev, ...updated }))}
+            />
           </div>
 
-          {/* Hard Constraints */}
-          <div className="space-y-2.5 bg-[#F2EDE6] p-4 rounded-2xl border border-[#D6CFCE]">
-            <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider block mb-1">
-              Hard Coverage Constraints (Default Rules)
+          {/* Sleeve Length Preferred */}
+          <div>
+            <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider block mb-2">
+              Default Sleeve Lengths
             </label>
-
-            <label className="flex items-center justify-between p-2.5 rounded-xl hover:bg-white cursor-pointer transition-all">
-              <div className="flex items-center gap-2.5">
-                <Scissors className="w-4 h-4 text-rose-700 shrink-0" />
-                <span className="text-xs font-medium text-[#4B3F38]">No Slits (Thigh or Back Slits)</span>
-              </div>
-              <input
-                type="checkbox"
-                checked={profile.noSlits}
-                onChange={(e) => setProfile(prev => ({ ...prev, noSlits: e.target.checked }))}
-                className="w-4 h-4 rounded border-[#D6CFCE] bg-white text-[#8A6B5D] focus:ring-[#8A6B5D]"
-              />
-            </label>
-
-            <label className="flex items-center justify-between p-2.5 rounded-xl hover:bg-white cursor-pointer transition-all">
-              <div className="flex items-center gap-2.5">
-                <EyeOff className="w-4 h-4 text-[#8A6B5D] shrink-0" />
-                <span className="text-xs font-medium text-[#4B3F38]">No Open Back / Back Cutouts</span>
-              </div>
-              <input
-                type="checkbox"
-                checked={profile.noOpenBack}
-                onChange={(e) => setProfile(prev => ({ ...prev, noOpenBack: e.target.checked }))}
-                className="w-4 h-4 rounded border-[#D6CFCE] bg-white text-[#8A6B5D] focus:ring-[#8A6B5D]"
-              />
-            </label>
-
-            <label className="flex items-center justify-between p-2.5 rounded-xl hover:bg-white cursor-pointer transition-all">
-              <div className="flex items-center gap-2.5">
-                <Layers className="w-4 h-4 text-[#B89A8E] shrink-0" />
-                <span className="text-xs font-medium text-[#4B3F38]">100% Opaque (No Sheer Fabrics)</span>
-              </div>
-              <input
-                type="checkbox"
-                checked={profile.isOpaque}
-                onChange={(e) => setProfile(prev => ({ ...prev, isOpaque: e.target.checked }))}
-                className="w-4 h-4 rounded border-[#D6CFCE] bg-white text-[#8A6B5D] focus:ring-[#8A6B5D]"
-              />
-            </label>
+            <div className="grid grid-cols-2 gap-2">
+              {sleeveLengths.map((item) => {
+                const selected = isSleeveSelected(item.ids);
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => toggleSleeveOption(item.ids)}
+                    className={`px-3 py-2.5 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                      selected
+                        ? 'bg-[#3D312A] border-[#3D312A] text-[#FAF7F2] shadow-sm'
+                        : 'bg-white border-[#D6CFCE] text-[#6E5D53] hover:bg-[#F2EDE6]'
+                    }`}
+                  >
+                    {selected && <Check className="w-3.5 h-3.5 text-amber-200" />}
+                    <span>{item.label}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {/* Neckline Preferred */}
@@ -198,19 +159,20 @@ export const PermanentProfileModal: React.FC<PermanentProfileModalProps> = ({
             <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider block mb-2">
               Default Necklines
             </label>
-            <div className="flex flex-wrap gap-2">
+            <div className="grid grid-cols-2 gap-2">
               {necklines.map((item) => {
-                const selected = profile.necklines.includes(item.id);
+                const selected = isNecklineSelected(item.ids);
                 return (
                   <button
                     key={item.id}
-                    onClick={() => setProfile(prev => ({ ...prev, necklines: toggleArrayItem(prev.necklines, item.id) }))}
-                    className={`px-3.5 py-2 rounded-xl text-xs font-medium transition-all flex items-center gap-1.5 border ${selected
-                        ? 'bg-[#8A6B5D] border-[#8A6B5D] text-white font-semibold'
-                        : 'bg-white border-[#D6CFCE] text-[#4B3F38] hover:bg-[#F2EDE6]'
-                      }`}
+                    onClick={() => toggleNecklineOption(item.ids)}
+                    className={`px-3 py-2.5 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                      selected
+                        ? 'bg-[#3D312A] border-[#3D312A] text-[#FAF7F2] shadow-sm'
+                        : 'bg-white border-[#D6CFCE] text-[#6E5D53] hover:bg-[#F2EDE6]'
+                    }`}
                   >
-                    {selected && <Check className="w-3.5 h-3.5 text-white" />}
+                    {selected && <Check className="w-3.5 h-3.5 text-amber-200" />}
                     <span>{item.label}</span>
                   </button>
                 );
@@ -218,83 +180,135 @@ export const PermanentProfileModal: React.FC<PermanentProfileModalProps> = ({
             </div>
           </div>
 
-          {/* Sleeve Lengths */}
+          {/* Bottoms Preferred */}
           <div>
             <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider block mb-2">
-              Default Sleeve Lengths
+              Default Bottoms Styles
             </label>
-            <div className="flex flex-wrap gap-2">
-              {sleeveLengths.map((item) => {
-                const selected = profile.sleeveLengths.includes(item.id);
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => setProfile(prev => ({ ...prev, sleeveLengths: toggleArrayItem(prev.sleeveLengths, item.id) }))}
-                    className={`px-3.5 py-2 rounded-xl text-xs font-medium transition-all flex items-center gap-1.5 border ${selected
-                        ? 'bg-[#8A6B5D] border-[#8A6B5D] text-white font-semibold'
-                        : 'bg-white border-[#D6CFCE] text-[#4B3F38] hover:bg-[#F2EDE6]'
-                      }`}
-                  >
-                    {selected && <Check className="w-3.5 h-3.5 text-white" />}
-                    <span>{item.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Hemlines */}
-          <div>
-            <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider block mb-2">
-              Default Hemline Lengths
-            </label>
-            <div className="flex flex-wrap gap-2">
+            <div className="grid grid-cols-2 gap-2">
               {hemlines.map((item) => {
-                const selected = profile.hemlines.includes(item.id);
+                const selected = isHemlineSelected(item.ids);
                 return (
                   <button
                     key={item.id}
-                    onClick={() => setProfile(prev => ({ ...prev, hemlines: toggleArrayItem(prev.hemlines, item.id) }))}
-                    className={`px-3.5 py-2 rounded-xl text-xs font-medium transition-all flex items-center gap-1.5 border ${selected
-                        ? 'bg-[#8A6B5D] border-[#8A6B5D] text-white font-semibold'
-                        : 'bg-white border-[#D6CFCE] text-[#4B3F38] hover:bg-[#F2EDE6]'
-                      }`}
+                    onClick={() => toggleHemlineOption(item.ids)}
+                    className={`px-3 py-2.5 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                      selected
+                        ? 'bg-[#3D312A] border-[#3D312A] text-[#FAF7F2] shadow-sm'
+                        : 'bg-white border-[#D6CFCE] text-[#6E5D53] hover:bg-[#F2EDE6]'
+                    }`}
                   >
-                    {selected && <Check className="w-3.5 h-3.5 text-white" />}
+                    {selected && <Check className="w-3.5 h-3.5 text-amber-200" />}
                     <span>{item.label}</span>
                   </button>
                 );
               })}
             </div>
+          </div>
+
+          {/* Hard Constraints Checkboxes */}
+          <div className="space-y-2 bg-[#F2EDE6] p-4 rounded-2xl border border-[#D6CFCE]">
+            <label className="text-[11px] font-bold text-[#8A6B5D] uppercase tracking-wider block mb-1">
+              Hard Coverage Constraints
+            </label>
+
+            <button
+              type="button"
+              onClick={() => setProfile(prev => ({ ...prev, noSlits: !prev.noSlits }))}
+              className={`w-full p-2.5 rounded-xl border text-xs font-bold flex items-center justify-between transition-all cursor-pointer ${
+                profile.noSlits
+                  ? 'bg-white border-[#3D312A] text-[#3D312A] shadow-xs'
+                  : 'bg-[#F2EDE6] border-transparent text-[#6E5D53]'
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <Scissors className="w-4 h-4 text-rose-600 shrink-0" />
+                <span>No Slits</span>
+              </div>
+              <div className={`w-4 h-4 rounded flex items-center justify-center border ${
+                profile.noSlits ? 'bg-[#3D312A] border-[#3D312A] text-white' : 'border-[#D6CFCE] bg-white'
+              }`}>
+                {profile.noSlits && <Check className="w-3 h-3 text-white" />}
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setProfile(prev => ({ ...prev, noOpenBack: !prev.noOpenBack }))}
+              className={`w-full p-2.5 rounded-xl border text-xs font-bold flex items-center justify-between transition-all cursor-pointer ${
+                profile.noOpenBack
+                  ? 'bg-white border-[#3D312A] text-[#3D312A] shadow-xs'
+                  : 'bg-[#F2EDE6] border-transparent text-[#6E5D53]'
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <EyeOff className="w-4 h-4 text-[#8A6B5D] shrink-0" />
+                <span>No Cutouts</span>
+              </div>
+              <div className={`w-4 h-4 rounded flex items-center justify-center border ${
+                profile.noOpenBack ? 'bg-[#3D312A] border-[#3D312A] text-white' : 'border-[#D6CFCE] bg-white'
+              }`}>
+                {profile.noOpenBack && <Check className="w-3 h-3 text-white" />}
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setProfile(prev => ({ ...prev, isOpaque: !profile.isOpaque }))}
+              className={`w-full p-2.5 rounded-xl border text-xs font-bold flex items-center justify-between transition-all cursor-pointer ${
+                profile.isOpaque
+                  ? 'bg-white border-[#3D312A] text-[#3D312A] shadow-xs'
+                  : 'bg-[#F2EDE6] border-transparent text-[#6E5D53]'
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <Layers className="w-4 h-4 text-[#8A6B5D] shrink-0" />
+                <span>100% Opaque</span>
+              </div>
+              <div className={`w-4 h-4 rounded flex items-center justify-center border ${
+                profile.isOpaque ? 'bg-[#3D312A] border-[#3D312A] text-white' : 'border-[#D6CFCE] bg-white'
+              }`}>
+                {profile.isOpaque && <Check className="w-3 h-3 text-white" />}
+              </div>
+            </button>
           </div>
 
         </div>
 
-        {/* Footer Action Bar */}
-        <div className="p-5 bg-[#F2EDE6] border-t border-[#D6CFCE] flex items-center justify-between gap-3">
+        {/* Footer Actions */}
+        <div className="p-6 border-t border-[#D6CFCE] bg-[#F2EDE6] flex items-center justify-between gap-4">
           {onSignOut ? (
             <button
-              onClick={() => {
-                onClose();
-                onSignOut();
-              }}
-              className="px-4 py-2.5 rounded-xl bg-white hover:bg-rose-50 border border-[#D6CFCE] hover:border-rose-300 text-xs font-semibold text-rose-700 transition-all flex items-center gap-1.5"
+              onClick={onSignOut}
+              className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold transition-all cursor-pointer"
             >
-              <LogOut className="w-4 h-4 text-rose-600" />
+              <LogOut className="w-4 h-4" />
               <span>Sign Out</span>
             </button>
           ) : (
-            <span className="text-xs text-[#8A6B5D] font-semibold">
-              {savedSuccess ? '✅ Profile Saved!' : 'Auto-applies on login'}
-            </span>
+            <button
+              onClick={onClose}
+              className="px-4 py-2.5 rounded-xl bg-white border border-[#D6CFCE] text-xs font-semibold text-[#3D312A] hover:bg-[#FAF7F2] transition-all cursor-pointer"
+            >
+              Cancel
+            </button>
           )}
 
           <button
             onClick={handleSave}
-            className="px-6 py-3 rounded-2xl bg-[#8A6B5D] hover:bg-[#4B3F38] text-white font-bold text-xs shadow-md transition-all flex items-center gap-2"
+            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#3D312A] hover:bg-[#2A211B] text-[#FAF7F2] font-bold text-xs shadow-md transition-all cursor-pointer"
           >
-            <Save className="w-4 h-4" />
-            <span>Save as My Permanent Default</span>
+            {savedSuccess ? (
+              <>
+                <Check className="w-4 h-4 text-emerald-300" />
+                <span>Modesty Profile Saved!</span>
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4 text-amber-200" />
+                <span>Save Profile Preferences</span>
+              </>
+            )}
           </button>
         </div>
 

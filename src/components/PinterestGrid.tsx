@@ -14,6 +14,7 @@ interface PinterestGridProps {
   hamperProductIds: string[];
   onOpenFilters?: () => void;
   activeFilterCount?: number;
+  userName?: string;
 }
 
 export const PinterestGrid: React.FC<PinterestGridProps> = ({
@@ -23,7 +24,8 @@ export const PinterestGrid: React.FC<PinterestGridProps> = ({
   onAddToHamper,
   hamperProductIds,
   onOpenFilters,
-  activeFilterCount = 0
+  activeFilterCount = 0,
+  userName
 }) => {
   if (matches.length === 0) {
     return (
@@ -49,6 +51,7 @@ export const PinterestGrid: React.FC<PinterestGridProps> = ({
           <ModestyStylistAvatar
             onOpenFilters={onOpenFilters}
             activeFilterCount={activeFilterCount}
+            userName={userName}
           />
         )}
 

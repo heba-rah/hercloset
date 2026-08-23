@@ -1,15 +1,23 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, ShieldCheck, Sparkles, CheckCircle2, XCircle, Scan, ExternalLink, FileText, ShoppingBag } from 'lucide-react';
+import { X, ShieldCheck, Sparkles, CheckCircle2, XCircle, Scan, ExternalLink, FileText, ShoppingBag, ArrowRight } from 'lucide-react';
 import { Product } from '@/types/product';
+import { resolveSleeveLength, resolveHemline, resolveSilhouetteFit } from '@/utils/filterEngine';
 
 interface AuditModalProps {
   product: Product | null;
   onClose: () => void;
+  hasActiveFilters?: boolean;
+  onOpenFilters?: () => void;
 }
 
-export const AuditModal: React.FC<AuditModalProps> = ({ product, onClose }) => {
+export const AuditModal: React.FC<AuditModalProps> = ({
+  product,
+  onClose,
+  hasActiveFilters = true,
+  onOpenFilters
+}) => {
   const [imgSrc, setImgSrc] = useState<string>(product?.imageUrl || '');
 
   if (!product) return null;
@@ -23,6 +31,10 @@ export const AuditModal: React.FC<AuditModalProps> = ({ product, onClose }) => {
   const displayPrice = typeof product.price === 'string' && product.price.startsWith('$')
     ? product.price
     : `$${product.price}`;
+
+  const corpus = `${product.name} ${product.category} ${(product as any).subcategory || ''}`.toLowerCase();
+  const isUpperGarment = /\b(top|blouse|shirt|tee|t-shirt|polo|sweater|hoodie|cardigan|sweatshirt|crewneck|fleece|pullover|jacket|coat|parka|blazer|vest|shacket)\b/i.test(corpus);
+  const isLowerGarment = /\b(pant|pants|jean|jeans|trouser|trousers|legging|leggings|jogger|cargo|skirt|skirts|slack|bottoms)\b/i.test(corpus) && !/\b(dress|gown)\b/i.test(corpus);
 
   const getStatusBadge = (condition: boolean, label: string, failNote: string, passNote: string) => {
     if (condition) {
@@ -56,7 +68,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({ product, onClose }) => {
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-20 p-2 rounded-full bg-white hover:bg-[#F2EDE6] text-[#4B3F38] border border-[#D6CFCE] transition-all shadow-sm"
+          className="absolute top-4 right-4 z-20 p-2 rounded-full bg-white hover:bg-[#F2EDE6] text-[#4B3F38] border border-[#D6CFCE] transition-all shadow-sm cursor-pointer"
         >
           <X className="w-5 h-5" />
         </button>
@@ -120,7 +132,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({ product, onClose }) => {
               href={product.originalUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-[#8A6B5D] hover:bg-[#4B3F38] text-white font-extrabold text-sm transition-all shadow-md hover:scale-105 active:scale-95"
+              className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-[#8A6B5D] hover:bg-[#4B3F38] text-white font-extrabold text-sm transition-all shadow-md hover:scale-105 active:scale-95 cursor-pointer"
             >
               <ShoppingBag className="w-4 h-4" />
               <span>Buy Item at {product.brand} Store</span>
@@ -146,29 +158,65 @@ export const AuditModal: React.FC<AuditModalProps> = ({ product, onClose }) => {
             <p className="text-sm font-semibold text-[#8A6B5D] mt-1">{displayPrice}</p>
           </div>
 
-          <div className="p-4 rounded-2xl bg-[#F2EDE6] border border-[#D6CFCE] space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-[#4B3F38] uppercase tracking-wider flex items-center gap-1.5">
-                <Sparkles className="w-4 h-4 text-[#8A6B5D]" />
-                Base AI Modesty Score
-              </span>
-              <span className="font-mono font-bold text-lg text-[#8A6B5D]">
-                {modestyAudit.modestyScore}/100
-              </span>
-            </div>
+          {/* MODESTY MATCH SCORE CONTAINER (PROMPTS GUEST WHEN NO FILTERS ARE SET) */}
+          {hasActiveFilters ? (
+            <div className="p-4 rounded-2xl bg-[#F2EDE6] border border-[#D6CFCE] space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-[#4B3F38] uppercase tracking-wider flex items-center gap-1.5">
+                  <Sparkles className="w-4 h-4 text-[#8A6B5D]" />
+                  Base AI Modesty Score
+                </span>
+                <span className="font-mono font-bold text-lg text-[#8A6B5D]">
+                  {modestyAudit.modestyScore}/100
+                </span>
+              </div>
 
-            <div className="w-full h-2.5 rounded-full bg-white overflow-hidden border border-[#D6CFCE]">
-              <div
-                style={{ width: `${modestyAudit.modestyScore}%` }}
-                className={`h-full rounded-full transition-all duration-1000 ${modestyAudit.modestyScore >= 90
+              <div className="w-full h-2.5 rounded-full bg-white overflow-hidden border border-[#D6CFCE]">
+                <div
+                  style={{ width: `${modestyAudit.modestyScore}%` }}
+                  className={`h-full rounded-full transition-all duration-1000 ${modestyAudit.modestyScore >= 90
                     ? 'bg-[#8A6B5D]'
                     : modestyAudit.modestyScore >= 75
                       ? 'bg-[#B89A8E]'
                       : 'bg-rose-500'
-                  }`}
-              />
+                    }`}
+                />
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="p-4 rounded-2xl bg-amber-50 border border-amber-300 space-y-3 shadow-xs">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-amber-900 uppercase tracking-wider flex items-center gap-1.5">
+                  <Sparkles className="w-4 h-4 text-amber-700" />
+                  Personal Modesty Match Score
+                </span>
+                <span className="font-mono font-bold text-lg text-amber-800">
+                  0 / 100
+                </span>
+              </div>
+
+              <div className="w-full h-2.5 rounded-full bg-amber-200/60 overflow-hidden border border-amber-300">
+                <div className="h-full rounded-full w-0 bg-amber-500" />
+              </div>
+
+              <div className="flex items-start gap-2 pt-1">
+                <ShieldCheck className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+                <p className="text-xs text-amber-900 font-medium leading-relaxed">
+                  No modesty requirements set yet. Set your coverage rules or session filters to calculate your personal match percentage.
+                </p>
+              </div>
+
+              {onOpenFilters && (
+                <button
+                  onClick={onOpenFilters}
+                  className="w-full py-2.5 px-4 bg-[#7A5C4D] hover:bg-[#684C3F] text-white rounded-xl text-xs font-extrabold uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-95 mt-2"
+                >
+                  <span>Set Your Modesty Preferences</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+          )}
 
           <div className="space-y-3">
             {modestyAudit.retailerDescriptionText && (
@@ -199,48 +247,97 @@ export const AuditModal: React.FC<AuditModalProps> = ({ product, onClose }) => {
               7-Point Verified Modesty Audit
             </h4>
 
-            {getStatusBadge(
-              modestyAudit.hasSlit,
-              '1. Leg Slits Test',
-              'AI detected open thigh/side leg slit',
-              'Zero thigh or side leg slits detected'
+            {hasActiveFilters ? (
+              <>
+                {isUpperGarment ? (
+                  getStatusBadge(
+                    modestyAudit.hasSlit,
+                    '1. Front Placket & Midriff Test',
+                    'AI detected exposed midriff or open front button placket',
+                    'Full front torso & waist coverage verified'
+                  )
+                ) : (
+                  getStatusBadge(
+                    modestyAudit.hasSlit,
+                    '1. Leg Slits Test',
+                    'AI detected open thigh or side leg slit',
+                    'Zero thigh or side leg slits detected'
+                  )
+                )}
+
+                {isUpperGarment ? (
+                  getStatusBadge(
+                    modestyAudit.isOpenBack,
+                    '2. Cutouts & Open Back Test',
+                    'AI detected exposed open back or torso cutout',
+                    'Full rear torso coverage verified'
+                  )
+                ) : isLowerGarment ? (
+                  getStatusBadge(
+                    modestyAudit.isOpenBack,
+                    '2. Waistband & Hip Exposure Test',
+                    'AI detected ultra low-rise or exposed waistband',
+                    'Full waist & hip coverage verified'
+                  )
+                ) : (
+                  getStatusBadge(
+                    modestyAudit.isOpenBack,
+                    '2. Open Back / Cutout Test',
+                    'AI detected exposed open back cutout',
+                    'Full rear torso coverage verified'
+                  )
+                )}
+
+                {getStatusBadge(
+                  modestyAudit.isSheer,
+                  '3. Fabric Opacity Test',
+                  'AI detected sheer/transparent unlined fabric layer',
+                  '100% opaque fabric density verified'
+                )}
+
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="p-3 rounded-xl bg-white border border-[#D6CFCE]">
+                    <span className="text-[#8A6B5D] block text-[10px] uppercase font-semibold">4. Neckline</span>
+                    <span className="font-bold text-[#4B3F38] uppercase">
+                      {isLowerGarment ? 'N/A (Legwear)' : modestyAudit.neckline}
+                    </span>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-white border border-[#D6CFCE]">
+                    <span className="text-[#8A6B5D] block text-[10px] uppercase font-semibold">5. Sleeve Length</span>
+                    <span className="font-bold text-[#4B3F38] capitalize">
+                      {isLowerGarment
+                        ? 'N/A (Legwear)'
+                        : product ? resolveSleeveLength(product) : modestyAudit.sleeveLength}
+                    </span>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-white border border-[#D6CFCE]">
+                    <span className="text-[#8A6B5D] block text-[10px] uppercase font-semibold">6. Hemline / Length</span>
+                    <span className="font-bold text-[#4B3F38] capitalize">
+                      {product ? resolveHemline(product) : modestyAudit.hemline}
+                    </span>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-white border border-[#D6CFCE]">
+                    <span className="text-[#8A6B5D] block text-[10px] uppercase font-semibold">7. Silhouette Fit</span>
+                    <span className="font-bold text-[#4B3F38] capitalize">
+                      {product ? resolveSilhouetteFit(product) : modestyAudit.fit}
+                    </span>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="p-6 rounded-2xl border-2 border-dashed border-[#D6CFCE] bg-[#F2EDE6]/40 text-center space-y-2">
+                <ShieldCheck className="w-8 h-8 text-[#8A6B5D]/60 mx-auto" />
+                <div className="space-y-1">
+                  <h4 className="text-sm font-bold text-[#4B3F38]">7-Point Audit Uncalculated</h4>
+                  <p className="text-xs text-[#8A6B5D] max-w-sm mx-auto leading-relaxed">
+                    Set your custom modesty rules or session filters to run the 7-Point AI Audit against your personal coverage preferences.
+                  </p>
+                </div>
+              </div>
             )}
-
-            {getStatusBadge(
-              modestyAudit.isOpenBack,
-              '2. Open Back / Cutout Test',
-              'AI detected exposed open back cutout',
-              'Full rear torso coverage verified'
-            )}
-
-            {getStatusBadge(
-              modestyAudit.isSheer,
-              '3. Fabric Opacity Test',
-              'AI detected sheer/transparent unlined fabric layer',
-              '100% opaque fabric density verified'
-            )}
-
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="p-3 rounded-xl bg-white border border-[#D6CFCE]">
-                <span className="text-[#8A6B5D] block text-[10px] uppercase font-semibold">4. Neckline</span>
-                <span className="font-bold text-[#4B3F38] uppercase">{modestyAudit.neckline}</span>
-              </div>
-
-              <div className="p-3 rounded-xl bg-white border border-[#D6CFCE]">
-                <span className="text-[#8A6B5D] block text-[10px] uppercase font-semibold">5. Sleeve Length</span>
-                <span className="font-bold text-[#4B3F38] capitalize">{modestyAudit.sleeveLength}</span>
-              </div>
-
-              <div className="p-3 rounded-xl bg-white border border-[#D6CFCE]">
-                <span className="text-[#8A6B5D] block text-[10px] uppercase font-semibold">6. Hemline</span>
-                <span className="font-bold text-[#4B3F38] capitalize">{modestyAudit.hemline}</span>
-              </div>
-
-              <div className="p-3 rounded-xl bg-white border border-[#D6CFCE]">
-                <span className="text-[#8A6B5D] block text-[10px] uppercase font-semibold">7. Silhouette Fit</span>
-                <span className="font-bold text-[#4B3F38] capitalize">{modestyAudit.fit}</span>
-              </div>
-            </div>
 
           </div>
 

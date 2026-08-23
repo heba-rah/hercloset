@@ -32,22 +32,20 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Top Header Bar */}
         <div className="flex items-center justify-between h-20 gap-4">
 
-          {/* Logo */}
-          <div className="flex items-center gap-3">
-            <div className="h-11 w-11 rounded-2xl bg-gradient-to-tr from-[#8A6B5D] via-[#B89A8E] to-[#4B3F38] p-0.5 shadow-md">
-              <div className="h-full w-full bg-[#FAF7F2] rounded-[14px] flex items-center justify-center">
-                <Sparkles className="w-6 h-6 text-[#8A6B5D]" />
-              </div>
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-serif italic font-bold text-2xl tracking-tight bg-gradient-to-r from-[#8A6B5D] via-[#B89A8E] to-[#4B3F38] bg-clip-text text-transparent">
-                  hercloset
-                </span>
-                <span className="text-[10px] font-sans font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full bg-[#B89A8E]/20 text-[#8A6B5D] border border-[#B89A8E]/40">
-                  AI Fashion Engine
-                </span>
-              </div>
+          {/* Logo Component (Enlarged Freestanding Icon & Dual-Color Wordmark) */}
+          <div className="flex items-center gap-3 cursor-pointer">
+            <img
+              src="/logo/logo.png"
+              alt="hercloset logo"
+              className="h-12 w-12 md:h-14 md:w-14 object-contain shrink-0 drop-shadow-xs"
+            />
+            <div className="flex items-baseline">
+              <span className="font-serif italic font-normal text-2xl md:text-3xl text-[#7A5C4D]">
+                her
+              </span>
+              <span className="font-serif not-italic font-medium text-2xl md:text-3xl text-[#3D312A] tracking-tight">
+                closet
+              </span>
             </div>
           </div>
 

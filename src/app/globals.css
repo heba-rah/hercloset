@@ -17,6 +17,9 @@ html, body {
   background-color: #F2EDE6 !important;
   color: #4B3F38 !important;
   font-family: var(--font-sans), Inter, system-ui, sans-serif !important;
+  overflow-x: hidden !important;
+  width: 100% !important;
+  max-width: 100% !important;
 }
 
 .font-serif {

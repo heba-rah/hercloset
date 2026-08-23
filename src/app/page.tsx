@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { ModestyFilterState, ModestyProfile, Product, UserAccount } from '@/types/product';
 import { mockProducts } from '@/data/mockProducts';
-import { filterAndScoreProducts } from '@/utils/filterEngine';
+import { filterAndScoreProducts, passesStrictModestyFilter } from '@/utils/filterEngine';
 
 import { Header } from '@/components/Header';
 import { ClosetTopShelf } from '@/components/ClosetTopShelf';
@@ -14,10 +14,26 @@ import { AuthLandingPage } from '@/components/AuthLandingPage';
 import { PermanentProfileModal } from '@/components/PermanentProfileModal';
 import { HamperDrawer } from '@/components/HamperDrawer';
 import { HamperButton } from '@/components/HamperButton';
-import { GlassmorphismLoadingScreen } from '@/components/GlassmorphismLoadingScreen';
 import { Sparkles, ShieldCheck, X, ChevronLeft, ChevronRight } from 'lucide-react';
 
-const ITEMS_PER_PAGE = 35;
+// Helper function to produce truncated pagination numbers with ellipsis (e.g. [1, 2, 3, '...', 42])
+const getPaginationRange = (currentPage: number, totalPages: number): (number | string)[] => {
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  }
+
+  if (currentPage <= 4) {
+    return [1, 2, 3, 4, 5, '...', totalPages];
+  }
+
+  if (currentPage >= totalPages - 3) {
+    return [1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+  }
+
+  return [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
+};
+
+const ITEMS_PER_PAGE = 30;
 
 const INITIAL_PROFILE: ModestyProfile = {
   name: 'My Custom Modesty Rules',
@@ -27,6 +43,7 @@ const INITIAL_PROFILE: ModestyProfile = {
   fits: [],
   noSlits: true,
   noOpenBack: true,
+  noCropped: true,
   isOpaque: true,
   selectedRetailers: ['Urban Planet', 'Ardene'],
   selectedOccasions: ['gymwear', 'graduation', 'wedding', 'workwear', 'school', 'casual', 'eid'],
@@ -34,18 +51,20 @@ const INITIAL_PROFILE: ModestyProfile = {
 };
 
 const INITIAL_FILTERS: ModestyFilterState = {
-  necklines: ['high', 'crew'],
-  sleeveLengths: ['wrist', '3/4'],
-  hemlines: ['floor', 'ankle'],
+  necklines: [],
+  sleeveLengths: [],
+  hemlines: [],
   fits: [],
-  noSlits: true,
-  noOpenBack: true,
-  isOpaque: true,
-  minModestyScore: 70,
+  noSlits: false,
+  noOpenBack: false,
+  noCropped: false,
+  isOpaque: false,
+  minModestyScore: 0,
   searchQuery: '',
   selectedCategory: 'all',
   selectedRetailer: 'all',
   selectedOccasion: 'all',
+  selectedSubcategory: 'All Types',
   demoMode: 'ai_search'
 };
 
@@ -53,8 +72,8 @@ export default function Home() {
   const [currentUser, setCurrentUser] = useState<UserAccount | null>(null);
   const [showAuthLandingPage, setShowAuthLandingPage] = useState<boolean>(true);
   
-  // Step 3 & 4 Glassmorphism Loading Screen State ("Preparing your modest closet...")
-  const [isGlassLoading, setIsGlassLoading] = useState<boolean>(false);
+  // Clean Blur-to-Reveal Transition State for Main Feed
+  const [isFeedRevealed, setIsFeedRevealed] = useState<boolean>(false);
 
   const [profile, setProfile] = useState<ModestyProfile>(INITIAL_PROFILE);
   const [filters, setFilters] = useState<ModestyFilterState>(INITIAL_FILTERS);
@@ -69,27 +88,35 @@ export default function Home() {
   // Pagination State
   const [currentPage, setCurrentPage] = useState<number>(1);
 
-  // Load permanent user account from localStorage on mount
+  // Load permanent user account and modesty profile from localStorage on mount
   useEffect(() => {
     try {
       const storedUser = localStorage.getItem('hercloset_user_account');
       if (storedUser) {
         const parsedUser: UserAccount = JSON.parse(storedUser);
         setCurrentUser(parsedUser);
-        setShowAuthLandingPage(!parsedUser.isLoggedIn);
-        if (parsedUser.profile) {
-          setProfile(parsedUser.profile);
-          setFilters(prev => ({
-            ...prev,
-            necklines: parsedUser.profile.necklines || prev.necklines,
-            sleeveLengths: parsedUser.profile.sleeveLengths || prev.sleeveLengths,
-            hemlines: parsedUser.profile.hemlines || prev.hemlines,
-            fits: parsedUser.profile.fits || prev.fits,
-            noSlits: parsedUser.profile.noSlits ?? prev.noSlits,
-            noOpenBack: parsedUser.profile.noOpenBack ?? prev.noOpenBack,
-            isOpaque: parsedUser.profile.isOpaque ?? prev.isOpaque,
-          }));
+        const shouldShowLanding = !parsedUser.isLoggedIn;
+        setShowAuthLandingPage(shouldShowLanding);
+        if (!shouldShowLanding) {
+          setTimeout(() => setIsFeedRevealed(true), 50);
         }
+
+        const savedPermanentKey = `modesty_profile_${parsedUser.email}`;
+        const savedPermanentRaw = localStorage.getItem(savedPermanentKey);
+        const savedPermanent = savedPermanentRaw ? JSON.parse(savedPermanentRaw) : null;
+        const activeProf = savedPermanent || parsedUser.profile || INITIAL_PROFILE;
+
+        setProfile(activeProf);
+        setFilters(prev => ({
+          ...prev,
+          necklines: activeProf.necklines || [],
+          sleeveLengths: activeProf.sleeveLengths || [],
+          hemlines: activeProf.hemlines || [],
+          fits: activeProf.fits || [],
+          noSlits: activeProf.noSlits ?? false,
+          noOpenBack: activeProf.noOpenBack ?? false,
+          isOpaque: activeProf.isOpaque ?? false,
+        }));
       }
     } catch {
       // fallback
@@ -101,41 +128,40 @@ export default function Home() {
     setCurrentPage(1);
   }, [filters]);
 
-  // STEP 3 & 4: GLASSMORPHISM LOADING SCREEN TRANSITION (Preparing Your Closet -> Fade into Feed)
-  const triggerGlassmorphismTransition = (onApplyState: () => void) => {
-    setIsGlassLoading(true);
-    onApplyState();
-    setShowAuthLandingPage(false);
-
-    // After 1.2s delay (simulating catalog curation and preference loading), fade out glass screen
-    setTimeout(() => {
-      setIsGlassLoading(false);
-    }, 1200);
-  };
-
   const handleOpenAuth = () => {
     setShowAuthLandingPage(true);
+    setIsFeedRevealed(false);
   };
 
   const handleCompleteAuth = (account: UserAccount) => {
-    triggerGlassmorphismTransition(() => {
-      setCurrentUser(account);
-      setProfile(account.profile);
-      setFilters(prev => ({
-        ...prev,
-        necklines: account.profile.necklines,
-        sleeveLengths: account.profile.sleeveLengths,
-        hemlines: account.profile.hemlines,
-        fits: account.profile.fits,
-        noSlits: account.profile.noSlits,
-        noOpenBack: account.profile.noOpenBack,
-        isOpaque: account.profile.isOpaque,
-      }));
-    });
+    setCurrentUser(account);
+
+    const savedPermanentKey = `modesty_profile_${account.email}`;
+    const savedPermanentRaw = localStorage.getItem(savedPermanentKey);
+    const savedPermanent = savedPermanentRaw ? JSON.parse(savedPermanentRaw) : null;
+    const activeProf = savedPermanent || account.profile || INITIAL_PROFILE;
+
+    setProfile(activeProf);
+    setFilters(prev => ({
+      ...prev,
+      necklines: activeProf.necklines || [],
+      sleeveLengths: activeProf.sleeveLengths || [],
+      hemlines: activeProf.hemlines || [],
+      fits: activeProf.fits || [],
+      noSlits: activeProf.noSlits ?? false,
+      noOpenBack: activeProf.noOpenBack ?? false,
+      isOpaque: activeProf.isOpaque ?? false,
+    }));
+    setShowAuthLandingPage(false);
+    setIsFeedRevealed(false);
+    setTimeout(() => setIsFeedRevealed(true), 50);
   };
 
   const handleSkipGuest = () => {
-    triggerGlassmorphismTransition(() => {});
+    setFilters(INITIAL_FILTERS);
+    setShowAuthLandingPage(false);
+    setIsFeedRevealed(false);
+    setTimeout(() => setIsFeedRevealed(true), 50);
   };
 
   const handleSignOut = () => {
@@ -236,6 +262,11 @@ export default function Home() {
 
   const activeFilterCount = useMemo(() => {
     let count = 0;
+    if (filters.selectedCategory !== 'all') count++;
+    if (filters.selectedRetailer !== 'all') count++;
+    if (filters.selectedOccasion !== 'all') count++;
+    if (filters.maxPrice) count++;
+    if (filters.searchQuery) count++;
     if (filters.noSlits) count++;
     if (filters.noOpenBack) count++;
     if (filters.isOpaque) count++;
@@ -246,12 +277,26 @@ export default function Home() {
     return count;
   }, [filters]);
 
-  return (
-    <div className="min-h-screen bg-[#F2EDE6] text-[#4B3F38] flex flex-col font-sans selection:bg-[#B89A8E] selection:text-white">
-      
-      {/* STEP 3 & 4: GLASSMORPHISM LOADING SCREEN ("Preparing your modest closet...") */}
-      <GlassmorphismLoadingScreen isLoading={isGlassLoading} />
+  const scopedItemsCount = useMemo(() => {
+    return mockProducts.filter(item =>
+      passesStrictModestyFilter(item, null, filters.selectedOccasion, filters.selectedRetailer, filters.selectedSubcategory)
+    ).length;
+  }, [filters.selectedOccasion, filters.selectedRetailer, filters.selectedSubcategory]);
 
+  const hasModestyRules = useMemo(() => {
+    if (filters.noSlits || filters.noOpenBack || filters.noCropped || filters.isOpaque) return true;
+    if (filters.necklines.length > 0 || filters.sleeveLengths.length > 0 || filters.hemlines.length > 0 || filters.fits.length > 0) return true;
+    if (currentUser && currentUser.profile) {
+      const p = currentUser.profile;
+      if (p.noSlits || p.noOpenBack || p.noCropped || p.isOpaque) return true;
+      if (p.necklines.length > 0 || p.sleeveLengths.length > 0 || p.hemlines.length > 0 || p.fits.length > 0) return true;
+    }
+    return false;
+  }, [currentUser, filters]);
+
+  return (
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#F2EDE6] text-[#4B3F38] flex flex-col font-sans selection:bg-[#B89A8E] selection:text-white">
+      
       {/* STEP 1 & 2: LANDING HERO & AUTHENTICATION FLOW OR MAIN STORE FEED */}
       {showAuthLandingPage ? (
         <AuthLandingPage
@@ -259,7 +304,12 @@ export default function Home() {
           onSkipGuest={handleSkipGuest}
         />
       ) : (
-        <>
+        /* CLEAN BLUR-TO-REVEAL TRANSITION CONTAINER */
+        <div className={`flex-1 flex flex-col w-full max-w-full overflow-x-hidden transition-all duration-500 ease-out ${
+          isFeedRevealed
+            ? 'blur-0 opacity-100'
+            : 'blur-md opacity-90'
+        }`}>
           {/* Permanent Modesty Profile Modal (Triggered by top-right square card) */}
           {isPermanentProfileModalOpen && (
             <PermanentProfileModal
@@ -288,8 +338,11 @@ export default function Home() {
             onSelectOccasion={(occ) => handleFilterChange({ selectedOccasion: occ })}
             selectedStore={filters.selectedRetailer}
             onSelectStore={(store) => handleFilterChange({ selectedRetailer: store })}
-            averageMatchScore={averageMatchScore}
-            totalItemsCount={calculatedMatches.length}
+            selectedSubcategory={filters.selectedSubcategory}
+            onSelectSubcategory={(sub) => handleFilterChange({ selectedSubcategory: sub })}
+            passingItemsCount={calculatedMatches.length}
+            totalItemsCount={scopedItemsCount}
+            hasActiveFilters={hasModestyRules}
           />
 
           {/* Main Full-Width Content Area with Persistent Stylist Tile in Position #1 */}
@@ -304,49 +357,74 @@ export default function Home() {
               hamperProductIds={hamper.map(p => p.id)}
               onOpenFilters={() => setIsFiltersDrawerOpen(true)}
               activeFilterCount={activeFilterCount}
+              userName={currentUser?.name}
             />
 
-            {/* CLEAN PAGINATION CONTROLS */}
+            {/* CLEAN TRUNCATED PAGINATION CONTROLS */}
             {calculatedMatches.length > 0 && (
-              <div className="mt-8 pt-6 border-t border-[#D6CFCE] flex flex-col sm:flex-row items-center justify-between gap-4 font-sans">
-                <span className="text-xs text-[#4B3F38] font-semibold">
-                  Page <span className="font-bold text-[#8A6B5D]">{currentPage}</span> of{' '}
-                  <span className="font-bold text-[#8A6B5D]">{totalPages}</span> — Showing{' '}
-                  <span className="font-mono text-[#8A6B5D]">
-                    {paginatedMatches.length} of {calculatedMatches.length}
-                  </span>{' '}
-                  Canadian garments
-                </span>
-
-                <div className="flex items-center gap-2">
+              <div className="mt-12 mb-8 pt-8 border-t border-[#D6CFCE]/60 flex flex-col items-center justify-center gap-3 font-sans">
+                <div className="flex items-center gap-2 flex-wrap justify-center">
                   <button
                     onClick={() => {
                       setCurrentPage(prev => Math.max(1, prev - 1));
-                      window.scrollTo({ top: 300, behavior: 'smooth' });
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
                     disabled={currentPage === 1}
-                    className="bg-[#8A6B5D] hover:bg-[#6e5346] text-[#FAF7F2] font-sans text-xs font-semibold px-4 py-2 rounded-xl shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
+                    className="px-4 py-2 rounded-xl bg-[#FAF7F2] hover:bg-[#EAE4DC] border border-[#D6CFCE]/80 text-xs font-semibold text-[#3D312A] disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer shadow-xs flex items-center gap-1"
                   >
-                    <ChevronLeft className="w-4 h-4 text-white" />
-                    <span>Previous</span>
+                    ← Previous
                   </button>
 
-                  <span className="px-3 py-1.5 rounded-lg bg-[#FAF7F2] border border-[#D6CFCE] text-xs font-mono font-bold text-[#4B3F38]">
-                    {currentPage} / {totalPages}
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    {getPaginationRange(currentPage, totalPages).map((item, idx) => {
+                      if (typeof item === 'string') {
+                        return (
+                          <span key={`ellipsis-${idx}`} className="w-10 h-10 flex items-center justify-center text-[#8A6B5D] font-mono text-xs select-none">
+                            •••
+                          </span>
+                        );
+                      }
+
+                      const pageNum = item as number;
+                      const isActive = currentPage === pageNum;
+
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => {
+                            setCurrentPage(pageNum);
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                          }}
+                          className={`w-10 h-10 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center ${
+                            isActive
+                              ? 'bg-[#7A5C4D] text-[#FAF7F2] shadow-sm'
+                              : 'bg-[#FAF7F2] hover:bg-[#EAE4DC] text-[#3D312A] border border-[#D6CFCE]/80'
+                          }`}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    })}
+                  </div>
 
                   <button
                     onClick={() => {
                       setCurrentPage(prev => Math.min(totalPages, prev + 1));
-                      window.scrollTo({ top: 300, behavior: 'smooth' });
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
                     disabled={currentPage === totalPages}
-                    className="bg-[#8A6B5D] hover:bg-[#6e5346] text-[#FAF7F2] font-sans text-xs font-semibold px-4 py-2 rounded-xl shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
+                    className="px-4 py-2 rounded-xl bg-[#FAF7F2] hover:bg-[#EAE4DC] border border-[#D6CFCE]/80 text-xs font-semibold text-[#3D312A] disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer shadow-xs flex items-center gap-1"
                   >
-                    <span>Next</span>
-                    <ChevronRight className="w-4 h-4 text-white" />
+                    Next →
                   </button>
                 </div>
+
+                <span className="text-xs text-[#8A6B5D] font-medium tracking-wide text-center">
+                  Showing <span className="font-mono font-bold text-[#3D312A]">{paginatedMatches.length}</span> of{' '}
+                  <span className="font-mono font-bold text-[#3D312A]">{calculatedMatches.length}</span> Canadian garments — Page{' '}
+                  <span className="font-mono font-bold text-[#3D312A]">{currentPage}</span> of{' '}
+                  <span className="font-mono font-bold text-[#3D312A]">{totalPages}</span>
+                </span>
               </div>
             )}
 
@@ -354,8 +432,8 @@ export default function Home() {
 
           {/* SLIDE-OVER MODESTY FILTERS DRAWER (For Current Session Tweaks) */}
           {isFiltersDrawerOpen && (
-            <div className="fixed inset-0 z-50 flex justify-end bg-[#4B3F38]/60 backdrop-blur-md animate-in fade-in duration-200">
-              <div className="relative w-full max-w-md h-full bg-[#FAF7F2] border-l border-[#D6CFCE] shadow-2xl flex flex-col justify-between text-[#4B3F38]">
+            <div className="fixed inset-0 z-[100] flex justify-end bg-[#4B3F38]/60 backdrop-blur-md animate-in fade-in duration-200">
+              <div className="relative w-full max-w-md h-full bg-[#FAF7F2] border-l border-[#D6CFCE] shadow-2xl flex flex-col justify-between text-[#3D312A]">
                 
                 {/* Drawer Header */}
                 <div className="p-5 border-b border-[#D6CFCE] flex items-center justify-between bg-[#F2EDE6]">
@@ -364,38 +442,36 @@ export default function Home() {
                       <ShieldCheck className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="font-serif italic font-bold text-base text-[#4B3F38]">Session Filter Tweaks</h3>
+                      <h3 className="font-serif italic font-bold text-base text-[#3D312A]">Session Filter Tweaks</h3>
                       <p className="text-xs text-[#8A6B5D]">Temporary adjustment for this search</p>
                     </div>
                   </div>
 
                   <button
                     onClick={() => setIsFiltersDrawerOpen(false)}
-                    className="p-2 rounded-full bg-white text-[#4B3F38] hover:bg-[#FAF7F2] border border-[#D6CFCE]"
+                    className="p-2 rounded-full bg-[#FAF7F2] text-[#3D312A] hover:bg-[#FAF7F2] border border-[#D6CFCE] cursor-pointer"
                   >
                     <X className="w-5 h-5" />
                   </button>
                 </div>
 
-                {/* Scrollable Filters Body */}
-                <div className="flex-1 overflow-y-auto p-5">
+                {/* Scrollable Filters Body (pb-28 for clear scrolling) */}
+                <div className="flex-1 overflow-y-auto p-5 pb-28">
                   <ModestyFilters
                     filters={filters}
                     onFilterChange={handleFilterChange}
                     onReset={handleResetFilters}
-                    onApplyStrictPreset={handleApplyStrictPreset}
-                    onApplySmartPreset={handleApplySmartPreset}
                   />
                 </div>
 
-                {/* Footer */}
-                <div className="p-4 bg-[#F2EDE6] border-t border-[#D6CFCE] flex items-center justify-between">
-                  <span className="text-xs text-[#8A6B5D] font-semibold">
+                {/* Footer Bar */}
+                <div className="p-4 bg-[#F2EDE6] border-t border-[#D6CFCE] flex items-center justify-between z-20 relative shadow-lg">
+                  <span className="text-xs text-[#8A6B5D] font-bold">
                     {calculatedMatches.length} items match
                   </span>
                   <button
                     onClick={() => setIsFiltersDrawerOpen(false)}
-                    className="px-5 py-2.5 rounded-xl bg-[#8A6B5D] hover:bg-[#4B3F38] text-[#FAF7F2] font-bold text-xs shadow-md transition-all"
+                    className="px-6 py-3 rounded-xl bg-[#3D312A] hover:bg-[#2A211B] text-[#FAF7F2] font-bold text-xs shadow-md transition-all cursor-pointer"
                   >
                     Apply to Feed
                   </button>
@@ -405,10 +481,11 @@ export default function Home() {
             </div>
           )}
 
-          {/* Floating Aesthetic Woven Laundry Hamper Button */}
+          {/* Floating Aesthetic Woven Laundry Hamper Button (Hidden when any modal/drawer is open) */}
           <HamperButton
             itemCount={hamper.length}
             onClick={() => setIsHamperOpen(true)}
+            isHidden={isFiltersDrawerOpen || isMobileFiltersOpen || isPermanentProfileModalOpen || isHamperOpen}
           />
 
           {/* Hamper Drawer */}
@@ -428,8 +505,6 @@ export default function Home() {
                   filters={filters}
                   onFilterChange={handleFilterChange}
                   onReset={handleResetFilters}
-                  onApplyStrictPreset={handleApplyStrictPreset}
-                  onApplySmartPreset={handleApplySmartPreset}
                   isMobileDrawer
                   onCloseMobileDrawer={() => setIsMobileFiltersOpen(false)}
                 />
@@ -441,27 +516,30 @@ export default function Home() {
           <AuditModal
             product={selectedAuditProduct}
             onClose={() => setSelectedAuditProduct(null)}
+            hasActiveFilters={hasModestyRules}
+            onOpenFilters={() => {
+              setSelectedAuditProduct(null);
+              setIsMobileFiltersOpen(true);
+            }}
           />
 
-          {/* Footer */}
-          <footer className="mt-auto border-t border-[#D6CFCE] bg-[#FAF7F2] py-8 text-xs text-[#8A6B5D]">
-            <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-2">
-                <div className="h-6 w-6 rounded-lg bg-[#F2EDE6] border border-[#B89A8E] flex items-center justify-center text-[#8A6B5D]">
-                  <Sparkles className="w-3.5 h-3.5" />
-                </div>
-                <span className="font-serif italic font-semibold text-[#4B3F38]">hercloset</span>
-                <span>— AI-powered visual fashion search engine</span>
-              </div>
-
-              <div className="flex items-center gap-4 text-[#4B3F38]">
-                <span className="flex items-center gap-1">
-                  <ShieldCheck className="w-[#3.5] h-3.5 text-[#8A6B5D]" /> Urban Planet &amp; Ardene Live Catalog
+          {/* Clean Brand Motto Footer */}
+          <footer className="mt-auto border-t border-[#D6CFCE]/80 bg-[#FAF7F2] py-8 text-xs font-sans">
+            <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center text-center">
+              <div className="flex items-baseline justify-center gap-1.5 flex-wrap">
+                <span className="font-serif italic font-normal text-base md:text-lg text-[#7A5C4D]">
+                  her
+                </span>
+                <span className="font-serif not-italic font-medium text-base md:text-lg text-[#3D312A] tracking-tight">
+                  closet
+                </span>
+                <span className="text-xs md:text-sm text-[#8A6B5D] uppercase tracking-[0.2em] font-semibold ml-1">
+                  — Fashion Curated for Your Coverage
                 </span>
               </div>
             </div>
           </footer>
-        </>
+        </div>
       )}
 
     </div>
