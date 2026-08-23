@@ -1,10 +1,10 @@
 # hercloset — Fashion Curated for Your Coverage
 
-> **hercloset** is an AI-powered modest fashion curation engine and catalog aggregator for Canadian retail brands (including Urban Planet and Ardene). It enforces zero-leak modesty filters, computer vision garment audits, and personalized coverage preferences.
+> **hercloset** bridges the modesty gap in mainstream e-commerce through real-time catalog aggregation, automated visual garment audits, and zero-leak coverage filters tailored to individual preferences.
 
 ---
 
-## ✨ Features & Highlights
+## Features & Highlights
 
 - **7-Point AI Vision Modesty Audit**: Interactive inspection modal with simulated computer vision bounding scans and tailored 7-point verification checklists (Leg Slits / Midriff Openings, Open Back & Cutouts, Fabric Opacity, Necklines, Sleeve Lengths, Hemlines, and Silhouette Fit).
 - **Strict Whitelist Modesty Engine**: High-accuracy classification pipeline enforcing hard constraints for cutouts, leg slits, sheer fabrics, sleeve coverage, necklines, and midriff exposure (`noCropped`).
@@ -20,7 +20,7 @@
 
 ---
 
-## 🚀 Getting Started & How to Run
+## Getting Started & How to Run
 
 ### Prerequisites
 
@@ -53,11 +53,11 @@ npm run dev
 ```
 
 Open your browser and navigate to:
-👉 **[http://localhost:3000](http://localhost:3000)**
+**[http://localhost:3000](http://localhost:3000)**
 
 ---
 
-## 🛠️ Available Scripts
+## Available Scripts
 
 | Command | Description |
 | :--- | :--- |
@@ -68,7 +68,7 @@ Open your browser and navigate to:
 
 ---
 
-## 📂 Project Architecture
+## Project Architecture
 
 ```text
 hercloset/
