@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { ModestyFilterState, ModestyProfile, Product, UserAccount } from '@/types/product';
 import { mockProducts } from '@/data/mockProducts';
-import { filterAndScoreProducts } from '@/utils/filterEngine';
+import { filterAndScoreProducts, passesStrictModestyFilter } from '@/utils/filterEngine';
 
 import { Header } from '@/components/Header';
 import { ClosetTopShelf } from '@/components/ClosetTopShelf';
@@ -274,6 +274,12 @@ export default function Home() {
     return count;
   }, [filters]);
 
+  const scopedItemsCount = useMemo(() => {
+    return mockProducts.filter(item =>
+      passesStrictModestyFilter(item, null, filters.selectedOccasion, filters.selectedRetailer, filters.selectedSubcategory)
+    ).length;
+  }, [filters.selectedOccasion, filters.selectedRetailer, filters.selectedSubcategory]);
+
   const hasModestyRules = useMemo(() => {
     if (currentUser !== null) return true;
     if (filters.noSlits || filters.noOpenBack || filters.isOpaque) return true;
@@ -328,7 +334,7 @@ export default function Home() {
             selectedSubcategory={filters.selectedSubcategory}
             onSelectSubcategory={(sub) => handleFilterChange({ selectedSubcategory: sub })}
             passingItemsCount={calculatedMatches.length}
-            totalItemsCount={mockProducts.length}
+            totalItemsCount={scopedItemsCount}
             hasActiveFilters={hasModestyRules}
           />
 
